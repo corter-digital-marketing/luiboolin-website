@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Boolin League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #050308; color: #fff; font-family: 'Rajdhani', sans-serif; min-height: 100vh; }
+
+    /* ── Login ── */
+    #login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-card {
+      background: rgba(17,10,42,0.95); border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 14px; padding: 2.75rem 2.25rem; width: min(380px, 92vw); text-align: center;
+      box-shadow: 0 0 60px rgba(124,58,237,0.15);
+    }
+    .login-title {
+      font-family: 'Saira Extra Condensed', sans-serif; font-weight: 800; font-style: italic;
+      font-size: 2.2rem; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.2rem;
+    }
+    .login-sub { color: rgba(167,139,250,0.6); font-size: 0.68rem; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 2rem; }
+
+    /* ── Dashboard ── */
+    #dashboard { display: none; max-width: 860px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(124,58,237,0.2); }
+    .dash-title { font-family: 'Saira Extra Condensed', sans-serif; font-weight: 800; font-style: italic; font-size: 1.9rem; text-transform: uppercase; }
+
+    /* ── Cards ── */
+    .card { background: rgba(17,10,42,0.8); border: 1px solid rgba(124,58,237,0.22); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+    .card-title { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: #a855f7; margin-bottom: 1.25rem; }
+
+    /* ── Inputs ── */
+    input[type="text"], input[type="number"], input[type="password"], select {
+      background: rgba(0,0,0,0.45); border: 1px solid rgba(124,58,237,0.3); border-radius: 6px;
+      color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600;
+      padding: 0.6rem 0.9rem; width: 100%; outline: none; transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    input:focus, select:focus { border-color: rgba(167,139,250,0.7); }
+    input::placeholder { color: rgba(255,255,255,0.22); font-weight: 500; }
+    select option { background: #110a2a; }
+
+    .form-grid-3 { display: grid; grid-template-columns: 1fr 36px 1fr; gap: 0.75rem; align-items: center; margin-bottom: 0.75rem; }
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .vs { text-align: center; font-weight: 900; font-size: 0.85rem; color: rgba(124,58,237,0.55); letter-spacing: 0.1em; }
+
+    /* ── Buttons ── */
+    .btn {
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 0.08em;
+      text-transform: uppercase; border: none; border-radius: 6px; padding: 0.65rem 1.5rem;
+      cursor: pointer; transition: opacity 0.18s, transform 0.12s;
+    }
+    .btn:hover { opacity: 0.82; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; width: 100%; margin-top: 0.5rem; padding: 0.75rem; }
+    .btn-sm-danger { background: rgba(239,68,68,0.12); color: rgba(239,68,68,0.75); border: 1px solid rgba(239,68,68,0.2); font-size: 0.68rem; padding: 0.22rem 0.55rem; border-radius: 4px; }
+    .btn-logout { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1.1rem; font-size: 0.8rem; }
+
+    /* ── Messages ── */
+    .msg { font-size: 0.8rem; text-align: center; margin-top: 0.65rem; min-height: 1.1em; transition: opacity 0.3s; }
+    .msg.ok  { color: #4ade80; }
+    .msg.err { color: #f87171; }
+
+    /* ── Leaderboard table ── */
+    .lb-table { width: 100%; border-collapse: collapse; }
+    .lb-table th { font-size: 0.58rem; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(124,58,237,0.65); padding: 0 0.75rem 0.75rem; text-align: left; font-weight: 700; }
+    .lb-table th:not(:nth-child(2)) { text-align: center; }
+    .lb-table td { padding: 0.55rem 0.75rem; border-top: 1px solid rgba(255,255,255,0.04); font-size: 0.95rem; font-weight: 600; }
+    .lb-table td:not(:nth-child(2)) { text-align: center; color: rgba(255,255,255,0.55); }
+    .lb-table tr:first-child td { border-top: none; }
+    .rank-num { color: rgba(124,58,237,0.6); font-size: 0.85rem; }
+    .pts-cell { color: #a855f7 !important; font-weight: 900 !important; font-size: 1rem !important; }
+
+    /* ── Match history ── */
+    .match-row { display: flex; align-items: center; gap: 1rem; padding: 0.65rem 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .match-row:last-child { border-bottom: none; }
+    .match-info { flex: 1; }
+    .match-teams { font-size: 0.95rem; font-weight: 600; }
+    .match-winner-label { font-size: 0.68rem; color: #4ade80; font-weight: 700; letter-spacing: 0.05em; margin-top: 0.15rem; }
+    .match-date { font-size: 0.68rem; color: rgba(255,255,255,0.22); white-space: nowrap; }
+    .no-data { color: rgba(255,255,255,0.22); font-size: 0.85rem; text-align: center; padding: 1.25rem 0; }
+  </style>
+</head>
+<body>
+
+<!-- ── Login ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-title">Boolin League</div>
+    <div class="login-sub">Admin Panel</div>
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')login()" />
+    <p class="msg err" id="login-err" style="margin-top:0.5rem;"></p>
+    <button class="btn btn-primary" onclick="login()">Enter</button>
+  </div>
+</div>
+
+<!-- ── Dashboard ── -->
+<div id="dashboard">
+  <div class="dash-header">
+    <div class="dash-title">Admin Panel</div>
+    <button class="btn btn-logout" onclick="logout()">Log out</button>
+  </div>
+
+  <!-- Add Match -->
+  <div class="card">
+    <div class="card-title">Add Match Result</div>
+    <div class="form-grid-3">
+      <input type="text" id="team1" placeholder="Team 1 name" />
+      <div class="vs">VS</div>
+      <input type="text" id="team2" placeholder="Team 2 name" />
+    </div>
+    <div class="form-grid-2">
+      <input type="number" id="score1" placeholder="Score (optional)" min="0" />
+      <input type="number" id="score2" placeholder="Score (optional)" min="0" />
+    </div>
+    <select id="winner-sel">
+      <option value="">— Select Winner —</option>
+      <option value="1">Team 1 Wins</option>
+      <option value="2">Team 2 Wins</option>
+    </select>
+    <button class="btn btn-primary" onclick="addMatch()">Save Result</button>
+    <p class="msg" id="match-msg"></p>
+  </div>
+
+  <!-- Leaderboard -->
+  <div class="card">
+    <div class="card-title">Season 1 Standings</div>
+    <div id="lb-wrap"><p class="no-data">No matches recorded yet.</p></div>
+  </div>
+
+  <!-- Match History -->
+  <div class="card">
+    <div class="card-title">Match History</div>
+    <div id="history-wrap"><p class="no-data">No matches recorded yet.</p></div>
+  </div>
+
+  <!-- Season 1 Bracket: Seeds -->
+  <div class="card">
+    <div class="card-title">Season 1 Bracket — Set Seeds</div>
+    <p style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-bottom:1.25rem;">Set the 4 quarterfinal matchups. Save before setting results.</p>
+    <div id="seeds-form">
+      <div style="display:flex;flex-direction:column;gap:0.6rem;">
+        <div style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(124,58,237,0.6);margin-bottom:0.25rem;">Quarterfinal Matchups</div>
+        <div class="form-grid-3"><input type="text" id="qf1-t1" placeholder="QF1 Team 1"/><div class="vs">vs</div><input type="text" id="qf1-t2" placeholder="QF1 Team 2"/></div>
+        <div class="form-grid-3"><input type="text" id="qf2-t1" placeholder="QF2 Team 1"/><div class="vs">vs</div><input type="text" id="qf2-t2" placeholder="QF2 Team 2"/></div>
+        <div class="form-grid-3"><input type="text" id="qf3-t1" placeholder="QF3 Team 1"/><div class="vs">vs</div><input type="text" id="qf3-t2" placeholder="QF3 Team 2"/></div>
+        <div class="form-grid-3"><input type="text" id="qf4-t1" placeholder="QF4 Team 1"/><div class="vs">vs</div><input type="text" id="qf4-t2" placeholder="QF4 Team 2"/></div>
+      </div>
+      <button class="btn btn-primary" onclick="saveSeeds()">Save Seeds</button>
+      <p class="msg" id="seeds-msg"></p>
+    </div>
+  </div>
+
+  <!-- Season 1 Bracket: Results -->
+  <div class="card">
+    <div class="card-title">Season 1 Bracket — Set Results</div>
+    <p style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-bottom:1.25rem;">Pick the winner for each match. Advancing teams auto-populate.</p>
+    <div id="bracket-results-wrap"><p class="no-data">Set seeds first.</p></div>
+    <p class="msg" id="bracket-msg"></p>
+  </div>
+</div>
+
+<script>
+  let adminToken = null;
+
+  async function login() {
+    const pw = document.getElementById('pw-input').value;
+    const r = await fetch('/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pw }),
+    });
+    const d = await r.json();
+    if (d.ok) {
+      adminToken = d.token;
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+      loadData();
+    } else {
+      document.getElementById('login-err').textContent = 'Incorrect password.';
+    }
+  }
+
+  async function logout() {
+    await fetch('/admin/logout', { method: 'POST', headers: { 'x-admin-token': adminToken } });
+    adminToken = null;
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('login-err').textContent = '';
+  }
+
+  async function loadData() {
+    const [lb, matches, bracket] = await Promise.all([
+      fetch('/api/leaderboard').then(r => r.json()),
+      fetch('/api/admin/matches', { headers: { 'x-admin-token': adminToken } }).then(r => r.json()),
+      fetch('/api/bracket/s1').then(r => r.json()),
+    ]);
+    renderLb(lb);
+    renderHistory(matches);
+    renderBracketSeeds(bracket);
+    renderBracketResults(bracket);
+  }
+
+  function renderBracketSeeds(b) {
+    const pairs = { qf1: b.qf[0], qf2: b.qf[1], qf3: b.qf[2], qf4: b.qf[3] };
+    Object.entries(pairs).forEach(([id, m]) => {
+      const t1 = document.getElementById(id + '-t1');
+      const t2 = document.getElementById(id + '-t2');
+      if (t1 && m.team1) t1.value = m.team1;
+      if (t2 && m.team2) t2.value = m.team2;
+    });
+  }
+
+  function renderBracketResults(b) {
+    const el = document.getElementById('bracket-results-wrap');
+    const rounds = [
+      { label: 'Quarterfinals', matches: b.qf },
+      { label: 'Semifinals',    matches: b.sf },
+      { label: 'Final',         matches: [b.final] },
+    ];
+    el.innerHTML = rounds.map(round => `
+      <div style="margin-bottom:1.25rem;">
+        <div style="font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(124,58,237,0.6);margin-bottom:0.6rem;">${round.label}</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          ${round.matches.map(m => {
+            const t1 = m.team1 || 'TBD'; const t2 = m.team2 || 'TBD';
+            const hasBoth = m.team1 && m.team2;
+            return `<div style="display:flex;align-items:center;gap:0.75rem;background:rgba(0,0,0,0.25);border:1px solid rgba(124,58,237,0.18);border-radius:7px;padding:0.6rem 0.9rem;">
+              <span style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(124,58,237,0.5);min-width:28px;">${m.id.toUpperCase()}</span>
+              <span style="flex:1;font-size:0.92rem;font-weight:600;color:${m.winner===t1?'#fff':'rgba(255,255,255,0.45)'};">${esc(t1)}</span>
+              <span style="font-size:0.7rem;color:rgba(255,255,255,0.2);">vs</span>
+              <span style="flex:1;font-size:0.92rem;font-weight:600;color:${m.winner===t2?'#fff':'rgba(255,255,255,0.45)'};">${esc(t2)}</span>
+              <select onchange="setBracketResult('${m.id}',this.value)" style="width:140px;font-size:0.78rem;padding:0.3rem 0.5rem;" ${hasBoth?'':'disabled'}>
+                <option value="">— Winner —</option>
+                <option value="${esc(t1)}" ${m.winner===t1?'selected':''}>${esc(t1)}</option>
+                <option value="${esc(t2)}" ${m.winner===t2?'selected':''}>${esc(t2)}</option>
+                ${m.winner ? `<option value="">Clear</option>` : ''}
+              </select>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  async function saveSeeds() {
+    const seeds = {};
+    ['qf1','qf2','qf3','qf4'].forEach(id => {
+      seeds[id] = {
+        team1: document.getElementById(id+'-t1').value.trim(),
+        team2: document.getElementById(id+'-t2').value.trim(),
+      };
+    });
+    const r = await fetch('/api/admin/bracket/s1/seeds', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
+      body: JSON.stringify(seeds),
+    });
+    const d = await r.json();
+    const msg = document.getElementById('seeds-msg');
+    if (d.ok) { flash(msg, 'Seeds saved!', false); renderBracketResults(d.bracket); }
+    else       { flash(msg, d.error || 'Failed.', true); }
+  }
+
+  async function setBracketResult(matchId, winner) {
+    const r = await fetch('/api/admin/bracket/s1/result', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
+      body: JSON.stringify({ matchId, winner }),
+    });
+    const d = await r.json();
+    const msg = document.getElementById('bracket-msg');
+    if (d.ok) { flash(msg, 'Bracket updated!', false); renderBracketResults(d.bracket); }
+    else       { flash(msg, d.error || 'Failed.', true); }
+  }
+
+  function renderLb(rows) {
+    const el = document.getElementById('lb-wrap');
+    if (!rows.length) { el.innerHTML = '<p class="no-data">No matches recorded yet.</p>'; return; }
+    el.innerHTML = `<table class="lb-table">
+      <thead><tr><th>#</th><th>Team</th><th>GP</th><th>W</th><th>L</th><th>PTS</th></tr></thead>
+      <tbody>${rows.map((r, i) => `<tr>
+        <td class="rank-num">${i + 1}</td>
+        <td>${esc(r.team)}</td>
+        <td>${r.gp}</td><td>${r.wins}</td><td>${r.losses}</td>
+        <td class="pts-cell">${r.points}</td>
+      </tr>`).join('')}</tbody>
+    </table>`;
+  }
+
+  function renderHistory(matches) {
+    const el = document.getElementById('history-wrap');
+    if (!matches.length) { el.innerHTML = '<p class="no-data">No matches recorded yet.</p>'; return; }
+    const sorted = matches.slice().reverse();
+    el.innerHTML = sorted.map(m => {
+      const scoreStr = m.score1 !== null && m.score2 !== null ? ` ${m.score1}–${m.score2}` : '';
+      return `<div class="match-row">
+        <div class="match-info">
+          <div class="match-teams">${esc(m.team1)}${scoreStr} vs ${esc(m.team2)}</div>
+          <div class="match-winner-label">Winner: ${esc(m.winner)}</div>
+        </div>
+        <div class="match-date">${new Date(m.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</div>
+        <button class="btn btn-sm-danger" onclick="deleteMatch('${m.id}')">Delete</button>
+      </div>`;
+    }).join('');
+  }
+
+  async function addMatch() {
+    const team1 = document.getElementById('team1').value.trim();
+    const team2 = document.getElementById('team2').value.trim();
+    const s1 = document.getElementById('score1').value;
+    const s2 = document.getElementById('score2').value;
+    const side = document.getElementById('winner-sel').value;
+    const msg = document.getElementById('match-msg');
+
+    if (!team1 || !team2) { flash(msg, 'Enter both team names.', true); return; }
+    if (!side)            { flash(msg, 'Select a winner.', true); return; }
+    if (team1.toLowerCase() === team2.toLowerCase()) { flash(msg, 'Teams must be different.', true); return; }
+
+    const winner = side === '1' ? team1 : team2;
+    const body = { team1, team2, winner, score1: s1 !== '' ? +s1 : null, score2: s2 !== '' ? +s2 : null };
+
+    const r = await fetch('/api/admin/matches', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
+      body: JSON.stringify(body),
+    });
+    const d = await r.json();
+    if (d.ok) {
+      flash(msg, 'Result saved!', false);
+      ['team1','team2','score1','score2'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('winner-sel').value = '';
+      loadData();
+    } else {
+      flash(msg, d.error || 'Failed to save.', true);
+    }
+  }
+
+  async function deleteMatch(id) {
+    if (!confirm('Delete this match result? This will update the leaderboard.')) return;
+    await fetch(`/api/admin/matches/${id}`, { method: 'DELETE', headers: { 'x-admin-token': adminToken } });
+    loadData();
+  }
+
+  function flash(el, text, isErr) {
+    el.textContent = text;
+    el.className = 'msg ' + (isErr ? 'err' : 'ok');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.textContent = ''; el.className = 'msg'; }, 3000);
+  }
+
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>
