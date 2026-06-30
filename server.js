@@ -613,7 +613,7 @@ const handler = async (req, res) => {
   });
 };
 
-if (require.main === module) {
+if (!process.env.VERCEL) {
   http.createServer(handler).listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
 }
 
