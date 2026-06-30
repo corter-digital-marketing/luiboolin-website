@@ -44,7 +44,7 @@ if (process.env.DATABASE_URL) {
 }
 
 // ── Local file DB ────────────────────────────────────────────────
-const DB_PATH = path.join(BASE, 'db.json');
+const DB_PATH = process.env.VERCEL ? '/tmp/db.json' : path.join(BASE, 'db.json');
 
 function readDb() {
   try {
@@ -333,7 +333,7 @@ const adminSessions = new Set();
 const ADMIN_HASH = crypto.createHash('sha256').update('Boolin2026').digest('hex');
 
 // ── HTTP Server ──────────────────────────────────────────────────
-http.createServer(async (req, res) => {
+const handler = async (req, res) => {
   const parsed   = url.parse(req.url, true);
   const pathname = parsed.pathname;
   const cookies  = parseCookies(req.headers['cookie']);
@@ -611,4 +611,10 @@ http.createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'application/octet-stream' });
     res.end(data);
   });
-}).listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+};
+
+if (require.main === module) {
+  http.createServer(handler).listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+}
+
+module.exports = handler;
