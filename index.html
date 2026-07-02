@@ -1360,6 +1360,12 @@
     }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
 
+    @keyframes merch-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    #merch-carousel-track:hover { animation-play-state: paused; }
+
     /* ══════════════════════════════
        SIGNUP MODAL
     ══════════════════════════════ */
@@ -1439,6 +1445,10 @@
     </button>
 
     <div class="nav-links">
+      <button id="nav-back" onclick="goBack()" style="display:none;align-items:center;gap:0.35rem;background:none;border:none;color:rgba(255,255,255,0.45);font-family:'Rajdhani',sans-serif;font-size:0.82rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;padding:0.35rem 0.6rem;border-radius:5px;transition:color 0.2s,background 0.2s;" onmouseover="this.style.color='#fff';this.style.background='rgba(255,255,255,0.07)'" onmouseout="this.style.color='rgba(255,255,255,0.45)';this.style.background='none'">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back
+      </button>
       <button class="nav-link" id="nav-lui" onclick="showPage('lui')">Home</button>
       <button class="nav-link" id="nav-home" onclick="showPage('home')">Boolin League</button>
       <button class="nav-link" id="nav-shop" onclick="showPage('shop')">Shop</button>
@@ -1453,6 +1463,10 @@
   </nav>
 
   <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <button id="mobile-back-btn" onclick="goBack();closeMobileMenu()" style="display:none;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.45);background:none;border:none;border-bottom:1px solid rgba(255,255,255,0.07);padding:1rem 2rem;text-align:left;cursor:pointer;width:100%;display:flex;align-items:center;gap:0.5rem;">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Back
+    </button>
     <button class="mobile-menu-link" onclick="showPage('lui');closeMobileMenu()">Home</button>
     <button class="mobile-menu-link" onclick="showPage('home');closeMobileMenu()">Boolin League</button>
     <button class="mobile-menu-link" onclick="showPage('shop');closeMobileMenu()">Shop</button>
@@ -1585,8 +1599,8 @@
         </div>
         <p style="font-family:'Rajdhani',sans-serif;font-size:0.95rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(167,139,250,0.7);margin-bottom:2.25rem;">LuiBoolin's Premier League for THE FINALS</p>
         <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-          <button onclick="showPage('home');setTimeout(function(){var t=document.getElementById('tournaments');if(t)t.scrollIntoView({behavior:'smooth'});},60)" style="padding:0.9rem 2rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:7px;cursor:pointer;transition:background 0.2s,border-color 0.2s,transform 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(255,255,255,0.35)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.18)';this.style.transform=''">
-            View Tournaments
+          <button onclick="showPage('home')" style="padding:0.9rem 2rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:7px;cursor:pointer;transition:background 0.2s,border-color 0.2s,transform 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(255,255,255,0.35)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.18)';this.style.transform=''">
+            View Boolin League
           </button>
           <button onclick="showPage('schedule')" style="padding:0.9rem 2rem;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.1em;text-transform:uppercase;border:none;border-radius:7px;cursor:pointer;box-shadow:0 4px 24px rgba(124,58,237,0.4);transition:opacity 0.2s,transform 0.15s;" onmouseover="this.style.opacity='0.88';this.style.transform='translateY(-1px)'" onmouseout="this.style.opacity='1';this.style.transform=''">
             Boolin League Season 01
@@ -1599,6 +1613,24 @@
     <div style="max-width:700px;margin:0 auto;padding:0 1.5rem;">
       <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent);"></div>
     </div>
+
+    <!-- ── Merch Carousel section ── -->
+    <section style="padding:4rem 0 5rem;background:#e8e8e8;overflow:hidden;">
+      <div style="max-width:700px;margin:0 auto;text-align:center;padding:0 1.5rem 2.5rem;">
+        <p style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.75rem;">Official Merch</p>
+        <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:clamp(2.5rem,7vw,4rem);color:#111;text-transform:uppercase;line-height:1;margin-bottom:1rem;">SHOP</div>
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:1rem;color:#666;line-height:1.7;margin-bottom:2rem;">Hoodies, tees, and more. Available in multiple colors.</p>
+        <button onclick="showPage('shop')" style="padding:0.9rem 2.25rem;background:#111;color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.1em;text-transform:uppercase;border:none;border-radius:7px;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed'" onmouseout="this.style.background='#111'">
+          Shop Now
+        </button>
+      </div>
+      <!-- Infinite carousel track -->
+      <div style="position:relative;width:100%;overflow:hidden;">
+        <div id="merch-carousel-track" style="display:flex;gap:2rem;width:max-content;animation:merch-scroll 28s linear infinite;">
+          <!-- Items injected by JS -->
+        </div>
+      </div>
+    </section>
 
     <!-- ── Coaching section ── -->
     <section style="padding:3.5rem 1.5rem 6rem;background:rgba(11,7,26,0.95);">
@@ -1616,63 +1648,138 @@
   <!-- ════════════════════════════════════
        PAGE: SHOP
   ════════════════════════════════════ -->
-  <div class="page" id="page-shop">
+  <div class="page" id="page-shop" style="background:#e8e8e8;">
     <div style="min-height:100vh;padding:7rem 1.5rem 6rem;">
-      <div style="max-width:1100px;margin:0 auto;">
+      <div style="max-width:1200px;margin:0 auto;">
 
         <!-- Header -->
-        <div style="text-align:center;margin-bottom:3.5rem;">
-          <p style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:0.75rem;">Merch</p>
-          <h1 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:clamp(3rem,8vw,5.5rem);color:#fff;text-transform:uppercase;line-height:1;margin-bottom:0;text-shadow:0 0 40px rgba(124,58,237,0.35);">Shop</h1>
+        <div style="text-align:center;margin-bottom:4rem;">
+          <p style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.75rem;">Official Merch</p>
+          <h1 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:clamp(3rem,8vw,5.5rem);color:#111;text-transform:uppercase;line-height:1;margin-bottom:0;">Shop</h1>
         </div>
 
-        <!-- Category grid -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;">
-
-          <!-- LUIBOOLIN -->
-          <div style="background:rgba(17,10,42,0.7);border:1px solid rgba(124,58,237,0.2);border-radius:14px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(124,58,237,0.5)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(124,58,237,0.2)';this.style.transform='translateY(0)'">
-            <div style="height:180px;background:linear-gradient(145deg,rgba(124,58,237,0.15),rgba(10,6,24,0.9));display:flex;align-items:center;justify-content:center;">
-              <span style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.15);">Coming Soon</span>
-            </div>
-            <div style="padding:1.25rem 1.5rem;border-top:1px solid rgba(124,58,237,0.15);">
-              <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.5rem;color:#fff;text-transform:uppercase;letter-spacing:0.02em;">LuiBoolin</div>
-            </div>
+        <!-- ── SECTION: BOOLIN ── -->
+        <div style="margin-bottom:5rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.25rem;">
+            <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:2rem;color:#111;text-transform:uppercase;letter-spacing:0.04em;margin:0;">Boolin</h2>
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.12);"></div>
           </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3rem;">
 
-          <!-- THE FINALS -->
-          <div style="background:rgba(17,10,42,0.7);border:1px solid rgba(124,58,237,0.2);border-radius:14px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(124,58,237,0.5)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(124,58,237,0.2)';this.style.transform='translateY(0)'">
-            <div style="height:180px;background:linear-gradient(145deg,rgba(124,58,237,0.15),rgba(10,6,24,0.9));display:flex;align-items:center;justify-content:center;">
-              <span style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.15);">Coming Soon</span>
+            <!-- Boolin Hoodie -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="openShopProduct('boolin-hoodie')" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-hoodie-black.png" alt="Boolin Hoodie" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">Boolin Hoodie</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">3 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="openShopProduct('boolin-hoodie')" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702336" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
             </div>
-            <div style="padding:1.25rem 1.5rem;border-top:1px solid rgba(124,58,237,0.15);">
-              <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.5rem;color:#fff;text-transform:uppercase;letter-spacing:0.02em;">The Finals</div>
+
+            <!-- Boolin Tee -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="openShopProduct('boolin-tee')" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-tee-black.png" alt="Boolin Tee" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">Boolin Tee</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">3 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="openShopProduct('boolin-tee')" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702319" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
             </div>
+
           </div>
-
-          <!-- BOOLIN LEAGUE -->
-          <div style="background:rgba(17,10,42,0.7);border:1px solid rgba(124,58,237,0.2);border-radius:14px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(124,58,237,0.5)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(124,58,237,0.2)';this.style.transform='translateY(0)'">
-            <div style="height:180px;background:linear-gradient(145deg,rgba(124,58,237,0.15),rgba(10,6,24,0.9));display:flex;align-items:center;justify-content:center;">
-              <span style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.15);">Coming Soon</span>
-            </div>
-            <div style="padding:1.25rem 1.5rem;border-top:1px solid rgba(124,58,237,0.15);">
-              <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.5rem;color:#fff;text-transform:uppercase;letter-spacing:0.02em;">Boolin League</div>
-            </div>
-          </div>
-
-          <!-- PLAYER CARDS -->
-          <div style="background:rgba(17,10,42,0.7);border:1px solid rgba(124,58,237,0.2);border-radius:14px;overflow:hidden;transition:border-color 0.2s,transform 0.2s;" onmouseover="this.style.borderColor='rgba(124,58,237,0.5)';this.style.transform='translateY(-3px)'" onmouseout="this.style.borderColor='rgba(124,58,237,0.2)';this.style.transform='translateY(0)'">
-            <div style="height:180px;background:linear-gradient(145deg,rgba(124,58,237,0.15),rgba(10,6,24,0.9));display:flex;align-items:center;justify-content:center;">
-              <span style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.15);">Coming Soon</span>
-            </div>
-            <div style="padding:1.25rem 1.5rem;border-top:1px solid rgba(124,58,237,0.15);">
-              <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.5rem;color:#fff;text-transform:uppercase;letter-spacing:0.02em;">Player Cards</div>
-            </div>
-          </div>
-
         </div>
+
+        <!-- ── SECTION: BOOLIN LEAGUE ── -->
+        <div style="margin-bottom:5rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.25rem;">
+            <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:2rem;color:#111;text-transform:uppercase;letter-spacing:0.04em;margin:0;">Boolin League</h2>
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.12);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3rem;">
+
+            <!-- League Hoodie -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="openShopProduct('bl-hoodie')" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-league-hoodie-black.png" alt="League Hoodie" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">League Hoodie</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">2 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="openShopProduct('bl-hoodie')" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702333" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- League Tee -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="openShopProduct('bl-tee')" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-league-tee-black.png" alt="League Tee" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">League Tee</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">3 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="openShopProduct('bl-tee')" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702329" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── SECTION: FINALS ── -->
+        <div style="margin-bottom:2rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.25rem;">
+            <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:2rem;color:#111;text-transform:uppercase;letter-spacing:0.04em;margin:0;">Finals</h2>
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.12);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3rem;">
+
+            <!-- Heavy Tee -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="openShopProduct('heavy-tee')" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/heavy-tee.png" alt="Heavy Tee" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">Heavy Tee</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">1 Color &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="openShopProduct('heavy-tee')" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702315" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
       </div>
     </div>
-  </div>
+  </div><!-- /page-shop -->
+
+  <!-- ════════════════════════════════════
+       PAGE: SHOP — PRODUCT DETAIL
+  ════════════════════════════════════ -->
+  <div class="page" id="page-shop-product" style="background:#e8e8e8;">
+    <div style="min-height:100vh;padding:7rem 1.5rem 6rem;">
+      <div style="max-width:1100px;margin:0 auto;">
+        <div id="shop-product-content"></div>
+      </div>
+    </div>
+  </div><!-- /page-shop-product -->
 
   <!-- ════════════════════════════════════
        PAGE: COACHING
@@ -1764,6 +1871,7 @@
           <div class="purple-line" style="margin-left:auto;margin-right:auto;"></div>
           <p style="color:#fff;font-size:1.2rem;font-weight:700;line-height:1.7;margin-bottom:2rem;">The first official Boolin League season is coming. Compete in weekly tournaments, earn points, and climb the leaderboard to prove you're the best. Ending the season off with a Major Tournament for the top teams.</p>
           <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSegLS4yS0p_D8HMca3jjb6DHH4wFTRQ2A_en_vKiMeQwVaXUg/viewform?usp=dialog" target="_blank" rel="noopener" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Sign Up</a>
             <button class="btn-outline" onclick="showPage('schedule')">View Season 01</button>
           </div>
         </div>
@@ -1822,6 +1930,29 @@
             <div style="margin-top:0.75rem;font-size:0.75rem;color:#fbbf24;font-weight:600;letter-spacing:0.05em;">View Rosters →</div>
           </div>
         </article>
+
+        <!-- Happening Soon: Boolin League -->
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:rgba(168,85,247,0.9);">Happening Soon</span>
+          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
+          <article class="tourney-card">
+            <div class="tourney-card-img-wrap" style="background:linear-gradient(145deg,rgba(8,4,20,1) 0%,rgba(20,12,48,1) 100%);display:flex;align-items:center;justify-content:center;padding:2.25rem 2rem;min-height:180px;">
+              <img src="boolin-small.png" alt="Boolin League" style="max-width:200px;width:100%;object-fit:contain;filter:drop-shadow(0 0 18px rgba(124,58,237,0.5));" loading="lazy" />
+              <span class="tourney-status status-soon">Happening Soon</span>
+            </div>
+            <div class="tourney-card-body">
+              <p class="tourney-game">Boolin League · Season 01</p>
+              <h3 class="tourney-name">BOOLIN LEAGUE</h3>
+              <div style="display:flex;gap:0.65rem;margin-top:0.1rem;">
+                <button onclick="showPage('season1')" style="flex:1;font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.6rem 0.75rem;border-radius:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(124,58,237,0.28)'" onmouseout="this.style.background='rgba(124,58,237,0.15)'">View</button>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSegLS4yS0p_D8HMca3jjb6DHH4wFTRQ2A_en_vKiMeQwVaXUg/viewform?usp=dialog" target="_blank" style="flex:1;font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.6rem 0.75rem;border-radius:6px;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);color:#fbbf24;cursor:pointer;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;transition:background 0.2s;" onmouseover="this.style.background='rgba(251,191,36,0.2)'" onmouseout="this.style.background='rgba(251,191,36,0.1)'">Sign Up</a>
+              </div>
+            </div>
+          </article>
+        </div>
 
         <!-- Bottom 3: All Pro 2v2 · 2v2 · 1v1 -->
         <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
@@ -2149,6 +2280,7 @@
 
       <!-- CTA buttons -->
       <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;">
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSegLS4yS0p_D8HMca3jjb6DHH4wFTRQ2A_en_vKiMeQwVaXUg/viewform?usp=dialog" target="_blank" rel="noopener" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Sign Up</a>
         <button class="btn-outline" onclick="showPage('leaderboards')">Leaderboards</button>
       </div>
 
@@ -2224,24 +2356,24 @@
     <div style="padding:0 1.5rem;">
       <div style="display:flex;justify-content:center;gap:0.5rem;padding-bottom:0;flex-wrap:wrap;">
         <button id="week-tab-1" onclick="switchWeekTab(1)"
-          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.5rem;border-radius:6px 6px 0 0;border:1px solid rgba(124,58,237,0.4);border-bottom:none;background:rgba(124,58,237,0.2);color:#fff;cursor:pointer;transition:background 0.2s,color 0.2s;">
-          Week 1
+          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.55rem 1.25rem 0.6rem;border-radius:6px 6px 0 0;border:1px solid rgba(124,58,237,0.4);border-bottom:none;background:rgba(124,58,237,0.2);color:#fff;cursor:pointer;transition:background 0.2s,color 0.2s;line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:0.15rem;">
+          <span>Week 1</span><span style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;opacity:0.65;">Jul 10 · 7PM EST</span>
         </button>
         <button id="week-tab-2" onclick="switchWeekTab(2)"
-          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.5rem;border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,0.08);border-bottom:none;background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s,color 0.2s;">
-          Week 2
+          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.55rem 1.25rem 0.6rem;border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,0.08);border-bottom:none;background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s,color 0.2s;line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:0.15rem;">
+          <span>Week 2</span><span style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;opacity:0.65;">Jul 17 · 7PM EST</span>
         </button>
         <button id="week-tab-3" onclick="switchWeekTab(3)"
-          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.5rem;border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,0.08);border-bottom:none;background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s,color 0.2s;">
-          Week 3
+          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.55rem 1.25rem 0.6rem;border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,0.08);border-bottom:none;background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s,color 0.2s;line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:0.15rem;">
+          <span>Week 3</span><span style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;opacity:0.65;">Jul 24 · 7PM EST</span>
         </button>
         <button id="week-tab-4" onclick="switchWeekTab(4)"
-          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.5rem;border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,0.08);border-bottom:none;background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s,color 0.2s;">
-          Week 4
+          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.55rem 1.25rem 0.6rem;border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,0.08);border-bottom:none;background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s,color 0.2s;line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:0.15rem;">
+          <span>Week 4</span><span style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;opacity:0.65;">Jul 31 · 7PM EST</span>
         </button>
         <button id="week-tab-5" onclick="switchWeekTab(5)"
-          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.5rem;border-radius:6px 6px 0 0;border:1px solid rgba(251,191,36,0.3);border-bottom:none;background:transparent;color:rgba(251,191,36,0.6);cursor:pointer;transition:background 0.2s,color 0.2s;">
-          Major
+          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.55rem 1.25rem 0.6rem;border-radius:6px 6px 0 0;border:1px solid rgba(251,191,36,0.3);border-bottom:none;background:transparent;color:rgba(251,191,36,0.6);cursor:pointer;transition:background 0.2s,color 0.2s;line-height:1.2;display:flex;flex-direction:column;align-items:center;gap:0.15rem;">
+          <span>Major</span><span style="font-size:0.58rem;font-weight:600;letter-spacing:0.08em;opacity:0.65;">Aug 7 · 7PM EST</span>
         </button>
       </div>
       <div style="height:1px;background:rgba(124,58,237,0.25);"></div>
@@ -3889,7 +4021,20 @@
     // ══════════════════════════════════════
     // PAGE ROUTING
     // ══════════════════════════════════════
-    function showPage(name) {
+    const _pageHistory = [];
+    let _currentPage = 'lui';
+
+    function showPage(name, _skipHistory) {
+      if (!_skipHistory && name !== _currentPage) {
+        _pageHistory.push(_currentPage);
+      }
+      _currentPage = name;
+
+      const backBtn = document.getElementById('nav-back');
+      if (backBtn) backBtn.style.display = _pageHistory.length > 0 ? 'flex' : 'none';
+      const mobileBackBtn = document.getElementById('mobile-back-btn');
+      if (mobileBackBtn) mobileBackBtn.style.display = _pageHistory.length > 0 ? 'flex' : 'none';
+
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-link').forEach(l => {
         l.classList.remove('active');
@@ -3900,7 +4045,9 @@
       if (page) page.classList.add('active');
 
       // sub-pages live under 'home' nav highlight
-      const navTarget = (name === 'bracket' || name === '2v2roster' || name === '2v2bracket' || name === 'invitational' || name === 'roadmap' || name === 'allpro2v2' || name === 's1bracket') ? 'home' : name;
+      const navTarget = (name === 'bracket' || name === '2v2roster' || name === '2v2bracket' || name === 'invitational' || name === 'roadmap' || name === 'allpro2v2' || name === 's1bracket') ? 'home'
+                      : (name === 'shop-product') ? 'shop'
+                      : name;
       const navBtn = document.getElementById('nav-' + navTarget);
       if (navBtn) { navBtn.classList.add('active'); navBtn.setAttribute('aria-current', 'page'); }
 
@@ -3910,6 +4057,98 @@
       document.querySelectorAll('#page-' + name + ' .fade-up').forEach(el => {
         if (!el.classList.contains('visible')) observer.observe(el);
       });
+    }
+
+    // ══════════════════════════════════════
+    // SHOP — PRODUCT DATA & DETAIL VIEW
+    // ══════════════════════════════════════
+    var _shopProducts = {
+      'boolin-hoodie': {
+        name: 'Boolin Hoodie',
+        section: 'Boolin',
+        link: 'https://luiboolin.printify.me/product/29702336',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-hoodie-black.png' },
+          { name: 'Tan',   img: '/merch/boolin-hoodie-tan.png'   },
+          { name: 'White', img: '/merch/boolin-hoodie-white.png' }
+        ]
+      },
+      'boolin-tee': {
+        name: 'Boolin Tee',
+        section: 'Boolin',
+        link: 'https://luiboolin.printify.me/product/29702319',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-tee-black.png' },
+          { name: 'Grey',  img: '/merch/boolin-tee-grey.png'  },
+          { name: 'White', img: '/merch/boolin-tee-white.png' }
+        ]
+      },
+      'bl-hoodie': {
+        name: 'League Hoodie',
+        section: 'Boolin League',
+        link: 'https://luiboolin.printify.me/product/29702333',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-league-hoodie-black.png' },
+          { name: 'Blue',  img: '/merch/boolin-league-hoodie-blue.png'  }
+        ]
+      },
+      'bl-tee': {
+        name: 'League Tee',
+        section: 'Boolin League',
+        link: 'https://luiboolin.printify.me/product/29702329',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-league-tee-black.png' },
+          { name: 'Blue',  img: '/merch/boolin-league-tee-blue.png'  },
+          { name: 'Grey',  img: '/merch/boolin-league-tee-grey.png'  }
+        ]
+      },
+      'heavy-tee': {
+        name: 'Heavy Tee',
+        section: 'Finals',
+        link: 'https://luiboolin.printify.me/product/29702315',
+        colors: [
+          { name: 'Black', img: '/merch/heavy-tee.png' }
+        ]
+      }
+    };
+
+    function openShopProduct(id) {
+      var p = _shopProducts[id];
+      if (!p) return;
+      var colorCount = p.colors.length;
+      var colorLabel = colorCount + ' Color' + (colorCount > 1 ? 's' : '');
+
+      var colorCardImages = p.colors.map(function(c) {
+        return '<div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">'
+          + '<div style="width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:0.5rem;overflow:hidden;">'
+          + '<img src="' + c.img + '" alt="' + c.name + '" style="max-width:100%;max-height:100%;object-fit:contain;" />'
+          + '</div>'
+          + '<span style="font-family:\'Rajdhani\',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#888;">' + c.name.toUpperCase() + '</span>'
+          + '</div>';
+      }).join('');
+
+      document.getElementById('shop-product-content').innerHTML =
+        '<div style="margin-bottom:0.6rem;">'
+        + '<span style="font-family:\'Rajdhani\',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:#7c3aed;">' + p.section.toUpperCase() + '</span>'
+        + '</div>'
+        + '<h1 style="font-family:\'Saira Extra Condensed\',sans-serif;font-weight:800;font-style:italic;font-size:clamp(2.5rem,7vw,4.5rem);color:#111;text-transform:uppercase;line-height:1;margin:0 0 0.5rem;">' + p.name + '</h1>'
+        + '<p style="font-family:\'Rajdhani\',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#999;margin:0 0 2.5rem;">' + colorLabel + '</p>'
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2rem;margin-bottom:3rem;">' + colorCardImages + '</div>'
+        + '<div style="border-top:1px solid rgba(0,0,0,0.1);padding-top:2rem;">'
+        + '<a href="' + p.link + '" target="_blank" style="display:inline-flex;align-items:center;gap:0.6rem;background:#111;color:#fff;font-family:\'Rajdhani\',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;padding:0.85rem 2.25rem;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background=\'#7c3aed\'" onmouseout="this.style.background=\'#111\'">'
+        + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><polyline points="1 1 5 1 7 13 16 13 19 5 3 5"/></svg>'
+        + 'Shop Now'
+        + '</a>'
+        + '<p style="font-family:\'Space Grotesk\',sans-serif;font-size:0.8rem;color:#aaa;margin:0.85rem 0 0;">Fulfilled by Printify · Ships worldwide</p>'
+        + '</div>';
+
+      showPage('shop-product');
+    }
+
+    function goBack() {
+      if (_pageHistory.length === 0) return;
+      const prev = _pageHistory.pop();
+      showPage(prev, true);
     }
 
     // ══════════════════════════════════════
@@ -4087,6 +4326,32 @@
       const majorEl = document.getElementById('week-panel-5');
       if (majorEl) majorEl.innerHTML = renderMajorBracket();
     }
+
+    // ── Merch carousel init ──
+    (function() {
+      var allMerchImgs = [
+        '/merch/boolin-hoodie-black.png',
+        '/merch/boolin-tee-white.png',
+        '/merch/boolin-league-hoodie-blue.png',
+        '/merch/boolin-tee-grey.png',
+        '/merch/boolin-hoodie-tan.png',
+        '/merch/boolin-league-tee-black.png',
+        '/merch/heavy-tee.png',
+        '/merch/boolin-hoodie-white.png',
+        '/merch/boolin-league-tee-blue.png',
+        '/merch/boolin-tee-black.png',
+        '/merch/boolin-league-hoodie-black.png',
+        '/merch/boolin-league-tee-grey.png'
+      ];
+      var track = document.getElementById('merch-carousel-track');
+      if (!track) return;
+      var doubled = allMerchImgs.concat(allMerchImgs);
+      track.innerHTML = doubled.map(function(src) {
+        return '<div style="flex-shrink:0;width:200px;height:220px;display:flex;align-items:center;justify-content:center;">'
+          + '<img src="' + src + '" style="max-width:100%;max-height:100%;object-fit:contain;" loading="lazy" />'
+          + '</div>';
+      }).join('');
+    })();
 
     // Init auth on load
     initAuth();
