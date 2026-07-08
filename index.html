@@ -2286,40 +2286,37 @@
 
       <!-- Teams List -->
       <style>
-        .team-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.75rem 1.25rem; }
-        @media (max-width:680px) { .team-grid { grid-template-columns:repeat(2,1fr); gap:1.5rem 1rem; } }
+        .team-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.75rem 2rem; }
+        @media (max-width:680px) { .team-grid { grid-template-columns:1fr; gap:1.5rem; } }
 
-        .team-square-wrap { display:flex; flex-direction:column; align-items:center; }
-        .team-square {
-          position:relative; width:100%; aspect-ratio:1/1; background:rgba(17,10,42,0.6); border:1px solid rgba(124,58,237,0.18);
-          border-radius:12px; cursor:pointer; user-select:none; transition:border-color 0.2s, background 0.2s; overflow:hidden;
+        .team-card-wrap { display:flex; flex-direction:column; }
+        .team-card-label {
+          font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.4rem; letter-spacing:0.06em;
+          text-transform:uppercase; color:rgba(255,255,255,0.35); text-align:center; margin-bottom:0.6rem;
         }
-        .team-square:hover { border-color:rgba(124,58,237,0.45); background:rgba(17,10,42,0.8); }
-        .team-square.open { border-color:rgba(124,58,237,0.6); }
-        .team-square-face { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-        .team-square-front { padding:0.5rem; }
-        .team-square-back { display:none; }
-        .team-square.open .team-square-front { display:none; }
-        .team-square.open .team-square-back { display:flex; }
-        .team-square-num { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:2rem; color:rgba(124,58,237,0.3); }
-        .team-square-name {
-          font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.85rem; letter-spacing:0.05em;
-          text-transform:uppercase; color:rgba(255,255,255,0.25); margin-top:0.7rem; text-align:center; cursor:pointer;
+        .team-card {
+          display:flex; align-items:stretch; width:100%; min-height:96px; background:rgba(17,10,42,0.6);
+          border:1px solid rgba(124,58,237,0.18); border-radius:12px; overflow:hidden;
+          transition:border-color 0.2s, background 0.2s;
         }
-        .team-square-wrap.active .team-square-num { color:rgba(167,139,250,0.9); }
-        .team-square-wrap.active .team-square-name { color:#fff; text-shadow:0 0 14px rgba(255,255,255,0.5),0 0 28px rgba(167,139,250,0.35); }
-
-        .roster-mini-row {
-          flex:1; width:100%; display:flex; align-items:center; justify-content:center;
-          padding:0.25rem 0.4rem; box-sizing:border-box; text-align:center;
+        .team-card:hover { border-color:rgba(124,58,237,0.45); background:rgba(17,10,42,0.8); }
+        .team-card-logo {
+          flex-shrink:0; width:96px; aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
+          border-right:1px solid rgba(124,58,237,0.18); overflow:hidden;
         }
-        .roster-mini-row + .roster-mini-row { border-top:1px solid rgba(255,255,255,0.08); }
-        .roster-mini-name { font-family:'Rajdhani',sans-serif; font-weight:700; font-size:clamp(0.78rem,2.1vw,1rem); color:rgba(255,255,255,0.45); letter-spacing:0.01em; line-height:1.15; word-break:break-word; }
-        .team-square-wrap.active .roster-mini-name { color:#fff; }
+        .team-card-logo img { width:100%; height:100%; object-fit:cover; display:block; }
+        .team-card-num { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.75rem; color:rgba(124,58,237,0.3); }
+        .team-card-players { flex:1; display:flex; flex-direction:column; justify-content:center; gap:0.3rem; padding:0.85rem 1.25rem; }
+        .team-card-player {
+          font-family:'Rajdhani',sans-serif; font-weight:700; font-size:0.95rem; letter-spacing:0.02em;
+          color:rgba(255,255,255,0.45); line-height:1.2; word-break:break-word;
+        }
+        .team-card-wrap.active .team-card-label { color:#fff; text-shadow:0 0 14px rgba(255,255,255,0.5),0 0 28px rgba(167,139,250,0.45); }
+        .team-card-wrap.active .team-card-num { color:rgba(167,139,250,0.9); }
+        .team-card-wrap.active .team-card-player { color:#fff; }
       </style>
 
-      <div style="max-width:760px;margin:0 auto 3rem;">
-        <p style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:rgba(255,255,255,0.3);text-align:center;margin-bottom:1.5rem;">Click logos to see players</p>
+      <div style="max-width:900px;margin:0 auto 3rem;">
         <div id="teams-list" class="team-grid"></div>
       </div>
 
@@ -2327,24 +2324,33 @@
         (function() {
           const teamsList = document.getElementById('teams-list');
           const teamsData = [
-            { name: 'Team Boolin', players: ['LuiBoolin', 'Seb', 'Player TBD'] },
+            { name: 'DOG POUND', players: ['LuiBoolin', 'Seb'], photo: '/teamphotos/dogpound2.jpg' },
+            { name: 'Spongeboiz', players: ['MrAzuri', 'lascur', 'wasdwsads'], photo: '/teamphotos/spongeboiz.png' },
+            { name: 'ForEmbarkRob', players: ['AustinMan', 'nvr', 'ye'], photo: '/teamphotos/forembarkrob.png' },
+            { name: 'washed', players: ['3RIE', 'Thing1', 'tecniq'], photo: '/teamphotos/washed.jpg' },
+            { name: 'THE NOBELS', players: ['Fmso_511', 'MFMO-10', 'VITO'], photo: '/teamphotos/thenobels.jpg' },
+            { name: 'oOmOo', players: ['BLEACH', 'INSANETRAIN', 'BoonChi'], photo: '/teamphotos/oomoo.png' },
+            { name: 'Super Nova', players: ['TheIceKing', 'JustBacon', 'Glubtupus_Wepple'], photo: '/teamphotos/supernova.png' },
           ];
           for (let i = 1; i <= 8; i++) {
             const data = teamsData[i - 1];
             const teamName = data ? data.name : 'TBD';
             const players = data ? data.players : ['Player TBD', 'Player TBD', 'Player TBD'];
             const wrap = document.createElement('div');
-            wrap.className = data ? 'team-square-wrap active' : 'team-square-wrap';
+            wrap.className = data ? 'team-card-wrap active' : 'team-card-wrap';
+            const logoInner = data && data.photo
+              ? `<img src="${data.photo}" alt="${teamName} logo" />`
+              : `<span class="team-card-num">${i}</span>`;
             wrap.innerHTML = `
-              <div class="team-square" onclick="this.classList.toggle('open')">
-                <div class="team-square-face team-square-front">
-                  <span class="team-square-num">${i}</span>
+              <div class="team-card-label">${teamName}</div>
+              <div class="team-card">
+                <div class="team-card-logo">
+                  ${logoInner}
                 </div>
-                <div class="team-square-face team-square-back">
-                  ${players.map(p => `<div class="roster-mini-row"><span class="roster-mini-name">${p}</span></div>`).join('')}
+                <div class="team-card-players">
+                  ${players.map(p => `<div class="team-card-player">${p}</div>`).join('')}
                 </div>
-              </div>
-              <div class="team-square-name" onclick="this.previousElementSibling.classList.toggle('open')">${teamName}</div>`;
+              </div>`;
             teamsList.appendChild(wrap);
           }
         })();
