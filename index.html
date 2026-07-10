@@ -2133,17 +2133,17 @@
           <div style="display:flex;flex-direction:column;gap:0.5rem;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">1st Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#fbbf24;">100 pts</span>
+              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#fbbf24;">12 pts</span>
             </div>
             <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">2nd Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#d1d5db;">50 pts</span>
+              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#d1d5db;">7 pts</span>
             </div>
             <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;">
               <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">3rd / 4th Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#cd7c3a;">25 pts</span>
+              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#cd7c3a;">3 pts</span>
             </div>
             <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -2292,7 +2292,7 @@
         .team-card-wrap { display:flex; flex-direction:column; }
         .team-card-label {
           font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.4rem; letter-spacing:0.06em;
-          text-transform:uppercase; color:rgba(255,255,255,0.35); text-align:center; margin-bottom:0.6rem;
+          color:rgba(255,255,255,0.35); text-align:center; margin-bottom:0.6rem;
         }
         .team-card {
           display:flex; align-items:stretch; width:100%; min-height:96px; background:rgba(17,10,42,0.6);
@@ -2314,6 +2314,24 @@
         .team-card-wrap.active .team-card-label { color:#fff; text-shadow:0 0 14px rgba(255,255,255,0.5),0 0 28px rgba(167,139,250,0.45); }
         .team-card-wrap.active .team-card-num { color:rgba(167,139,250,0.9); }
         .team-card-wrap.active .team-card-player { color:#fff; }
+
+        .live-badge {
+          display:inline-flex; align-items:center; gap:0.35rem;
+          background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.3); font-family:'Rajdhani',sans-serif; font-weight:800;
+          font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase;
+          padding:0.28rem 0.6rem; border-radius:100px; text-decoration:none;
+          box-shadow:none; transition:background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+        }
+        .live-badge::before {
+          content:''; width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.25); flex-shrink:0;
+        }
+        .live-badge.is-live {
+          background:#dc2626; color:#fff; box-shadow:0 0 12px rgba(220,38,38,0.55);
+        }
+        .live-badge.is-live:hover { transform:scale(1.06); box-shadow:0 0 18px rgba(220,38,38,0.8); }
+        .live-badge.is-live::before {
+          background:#fff; animation:ping 1.4s ease-in-out infinite;
+        }
       </style>
 
       <div style="max-width:900px;margin:0 auto 3rem;">
@@ -2324,13 +2342,14 @@
         (function() {
           const teamsList = document.getElementById('teams-list');
           const teamsData = [
-            { name: 'DOG POUND', players: ['LuiBoolin', 'Seb'], photo: '/teamphotos/dogpound2.jpg' },
-            { name: 'Spongeboiz', players: ['MrAzuri', 'lascur', 'wasdwsads'], photo: '/teamphotos/spongeboiz.png' },
-            { name: 'ForEmbarkRob', players: ['AustinMan', 'nvr', 'ye'], photo: '/teamphotos/forembarkrob.png' },
-            { name: 'washed', players: ['3RIE', 'Thing1', 'tecniq'], photo: '/teamphotos/washed.jpg' },
-            { name: 'THE NOBELS', players: ['Fmso_511', 'MFMO-10', 'VITO'], photo: '/teamphotos/thenobels.jpg' },
+            { name: 'DOG POUND', players: ['LuiBoolin', 'Seb'], photo: '/teamphotos/dogpound-logo.png', live: 'https://www.twitch.tv/luiboolin' },
+            { name: 'Spongeboiz', players: ['MrAzuri', 'lascur', 'wasdwsads'], photo: '/teamphotos/spongeboiz.png', live: 'https://www.youtube.com/@lascur0513' },
+            { name: 'ForEmbarkRob', players: ['AustinMan', 'nvr', 'ye'], photo: '/teamphotos/forembarkrob.png', live: 'https://www.twitch.tv/nvrlive' },
+            { name: 'washed', players: ['3RIE', 'Thing1', 'tecniq'], photo: '/teamphotos/washed.jpg', live: 'https://www.twitch.tv/tecniqttv' },
+            { name: 'Super Nova', players: ['TheIceKing', 'JustBacon', 'Glubtupus_Wepple'], photo: '/teamphotos/supernova.png', live: 'https://www.twitch.tv/icecoldboard' },
             { name: 'oOmOo', players: ['BLEACH', 'INSANETRAIN', 'BoonChi'], photo: '/teamphotos/oomoo.png' },
-            { name: 'Super Nova', players: ['TheIceKing', 'JustBacon', 'Glubtupus_Wepple'], photo: '/teamphotos/supernova.png' },
+            { name: 'THE NOBELS', players: ['Fmso_511', 'MFMO-10', 'VITO'], photo: '/teamphotos/thenobels.jpg' },
+            { name: 'Prophets', players: ['archangelfear', 'themanyourlookingfor', 'itslobotomingtime'], photo: '/teamphotos/prophets.jpeg' },
           ];
           for (let i = 1; i <= 8; i++) {
             const data = teamsData[i - 1];
@@ -2341,8 +2360,13 @@
             const logoInner = data && data.photo
               ? `<img src="${data.photo}" alt="${teamName} logo" />`
               : `<span class="team-card-num">${i}</span>`;
+            const liveButton = data && data.live
+              ? `<a href="${data.live}" target="_blank" rel="noopener" class="live-badge" data-live-url="${data.live}">Live Now</a>`
+              : '';
             wrap.innerHTML = `
-              <div class="team-card-label">${teamName}</div>
+              <div class="team-card-label" style="display:flex;align-items:center;justify-content:center;gap:0.5rem;">
+                <span>${teamName}</span>${liveButton}
+              </div>
               <div class="team-card">
                 <div class="team-card-logo">
                   ${logoInner}
@@ -2353,6 +2377,16 @@
               </div>`;
             teamsList.appendChild(wrap);
           }
+
+          function refreshLiveStatus() {
+            fetch('/api/live-status').then(r => r.json()).then(status => {
+              document.querySelectorAll('.live-badge[data-live-url]').forEach(el => {
+                el.classList.toggle('is-live', !!status[el.getAttribute('data-live-url')]);
+              });
+            }).catch(() => {});
+          }
+          refreshLiveStatus();
+          setInterval(refreshLiveStatus, 30000);
         })();
       </script>
 
@@ -2406,17 +2440,17 @@
         <div style="display:flex;flex-direction:column;gap:0.5rem;">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">1st Place</span>
-            <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#fbbf24;">100 pts</span>
+            <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#fbbf24;">12 pts</span>
           </div>
           <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">2nd Place</span>
-            <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#d1d5db;">50 pts</span>
+            <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#d1d5db;">7 pts</span>
           </div>
           <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">3rd / 4th Place</span>
-            <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#cd7c3a;">25 pts</span>
+            <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#cd7c3a;">3 pts</span>
           </div>
           <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
           <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -4218,9 +4252,26 @@
       return a;
     }
 
+    // Circle-method round robin: over n-1 rounds every team faces a
+    // different opponent each round with no repeats until all pairs
+    // are exhausted, so first-round matchups stay as evenly spread
+    // out as possible across the season.
+    function roundRobinPairs(teams, round) {
+      const n = teams.length;
+      let list = teams.slice();
+      for (let r = 0; r < round; r++) {
+        list = [list[0], list[n - 1], ...list.slice(1, n - 1)];
+      }
+      const pairs = [];
+      for (let i = 0; i < n / 2; i++) pairs.push([list[i], list[n - 1 - i]]);
+      return pairs;
+    }
+
     function renderBracket(weekNum, grouped) {
-      const all = ['Team 1','Team 2','Team 3','Team 4','Team 5','Team 6','Team 7','Team 8'];
-      const t = seededShuffle(all, weekNum * 31337 + 7);
+      const all = ['DOG POUND','Spongeboiz','ForEmbarkRob','washed','Super Nova','oOmOo','THE NOBELS','Prophets'];
+      const round = (weekNum - 1) % (all.length - 1);
+      const pairs = seededShuffle(roundRobinPairs(all, round), weekNum * 31337 + 7);
+      const t = pairs.flat();
 
       const qfMatch = (a, b) => `
         <div class="sched-match">
@@ -4256,14 +4307,14 @@
 
       return `
         <div style="overflow-x:auto;padding-bottom:1rem;">
-          <div style="display:flex;min-width:654px;margin-bottom:0.6rem;">
+          <div style="display:flex;min-width:704px;margin-bottom:0.6rem;">
             <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">${colA}</div>
             <div style="width:42px;border-bottom:1px solid rgba(255,255,255,0.06);"></div>
             <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">${colB}</div>
             <div style="width:42px;border-bottom:1px solid rgba(255,255,255,0.06);"></div>
             <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">${colC}</div>
           </div>
-          <div style="display:flex;align-items:stretch;min-width:654px;${grouped ? 'padding-top:20px;' : ''}">
+          <div style="display:flex;align-items:stretch;min-width:704px;${grouped ? 'padding-top:20px;' : ''}">
             <div style="display:flex;flex-direction:column;">
               <div style="display:flex;align-items:center;">
                 ${matchCol(t[0],t[1],t[2],t[3],'A')}
@@ -4285,6 +4336,8 @@
             <div style="display:flex;align-items:center;align-self:stretch;">
               ${tbdMatch(gf[0],gf[1],true)}
             </div>
+            <div style="width:24px;align-self:center;height:2px;background:linear-gradient(90deg,rgba(250,204,21,0.75),rgba(250,204,21,0.95));flex-shrink:0;box-shadow:0 0 6px rgba(250,204,21,0.5);"></div>
+            <div style="align-self:center;flex-shrink:0;padding-left:2px;font-size:1.5rem;line-height:1;filter:drop-shadow(0 0 6px rgba(250,204,21,0.55));" title="Champion">🏆</div>
           </div>
         </div>`;
     }

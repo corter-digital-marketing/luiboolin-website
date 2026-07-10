@@ -109,6 +109,66 @@ function discordGet(p, token) {
   });
 }
 
+// ── Live status (Twitch / YouTube) ────────────────────────────────
+const LIVE_CHANNELS = [
+  { url: 'https://www.twitch.tv/luiboolin',     platform: 'twitch',  channel: 'luiboolin' },
+  { url: 'https://www.twitch.tv/nvrlive',       platform: 'twitch',  channel: 'nvrlive' },
+  { url: 'https://www.twitch.tv/tecniqttv',     platform: 'twitch',  channel: 'tecniqttv' },
+  { url: 'https://www.twitch.tv/icecoldboard',  platform: 'twitch',  channel: 'icecoldboard' },
+  { url: 'https://www.youtube.com/@lascur0513', platform: 'youtube', channel: 'lascur0513' },
+];
+
+// Twitch's public web Client-Id (used by twitch.tv itself) — no app registration needed.
+const TWITCH_WEB_CLIENT_ID = 'kimne78kx3ncx6brgo4mv6wki5h1ko';
+
+function isTwitchLive(login) {
+  return new Promise(resolve => {
+    const body = JSON.stringify({ query: `{ user(login: "${login}") { stream { id } } }` });
+    const req = https.request({
+      hostname: 'gql.twitch.tv', path: '/gql', method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Client-Id': TWITCH_WEB_CLIENT_ID, 'Content-Length': Buffer.byteLength(body) },
+    }, res => {
+      let d = ''; res.on('data', c => d += c);
+      res.on('end', () => {
+        try { resolve(!!JSON.parse(d).data.user.stream); } catch { resolve(false); }
+      });
+    });
+    req.on('error', () => resolve(false));
+    req.setTimeout(8000, () => req.destroy());
+    req.write(body); req.end();
+  });
+}
+
+function isYoutubeLive(handle) {
+  return new Promise(resolve => {
+    const req = https.request({
+      hostname: 'www.youtube.com', path: `/@${handle}/live`,
+      headers: { 'User-Agent': 'Mozilla/5.0' },
+    }, res => {
+      let d = ''; res.on('data', c => d += c);
+      res.on('end', () => resolve(d.includes('"isLive":true')));
+    });
+    req.on('error', () => resolve(false));
+    req.setTimeout(8000, () => req.destroy());
+    req.end();
+  });
+}
+
+let liveStatusCache = { data: {}, ts: 0 };
+const LIVE_CACHE_TTL = 30000;
+
+async function getLiveStatus() {
+  if (Date.now() - liveStatusCache.ts < LIVE_CACHE_TTL) return liveStatusCache.data;
+  const results = await Promise.all(LIVE_CHANNELS.map(c =>
+    (c.platform === 'twitch' ? isTwitchLive(c.channel) : isYoutubeLive(c.channel))
+      .catch(() => false)
+  ));
+  const data = {};
+  LIVE_CHANNELS.forEach((c, i) => { data[c.url] = results[i]; });
+  liveStatusCache = { data, ts: Date.now() };
+  return data;
+}
+
 // ── User DB ──────────────────────────────────────────────────────
 async function dbSaveUser(u) {
   if (pool) {
@@ -551,6 +611,13 @@ const handler = async (req, res) => {
     const matchId = pathname.split('/').pop();
     const db = readDb(); db.matches = db.matches.filter(m => m.id !== matchId); writeDb(db);
     json(res, 200, { ok: true });
+    return;
+  }
+
+  // ── Live status (Twitch / YouTube) ────────────────────────────────────────────
+  if (pathname === '/api/live-status') {
+    const status = await getLiveStatus();
+    json(res, 200, status);
     return;
   }
 
