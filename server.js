@@ -115,7 +115,7 @@ const LIVE_CHANNELS = [
   { url: 'https://www.twitch.tv/nvrlive',       platform: 'twitch',  channel: 'nvrlive' },
   { url: 'https://www.twitch.tv/tecniqttv',     platform: 'twitch',  channel: 'tecniqttv' },
   { url: 'https://www.twitch.tv/icecoldboard',  platform: 'twitch',  channel: 'icecoldboard' },
-  { url: 'https://www.youtube.com/@lascur0513', platform: 'youtube', channel: 'lascur0513' },
+  { url: 'https://www.twitch.tv/wasdwsads69',   platform: 'twitch',  channel: 'wasdwsads69' },
 ];
 
 // Twitch's public web Client-Id (used by twitch.tv itself) — no app registration needed.
