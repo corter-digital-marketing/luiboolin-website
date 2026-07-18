@@ -1600,7 +1600,7 @@
         <p style="font-family:'Rajdhani',sans-serif;font-size:0.95rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:rgba(167,139,250,0.7);margin-bottom:2.25rem;">LuiBoolin's Premier League for THE FINALS</p>
         <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
           <button onclick="showPage('home')" style="padding:0.9rem 2rem;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.18);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.1em;text-transform:uppercase;border-radius:7px;cursor:pointer;transition:background 0.2s,border-color 0.2s,transform 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.12)';this.style.borderColor='rgba(255,255,255,0.35)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.18)';this.style.transform=''">
-            View Boolin League
+            View League
           </button>
           <button onclick="showPage('schedule')" style="padding:0.9rem 2rem;background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.9rem;letter-spacing:0.1em;text-transform:uppercase;border:none;border-radius:7px;cursor:pointer;box-shadow:0 4px 24px rgba(124,58,237,0.4);transition:opacity 0.2s,transform 0.15s;" onmouseover="this.style.opacity='0.88';this.style.transform='translateY(-1px)'" onmouseout="this.style.opacity='1';this.style.transform=''">
             Boolin League Season 01
@@ -1857,21 +1857,13 @@
     </section>
 
     <!-- UPCOMING SECTION -->
-    <section class="section fade-up" aria-label="Upcoming">
-      <div class="section-inner">
+    <section class="section fade-up" aria-label="Upcoming" style="position:relative;overflow:hidden;min-height:420px;display:flex;align-items:center;background:linear-gradient(to bottom,rgba(5,3,8,0.55) 0%,rgba(5,3,8,0.35) 45%,rgba(5,3,8,0.9) 100%);">
 
-        <!-- Big logo at top -->
-        <div style="text-align:center;margin-bottom:3.5rem;">
-          <p class="section-label" style="margin-bottom:1.25rem;">Upcoming</p>
-          <img src="BL-S1.png" alt="Boolin League Season 1" style="width:min(700px,90%);height:auto;display:inline-block;filter:drop-shadow(0 0 48px rgba(124,58,237,0.45));" />
-        </div>
-
-        <!-- Description + CTA, centered -->
+      <div class="section-inner" style="position:relative;z-index:1;width:100%;">
         <div style="max-width:680px;margin:0 auto;text-align:center;">
-          <div class="purple-line" style="margin-left:auto;margin-right:auto;"></div>
-          <p style="color:#fff;font-size:1.2rem;font-weight:700;line-height:1.7;margin-bottom:2rem;">The first official Boolin League season is coming. Compete in weekly tournaments, earn points, and climb the leaderboard to prove you're the best. Ending the season off with a Major Tournament for the top teams.</p>
           <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-            <button class="btn-primary" onclick="showPage('schedule')">View Season 01</button>
+            <a href="/auth/discord" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Sign Up</a>
+            <button class="btn-outline" onclick="showPage('schedule')">View Season 01</button>
           </div>
         </div>
       </div>
@@ -2186,12 +2178,12 @@
               'Prophets':     '/teamphotos/prophets.jpeg',
             };
             var rows = [
-              { team: 'washed',       points: 12 },
-              { team: 'Spongeboiz',   points: 7 },
+              { team: 'washed',       points: 24 },
+              { team: 'Spongeboiz',   points: 14 },
+              { team: 'DOG POUND',    points: 6 },
               { team: 'ForEmbarkRob', points: 3 },
-              { team: 'DOG POUND',    points: 3 },
+              { team: 'oOmOo',        points: 3 },
               { team: 'Super Nova',   points: 0 },
-              { team: 'oOmOo',        points: 0 },
               { team: 'THE NOBELS',   points: 0 },
               { team: 'Prophets',     points: 0 },
             ];
@@ -4358,6 +4350,72 @@
         </div>`;
     }
 
+    function renderWeek2Results() {
+      const wMatch = (teamA, scoreA, teamB, scoreB, finals) => {
+        const aWins = scoreA > scoreB;
+        return `
+          <div class="sched-match${finals ? ' sched-finals' : ''}">
+            <div class="sched-team" style="${aWins ? 'color:#fff;font-weight:800;' : 'color:rgba(255,255,255,0.35);'}">
+              <span style="flex:1;">${teamA}</span><span style="font-family:'Rajdhani',sans-serif;font-weight:900;">${scoreA}</span>
+            </div>
+            <div class="sched-team" style="${!aWins ? 'color:#fff;font-weight:800;' : 'color:rgba(255,255,255,0.35);'}">
+              <span style="flex:1;">${teamB}</span><span style="font-family:'Rajdhani',sans-serif;font-weight:900;">${scoreB}</span>
+            </div>
+          </div>`;
+      };
+
+      const conn = (m) => `
+        <div style="width:28px;align-self:stretch;display:flex;flex-direction:column;flex-shrink:0;">
+          <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-top:2px solid rgba(124,58,237,0.35);margin-top:${m}px;"></div>
+          <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-bottom:2px solid rgba(124,58,237,0.35);margin-bottom:${m}px;"></div>
+        </div><div style="width:14px;height:2px;background:rgba(124,58,237,0.35);align-self:center;flex-shrink:0;"></div>`;
+
+      const groupCol = (m1, m2, label) => `
+        <div style="position:relative;display:flex;flex-direction:column;gap:16px;">
+          <div style="position:absolute;top:-17px;left:0;font-family:'Rajdhani',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(167,139,250,0.7);">GROUP ${label}</div>
+          ${m1}${m2}
+        </div>`;
+
+      return `
+        <div style="overflow-x:auto;padding-bottom:1rem;">
+          <div style="display:flex;min-width:704px;margin-bottom:0.6rem;">
+            <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">Group Stage</div>
+            <div style="width:42px;border-bottom:1px solid rgba(255,255,255,0.06);"></div>
+            <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">Semi Final</div>
+            <div style="width:42px;border-bottom:1px solid rgba(255,255,255,0.06);"></div>
+            <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">Grand Final</div>
+          </div>
+          <div style="display:flex;align-items:stretch;min-width:704px;padding-top:20px;">
+            <div style="display:flex;flex-direction:column;">
+              <div style="display:flex;align-items:center;">
+                ${groupCol(wMatch('oOmOo', 2, 'Prophets', 0), wMatch('ForEmbarkRob', 0, 'washed', 2), 'A')}
+                ${conn(44)}
+                ${wMatch('oOmOo', 0, 'washed', 2)}
+              </div>
+              <div style="height:16px;"></div>
+              <div style="display:flex;align-items:center;">
+                ${groupCol(wMatch('Spongeboiz', 2, 'Super Nova', 0), wMatch('DOG POUND', 2, 'THE NOBELS', 0), 'B')}
+                ${conn(44)}
+                ${wMatch('DOG POUND', 1, 'Spongeboiz', 2)}
+              </div>
+            </div>
+            <div style="width:28px;align-self:stretch;display:flex;flex-direction:column;flex-shrink:0;">
+              <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-top:2px solid rgba(124,58,237,0.35);margin-top:96px;"></div>
+              <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-bottom:2px solid rgba(124,58,237,0.35);margin-bottom:96px;"></div>
+            </div>
+            <div style="width:14px;height:2px;background:rgba(124,58,237,0.35);align-self:center;flex-shrink:0;"></div>
+            <div style="display:flex;align-items:center;align-self:stretch;">
+              ${wMatch('Spongeboiz', 0, 'washed', 2, true)}
+            </div>
+            <div style="width:24px;align-self:center;height:2px;background:linear-gradient(90deg,rgba(250,204,21,0.75),rgba(250,204,21,0.95));flex-shrink:0;box-shadow:0 0 6px rgba(250,204,21,0.5);"></div>
+            <div style="align-self:center;flex-shrink:0;padding-left:6px;display:flex;align-items:center;gap:0.45rem;">
+              <span style="font-size:1.5rem;line-height:1;filter:drop-shadow(0 0 6px rgba(250,204,21,0.55));" title="Champion">🏆</span>
+              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:0.9rem;color:#fbbf24;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;">washed</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
     function switchWeekTab(week) {
       [1,2,3,4,5].forEach(w => {
         const btn = document.getElementById('week-tab-' + w);
@@ -4395,7 +4453,9 @@
     function initSchedule() {
       const el1 = document.getElementById('week-panel-1');
       if (el1) el1.innerHTML = renderWeek1Results();
-      [2,3,4].forEach(w => {
+      const el2 = document.getElementById('week-panel-2');
+      if (el2) el2.innerHTML = renderWeek2Results();
+      [3,4].forEach(w => {
         const el = document.getElementById('week-panel-' + w);
         if (el) el.innerHTML = renderBracket(w, false);
       });

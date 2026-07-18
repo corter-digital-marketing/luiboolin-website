@@ -384,6 +384,7 @@ const MIME = {
   '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg', '.gif': 'image/gif', '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon', '.woff': 'font/woff', '.woff2': 'font/woff2',
+  '.mov': 'video/quicktime', '.mp4': 'video/mp4',
 };
 
 // ── Sessions & OAuth state ────────────────────────────────────────
