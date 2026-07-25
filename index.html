@@ -2178,14 +2178,14 @@
               'Prophets':     '/teamphotos/prophets.jpeg',
             };
             var rows = [
-              { team: 'washed',       points: 24 },
-              { team: 'Spongeboiz',   points: 14 },
-              { team: 'DOG POUND',    points: 6 },
+              { team: 'washed',       points: 36 },
+              { team: 'Spongeboiz',   points: 17 },
+              { team: 'DOG POUND',    points: 13 },
               { team: 'ForEmbarkRob', points: 3 },
               { team: 'oOmOo',        points: 3 },
-              { team: 'Super Nova',   points: 0 },
-              { team: 'THE NOBELS',   points: 0 },
+              { team: 'THE NOBELS',   points: 3 },
               { team: 'Prophets',     points: 0 },
+              { team: 'Super Nova',   points: 0 },
             ];
             document.getElementById('s1-slots').innerHTML = rows.map(function(r,i){
               var top = i < 4;
@@ -4416,6 +4416,72 @@
         </div>`;
     }
 
+    function renderWeek3Results() {
+      const wMatch = (teamA, scoreA, teamB, scoreB, finals) => {
+        const aWins = scoreA > scoreB;
+        return `
+          <div class="sched-match${finals ? ' sched-finals' : ''}">
+            <div class="sched-team" style="${aWins ? 'color:#fff;font-weight:800;' : 'color:rgba(255,255,255,0.35);'}">
+              <span style="flex:1;">${teamA}</span><span style="font-family:'Rajdhani',sans-serif;font-weight:900;">${scoreA}</span>
+            </div>
+            <div class="sched-team" style="${!aWins ? 'color:#fff;font-weight:800;' : 'color:rgba(255,255,255,0.35);'}">
+              <span style="flex:1;">${teamB}</span><span style="font-family:'Rajdhani',sans-serif;font-weight:900;">${scoreB}</span>
+            </div>
+          </div>`;
+      };
+
+      const conn = (m) => `
+        <div style="width:28px;align-self:stretch;display:flex;flex-direction:column;flex-shrink:0;">
+          <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-top:2px solid rgba(124,58,237,0.35);margin-top:${m}px;"></div>
+          <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-bottom:2px solid rgba(124,58,237,0.35);margin-bottom:${m}px;"></div>
+        </div><div style="width:14px;height:2px;background:rgba(124,58,237,0.35);align-self:center;flex-shrink:0;"></div>`;
+
+      const groupCol = (m1, m2, label) => `
+        <div style="position:relative;display:flex;flex-direction:column;gap:16px;">
+          <div style="position:absolute;top:-17px;left:0;font-family:'Rajdhani',sans-serif;font-size:0.55rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(167,139,250,0.7);">GROUP ${label}</div>
+          ${m1}${m2}
+        </div>`;
+
+      return `
+        <div style="overflow-x:auto;padding-bottom:1rem;">
+          <div style="display:flex;min-width:704px;margin-bottom:0.6rem;">
+            <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">Group Stage</div>
+            <div style="width:42px;border-bottom:1px solid rgba(255,255,255,0.06);"></div>
+            <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">Semi Final</div>
+            <div style="width:42px;border-bottom:1px solid rgba(255,255,255,0.06);"></div>
+            <div style="width:190px;text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.62rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.22);padding-bottom:0.5rem;border-bottom:1px solid rgba(255,255,255,0.06);">Grand Final</div>
+          </div>
+          <div style="display:flex;align-items:stretch;min-width:704px;padding-top:20px;">
+            <div style="display:flex;flex-direction:column;">
+              <div style="display:flex;align-items:center;">
+                ${groupCol(wMatch('DOG POUND', 2, 'oOmOo', 0), wMatch('Spongeboiz', 2, 'ForEmbarkRob', 0), 'A')}
+                ${conn(44)}
+                ${wMatch('DOG POUND', 2, 'Spongeboiz', 1)}
+              </div>
+              <div style="height:16px;"></div>
+              <div style="display:flex;align-items:center;">
+                ${groupCol(wMatch('washed', 2, 'Prophets', 0), wMatch('THE NOBELS', 2, 'Super Nova', 1), 'B')}
+                ${conn(44)}
+                ${wMatch('washed', 2, 'THE NOBELS', 0)}
+              </div>
+            </div>
+            <div style="width:28px;align-self:stretch;display:flex;flex-direction:column;flex-shrink:0;">
+              <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-top:2px solid rgba(124,58,237,0.35);margin-top:96px;"></div>
+              <div style="flex:1;border-right:2px solid rgba(124,58,237,0.35);border-bottom:2px solid rgba(124,58,237,0.35);margin-bottom:96px;"></div>
+            </div>
+            <div style="width:14px;height:2px;background:rgba(124,58,237,0.35);align-self:center;flex-shrink:0;"></div>
+            <div style="display:flex;align-items:center;align-self:stretch;">
+              ${wMatch('washed', 2, 'DOG POUND', 0, true)}
+            </div>
+            <div style="width:24px;align-self:center;height:2px;background:linear-gradient(90deg,rgba(250,204,21,0.75),rgba(250,204,21,0.95));flex-shrink:0;box-shadow:0 0 6px rgba(250,204,21,0.5);"></div>
+            <div style="align-self:center;flex-shrink:0;padding-left:6px;display:flex;align-items:center;gap:0.45rem;">
+              <span style="font-size:1.5rem;line-height:1;filter:drop-shadow(0 0 6px rgba(250,204,21,0.55));" title="Champion">🏆</span>
+              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:0.9rem;color:#fbbf24;letter-spacing:0.05em;text-transform:uppercase;white-space:nowrap;">washed</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
     function switchWeekTab(week) {
       [1,2,3,4,5].forEach(w => {
         const btn = document.getElementById('week-tab-' + w);
@@ -4455,7 +4521,9 @@
       if (el1) el1.innerHTML = renderWeek1Results();
       const el2 = document.getElementById('week-panel-2');
       if (el2) el2.innerHTML = renderWeek2Results();
-      [3,4].forEach(w => {
+      const el3 = document.getElementById('week-panel-3');
+      if (el3) el3.innerHTML = renderWeek3Results();
+      [4].forEach(w => {
         const el = document.getElementById('week-panel-' + w);
         if (el) el.innerHTML = renderBracket(w, false);
       });
