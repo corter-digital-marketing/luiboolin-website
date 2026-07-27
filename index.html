@@ -4558,21 +4558,23 @@
 
     // ── Merch carousel init ──
     (function() {
+      // Order interleaves product families round-robin so the same
+      // shirt/hoodie design never lands next to its own other colors.
       var allMerchImgs = [
         '/merch/boolin-hoodie-black.png',
         '/merch/boolin-tee-white.png',
-        '/merch/boolin-league-hoodie-blue.png',
-        '/merch/boolin-tee-grey.png',
-        '/merch/boolin-hoodie-tan.png',
         '/merch/boolin-league-tee-black.png',
-        '/merch/heavy-tee.png',
-        '/merch/boolin-hoodie-white.png',
-        '/merch/boolin-league-tee-blue.png',
-        '/merch/boolin-tee-black.png',
-        '/merch/boolin-league-hoodie-black.png',
-        '/merch/boolin-league-tee-grey.png',
         '/merch/PLUG-BLACK.png',
+        '/merch/boolin-league-hoodie-blue.png',
+        '/merch/heavy-tee.png',
+        '/merch/boolin-hoodie-tan.png',
+        '/merch/boolin-tee-grey.png',
+        '/merch/boolin-league-tee-blue.png',
         '/merch/PLUG-WHITE.png',
+        '/merch/boolin-league-hoodie-black.png',
+        '/merch/boolin-hoodie-white.png',
+        '/merch/boolin-tee-black.png',
+        '/merch/boolin-league-tee-grey.png',
         '/merch/PLUG-RED.png'
       ];
       var track = document.getElementById('merch-carousel-track');
