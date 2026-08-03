@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boolin League — Tournaments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG wave layers -->
+    <svg class="wave-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,100 C180,20 360,180 540,100 C720,20 900,180 1080,100 C1260,20 1350,140 1440,100 L1440,200 L0,200Z" fill="#7c3aed"/>
+    </svg>
+    <svg class="wave-svg-mid" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,10 480,150 720,80 C960,10 1200,150 1440,80 L1440,160 L0,160Z" fill="#4c1d95"/>
+    </svg>
+    <svg class="wave-svg-top" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C120,10 240,110 360,60 C480,10 600,110 720,60 C840,10 960,110 1080,60 C1200,10 1320,110 1440,60 L1440,120 L0,120Z" fill="#7c3aed"/>
+    </svg>
+
+    <!-- Waveform bars visualizer -->
+    <div class="waveform-bars" aria-hidden="true">
+      <span style="--dur:1.2s;height:30%"></span><span style="--dur:2.1s;height:60%"></span>
+      <span style="--dur:1.7s;height:40%"></span><span style="--dur:0.9s;height:80%"></span>
+      <span style="--dur:2.4s;height:50%"></span><span style="--dur:1.4s;height:90%"></span>
+      <span style="--dur:1.9s;height:35%"></span><span style="--dur:2.7s;height:70%"></span>
+      <span style="--dur:1.1s;height:55%"></span><span style="--dur:2.0s;height:45%"></span>
+      <span style="--dur:1.6s;height:85%"></span><span style="--dur:0.8s;height:40%"></span>
+      <span style="--dur:2.2s;height:65%"></span><span style="--dur:1.5s;height:30%"></span>
+      <span style="--dur:1.8s;height:75%"></span><span style="--dur:2.5s;height:50%"></span>
+      <span style="--dur:1.3s;height:95%"></span><span style="--dur:2.8s;height:40%"></span>
+      <span style="--dur:1.0s;height:60%"></span><span style="--dur:2.3s;height:80%"></span>
+      <span style="--dur:1.7s;height:45%"></span><span style="--dur:0.9s;height:70%"></span>
+      <span style="--dur:2.1s;height:55%"></span><span style="--dur:1.4s;height:35%"></span>
+      <span style="--dur:1.9s;height:90%"></span><span style="--dur:2.6s;height:60%"></span>
+      <span style="--dur:1.2s;height:40%"></span><span style="--dur:2.0s;height:75%"></span>
+      <span style="--dur:1.6s;height:50%"></span><span style="--dur:0.7s;height:85%"></span>
+      <span style="--dur:2.4s;height:30%"></span><span style="--dur:1.5s;height:65%"></span>
+      <span style="--dur:1.1s;height:45%"></span><span style="--dur:2.2s;height:95%"></span>
+      <span style="--dur:1.8s;height:55%"></span><span style="--dur:2.7s;height:40%"></span>
+      <span style="--dur:1.3s;height:70%"></span><span style="--dur:2.0s;height:80%"></span>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link active" href="/league" aria-current="page">Boolin League</a>
+      <a class="nav-link" href="/shop">Shop</a>
+      <a class="nav-link" href="/coaching">Coaching</a>
+      <a class="nav-link" href="/contact">Contact</a>
+    </div>
+
+    <div id="nav-auth" style="display:flex;align-items:center;gap:0.75rem;">
+      <!-- populated by initAuth() -->
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/league">Boolin League</a>
+    <a class="mobile-menu-link" href="/shop">Shop</a>
+    <a class="mobile-menu-link" href="/coaching">Coaching</a>
+    <a class="mobile-menu-link" href="/contact">Contact</a>
+  </div>
+
+  <div class="page" id="page-home">
+
+    <!-- HERO -->
+    <section class="hero" aria-label="Hero">
+
+      <div class="hero-video-wrap">
+        <video autoplay muted loop playsinline aria-hidden="true"
+          poster="https://placehold.co/1920x1080/050308/7c3aed?text= ">
+          <source src="" type="video/mp4" />
+        </video>
+        <div style="position:absolute;inset:0;background:#050308;overflow:hidden;">
+          <div class="lava-blob lava-blob-1"></div>
+          <div class="lava-blob lava-blob-2"></div>
+          <div class="lava-blob lava-blob-3"></div>
+          <div class="lava-blob lava-blob-4"></div>
+          <div class="lava-blob lava-blob-5"></div>
+          <div style="position:absolute;inset:0;backdrop-filter:blur(60px);-webkit-backdrop-filter:blur(60px);"></div>
+          <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 90% at 50% 50%,transparent 30%,rgba(5,3,8,0.7) 100%);"></div>
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <div style="text-align:center;margin:0 auto 1.25rem;display:block;">
+          <img src="boolin-small.png" alt="Boolin League" style="width:min(680px,88vw);height:auto;display:inline-block;filter:drop-shadow(0 0 48px rgba(124,58,237,0.4));" />
+        </div>
+        <p style="text-align:center;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:rgba(167,139,250,0.7);margin-bottom:2.5rem;">Season 01 Coming Soon</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <button class="btn-outline" onclick="location.href='/schedule'">Season 01</button>
+          <button class="btn-outline" onclick="document.getElementById('tournaments').scrollIntoView({behavior:'smooth'})">Tournaments</button>
+          <button class="btn-outline" onclick="location.href='/leaderboards'">Leaderboards</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- UPCOMING SECTION -->
+    <section class="section fade-up" aria-label="Upcoming" style="position:relative;overflow:hidden;min-height:420px;display:flex;align-items:center;background:linear-gradient(to bottom,rgba(5,3,8,0.55) 0%,rgba(5,3,8,0.35) 45%,rgba(5,3,8,0.9) 100%);">
+
+      <div class="section-inner" style="position:relative;z-index:1;width:100%;">
+        <div style="max-width:680px;margin:0 auto;text-align:center;">
+          <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+            <a href="/auth/discord" class="btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Sign Up</a>
+            <button class="btn-outline" onclick="location.href='/schedule'">View Season 01</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TOURNAMENTS SECTION -->
+    <section class="section fade-up" id="tournaments" aria-label="Tournaments">
+      <div class="section-inner">
+        <p class="section-label">All Time</p>
+        <h2 class="section-title"><span class="accent">Tournaments</span></h2>
+        <div class="purple-line"></div>
+
+        <!-- Top: Boolin Invitational — full width horizontal featured card -->
+        <article class="tourney-card featured-card" onclick="location.href='/invitational'" style="cursor:pointer;display:grid;grid-template-columns:320px 1fr;margin-bottom:1.25rem;min-height:200px;" role="button" tabindex="0" aria-label="View Boolin Invitational" onkeydown="if(event.key==='Enter')location.href='/invitational'">
+          <div class="tourney-card-img-wrap" style="height:auto;min-height:300px;background:linear-gradient(160deg,rgba(8,4,20,1) 0%,rgba(18,10,40,1) 50%,rgba(26,14,58,1) 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;position:relative;overflow:hidden;">
+            <!-- Background glow -->
+            <div style="position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:260px;height:260px;background:radial-gradient(circle,rgba(251,191,36,0.13) 0%,transparent 65%);pointer-events:none;"></div>
+            <!-- Trophy -->
+            <svg viewBox="-4 0 108 114" width="168" height="178" aria-hidden="true"
+                 style="filter:drop-shadow(0 0 16px rgba(251,191,36,0.9)) drop-shadow(0 4px 32px rgba(251,191,36,0.45));flex-shrink:0;position:relative;z-index:1;">
+              <!-- Rim -->
+              <rect x="16" y="3" width="68" height="8" rx="2.5" fill="rgba(251,191,36,0.55)" stroke="#fbbf24" stroke-width="1.8"/>
+              <!-- Cup body -->
+              <path d="M18 11 Q80 11 82 11 Q80 7 82 50 Q74 76 50 82 Q26 76 18 50 Q20 7 18 11 Z"
+                    fill="rgba(251,191,36,0.18)" stroke="#fbbf24" stroke-width="2.2" stroke-linejoin="round"/>
+              <!-- Left handle -->
+              <path d="M18 22 Q0 22 0 44 Q0 66 18 68" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+              <!-- Right handle -->
+              <path d="M82 22 Q100 22 100 44 Q100 66 82 68" fill="none" stroke="#fbbf24" stroke-width="3" stroke-linecap="round"/>
+              <!-- Star inside cup -->
+              <path d="M50 28 l2.94 9.05 9.51 0 -7.69 5.59 2.94 9.05 -7.7-5.59 -7.7 5.59 2.94-9.05 -7.69-5.59 9.51 0 Z"
+                    fill="rgba(255,255,255,0.55)"/>
+              <!-- Cup shine -->
+              <path d="M24 16 Q21 40 24 64" stroke="rgba(255,255,255,0.18)" stroke-width="5" fill="none" stroke-linecap="round"/>
+              <!-- Stem -->
+              <path d="M44 82 L41 96 h18 L56 82 Z" fill="rgba(251,191,36,0.6)" stroke="#fbbf24" stroke-width="1.8"/>
+              <!-- Base tier 1 -->
+              <rect x="30" y="96" width="40" height="9" rx="3.5" fill="rgba(251,191,36,0.85)" stroke="#fbbf24" stroke-width="1.8"/>
+              <!-- Base tier 2 -->
+              <rect x="18" y="105" width="64" height="9" rx="4.5" fill="rgba(251,191,36,0.7)" stroke="#fbbf24" stroke-width="1.8"/>
+            </svg>
+            <!-- 2026 -->
+            <span style="font-family:'Rajdhani',sans-serif;font-size:3.25rem;font-weight:900;color:#fbbf24;letter-spacing:0.14em;text-shadow:0 0 30px rgba(251,191,36,0.75),0 0 60px rgba(251,191,36,0.35);line-height:1;position:relative;z-index:1;">2026</span>
+            <span class="tourney-status status-soon">Upcoming</span>
+          </div>
+          <div class="tourney-card-body" style="display:flex;flex-direction:column;justify-content:center;padding:2rem 2.5rem;">
+            <p class="tourney-game">Boolin League · GRAND FINALE</p>
+            <img src="BI-2026.png" alt="Boolin Invitational 2026" style="width:min(340px,100%);height:auto;display:block;filter:drop-shadow(0 0 12px rgba(251,191,36,0.5));margin:0.5rem 0;" />
+            <div class="tourney-prize">
+              <div>
+                <div class="prize-label">Date</div>
+                <div class="prize-amount" style="font-size:1.1rem;letter-spacing:0.02em;">End of 2026</div>
+              </div>
+            </div>
+            <div style="margin-top:0.75rem;font-size:0.75rem;color:#fbbf24;font-weight:600;letter-spacing:0.05em;">View Rosters →</div>
+          </div>
+        </article>
+
+        <!-- Happening Soon: Boolin League -->
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:rgba(168,85,247,0.9);">Happening Soon</span>
+          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin-bottom:1.5rem;">
+          <article class="tourney-card">
+            <div class="tourney-card-img-wrap" style="background:linear-gradient(145deg,rgba(8,4,20,1) 0%,rgba(20,12,48,1) 100%);display:flex;align-items:center;justify-content:center;padding:2.25rem 2rem;min-height:180px;">
+              <img src="boolin-small.png" alt="Boolin League" style="max-width:200px;width:100%;object-fit:contain;filter:drop-shadow(0 0 18px rgba(124,58,237,0.5));" loading="lazy" />
+              <span class="tourney-status status-soon">Happening Soon</span>
+            </div>
+            <div class="tourney-card-body">
+              <p class="tourney-game">Boolin League · Season 01</p>
+              <h3 class="tourney-name">BOOLIN LEAGUE</h3>
+              <div style="display:flex;gap:0.65rem;margin-top:0.1rem;">
+                <button onclick="location.href='/schedule'" style="flex:1;font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.6rem 0.75rem;border-radius:6px;background:rgba(124,58,237,0.15);border:1px solid rgba(124,58,237,0.4);color:#a78bfa;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(124,58,237,0.28)'" onmouseout="this.style.background='rgba(124,58,237,0.15)'">View Season 01</button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <!-- Bottom 3: All Pro 2v2 · 2v2 · 1v1 -->
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+          <span style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:rgba(255,255,255,0.3);">Past Tournaments</span>
+          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
+        </div>
+        <div class="tourney-bottom-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
+
+          <article class="tourney-card" onclick="location.href='/allpro2v2'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View All Pro 2v2 Tournament rosters" onkeydown="if(event.key==='Enter')location.href='/allpro2v2'">
+            <div class="tourney-card-img-wrap">
+              <img class="tourney-card-img" src="REAL2V2POISTER.jpg" alt="All Pro 2v2 Tournament" loading="lazy" />
+              <span class="tourney-status status-closed">Completed</span>
+            </div>
+            <div class="tourney-card-body">
+              <h3 class="tourney-name">ALL PRO 2V2</h3>
+              <div class="tourney-prize">
+                <div>
+                  <div class="prize-label">Winners</div>
+                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 UNI &amp; notBubbaa</div>
+                </div>
+                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="tourney-card" onclick="location.href='/2v2bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 2v2 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/2v2bracket'">
+            <div class="tourney-card-img-wrap">
+              <img class="tourney-card-img" src="2v2-teaser.jpg" alt="2v2 Tournament" loading="lazy" />
+              <span class="tourney-status status-closed">Completed</span>
+            </div>
+            <div class="tourney-card-body">
+              <h3 class="tourney-name">2v2 Tournament</h3>
+              <div class="tourney-prize">
+                <div>
+                  <div class="prize-label">Winners</div>
+                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 Gremlin &amp; Azuri</div>
+                </div>
+                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="tourney-card" onclick="location.href='/bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 1v1 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/bracket'">
+            <div class="tourney-card-img-wrap">
+              <img class="tourney-card-img" src="1V1CHAMP.jpg" alt="1v1 Tournament Champion SwiftCheetah" loading="lazy" />
+              <span class="tourney-status status-closed">Completed</span>
+            </div>
+            <div class="tourney-card-body">
+              <h3 class="tourney-name">1v1 Tournament</h3>
+              <div class="tourney-prize">
+                <div>
+                  <div class="prize-label">Winner</div>
+                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 SwiftCheetah</div>
+                </div>
+                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /page-home -->
+
+  <script src="/assets/common.js"></script>
+
+</body>
+</html>

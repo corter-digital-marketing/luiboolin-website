@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — Boolin League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG wave layers -->
+    <svg class="wave-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,100 C180,20 360,180 540,100 C720,20 900,180 1080,100 C1260,20 1350,140 1440,100 L1440,200 L0,200Z" fill="#7c3aed"/>
+    </svg>
+    <svg class="wave-svg-mid" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,10 480,150 720,80 C960,10 1200,150 1440,80 L1440,160 L0,160Z" fill="#4c1d95"/>
+    </svg>
+    <svg class="wave-svg-top" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C120,10 240,110 360,60 C480,10 600,110 720,60 C840,10 960,110 1080,60 C1200,10 1320,110 1440,60 L1440,120 L0,120Z" fill="#7c3aed"/>
+    </svg>
+
+    <!-- Waveform bars visualizer -->
+    <div class="waveform-bars" aria-hidden="true">
+      <span style="--dur:1.2s;height:30%"></span><span style="--dur:2.1s;height:60%"></span>
+      <span style="--dur:1.7s;height:40%"></span><span style="--dur:0.9s;height:80%"></span>
+      <span style="--dur:2.4s;height:50%"></span><span style="--dur:1.4s;height:90%"></span>
+      <span style="--dur:1.9s;height:35%"></span><span style="--dur:2.7s;height:70%"></span>
+      <span style="--dur:1.1s;height:55%"></span><span style="--dur:2.0s;height:45%"></span>
+      <span style="--dur:1.6s;height:85%"></span><span style="--dur:0.8s;height:40%"></span>
+      <span style="--dur:2.2s;height:65%"></span><span style="--dur:1.5s;height:30%"></span>
+      <span style="--dur:1.8s;height:75%"></span><span style="--dur:2.5s;height:50%"></span>
+      <span style="--dur:1.3s;height:95%"></span><span style="--dur:2.8s;height:40%"></span>
+      <span style="--dur:1.0s;height:60%"></span><span style="--dur:2.3s;height:80%"></span>
+      <span style="--dur:1.7s;height:45%"></span><span style="--dur:0.9s;height:70%"></span>
+      <span style="--dur:2.1s;height:55%"></span><span style="--dur:1.4s;height:35%"></span>
+      <span style="--dur:1.9s;height:90%"></span><span style="--dur:2.6s;height:60%"></span>
+      <span style="--dur:1.2s;height:40%"></span><span style="--dur:2.0s;height:75%"></span>
+      <span style="--dur:1.6s;height:50%"></span><span style="--dur:0.7s;height:85%"></span>
+      <span style="--dur:2.4s;height:30%"></span><span style="--dur:1.5s;height:65%"></span>
+      <span style="--dur:1.1s;height:45%"></span><span style="--dur:2.2s;height:95%"></span>
+      <span style="--dur:1.8s;height:55%"></span><span style="--dur:2.7s;height:40%"></span>
+      <span style="--dur:1.3s;height:70%"></span><span style="--dur:2.0s;height:80%"></span>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/league">Boolin League</a>
+      <a class="nav-link active" href="/shop" aria-current="page">Shop</a>
+      <a class="nav-link" href="/coaching">Coaching</a>
+      <a class="nav-link" href="/contact">Contact</a>
+    </div>
+
+    <div id="nav-auth" style="display:flex;align-items:center;gap:0.75rem;">
+      <!-- populated by initAuth() -->
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/league">Boolin League</a>
+    <a class="mobile-menu-link" href="/shop">Shop</a>
+    <a class="mobile-menu-link" href="/coaching">Coaching</a>
+    <a class="mobile-menu-link" href="/contact">Contact</a>
+  </div>
+
+  <div class="page" id="page-shop-product" style="background:#e8e8e8;">
+    <div style="min-height:100vh;padding:7rem 1.5rem 6rem;">
+      <div style="max-width:1100px;margin:0 auto;">
+        <button onclick="location.href='/shop'" style="display:inline-flex;align-items:center;gap:0.5rem;background:none;border:none;color:#888;font-size:0.8rem;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;padding:0.5rem 0;margin-bottom:1.5rem;transition:color 0.2s;" onmouseover="this.style.color='#111'" onmouseout="this.style.color='#888'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back to Shop
+        </button>
+        <div id="shop-product-content"></div>
+      </div>
+    </div>
+  </div><!-- /page-shop-product -->
+
+  <script src="/assets/common.js"></script>
+  <script>
+    var _shopProducts = {
+      'boolin-hoodie': {
+        name: 'Boolin Hoodie',
+        section: 'Boolin',
+        link: 'https://luiboolin.printify.me/product/29702336',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-hoodie-black.png' },
+          { name: 'Tan',   img: '/merch/boolin-hoodie-tan.png'   },
+          { name: 'White', img: '/merch/boolin-hoodie-white.png' }
+        ]
+      },
+      'boolin-tee': {
+        name: 'Boolin Tee',
+        section: 'Boolin',
+        link: 'https://luiboolin.printify.me/product/29702319',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-tee-black.png' },
+          { name: 'Grey',  img: '/merch/boolin-tee-grey.png'  },
+          { name: 'White', img: '/merch/boolin-tee-white.png' }
+        ]
+      },
+      'bl-hoodie': {
+        name: 'League Hoodie',
+        section: 'Boolin League',
+        link: 'https://luiboolin.printify.me/product/29702333',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-league-hoodie-black.png' },
+          { name: 'Blue',  img: '/merch/boolin-league-hoodie-blue.png'  }
+        ]
+      },
+      'bl-tee': {
+        name: 'League Tee',
+        section: 'Boolin League',
+        link: 'https://luiboolin.printify.me/product/29702329',
+        colors: [
+          { name: 'Black', img: '/merch/boolin-league-tee-black.png' },
+          { name: 'Blue',  img: '/merch/boolin-league-tee-blue.png'  },
+          { name: 'Grey',  img: '/merch/boolin-league-tee-grey.png'  }
+        ]
+      },
+      'heavy-tee': {
+        name: 'Heavy Tee',
+        section: 'Finals',
+        link: 'https://luiboolin.printify.me/product/29702315',
+        colors: [
+          { name: 'Black', img: '/merch/heavy-tee.png' }
+        ]
+      },
+      'cashbox-tee': {
+        name: 'Cashbox Tee',
+        section: 'Finals',
+        link: 'https://luiboolin.printify.me/',
+        colors: [
+          { name: 'Black', img: '/merch/PLUG-BLACK.png' },
+          { name: 'White', img: '/merch/PLUG-WHITE.png' },
+          { name: 'Red',   img: '/merch/PLUG-RED.png'   }
+        ]
+      }
+    };
+
+    function renderShopProduct(id) {
+      var p = _shopProducts[id];
+      if (!p) {
+        document.getElementById('shop-product-content').innerHTML =
+          '<p style="font-family:\'Space Grotesk\',sans-serif;color:#888;">Product not found. <a href="/shop" style="color:#7c3aed;">Back to Shop</a></p>';
+        return;
+      }
+      document.title = p.name + ' — Boolin League Shop';
+
+      var colorCount = p.colors.length;
+      var colorLabel = colorCount + ' Color' + (colorCount > 1 ? 's' : '');
+
+      var colorCardImages = p.colors.map(function(c) {
+        return '<div style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">'
+          + '<div style="width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:0.5rem;overflow:hidden;">'
+          + '<img src="' + c.img + '" alt="' + c.name + '" style="max-width:100%;max-height:100%;object-fit:contain;" />'
+          + '</div>'
+          + '<span style="font-family:\'Rajdhani\',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#888;">' + c.name.toUpperCase() + '</span>'
+          + '</div>';
+      }).join('');
+
+      document.getElementById('shop-product-content').innerHTML =
+        '<div style="margin-bottom:0.6rem;">'
+        + '<span style="font-family:\'Rajdhani\',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:#7c3aed;">' + p.section.toUpperCase() + '</span>'
+        + '</div>'
+        + '<h1 style="font-family:\'Saira Extra Condensed\',sans-serif;font-weight:800;font-style:italic;font-size:clamp(2.5rem,7vw,4.5rem);color:#111;text-transform:uppercase;line-height:1;margin:0 0 0.5rem;">' + p.name + '</h1>'
+        + '<p style="font-family:\'Rajdhani\',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#999;margin:0 0 2.5rem;">' + colorLabel + '</p>'
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:2rem;margin-bottom:3rem;">' + colorCardImages + '</div>'
+        + '<div style="border-top:1px solid rgba(0,0,0,0.1);padding-top:2rem;">'
+        + '<a href="' + p.link + '" target="_blank" style="display:inline-flex;align-items:center;gap:0.6rem;background:#111;color:#fff;font-family:\'Rajdhani\',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;padding:0.85rem 2.25rem;border-radius:8px;transition:background 0.2s;" onmouseover="this.style.background=\'#7c3aed\'" onmouseout="this.style.background=\'#111\'">'
+        + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><polyline points="1 1 5 1 7 13 16 13 19 5 3 5"/></svg>'
+        + 'Shop Now'
+        + '</a>'
+        + '<p style="font-family:\'Space Grotesk\',sans-serif;font-size:0.8rem;color:#aaa;margin:0.85rem 0 0;">Fulfilled by Printify · Ships worldwide</p>'
+        + '</div>';
+    }
+
+    var _productId = location.pathname.replace(/^\/shop\/?/, '').split('/')[0];
+    renderShopProduct(decodeURIComponent(_productId));
+  </script>
+</body>
+</html>

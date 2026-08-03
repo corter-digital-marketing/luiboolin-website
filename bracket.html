@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1v1 Tournament — Boolin League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG wave layers -->
+    <svg class="wave-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,100 C180,20 360,180 540,100 C720,20 900,180 1080,100 C1260,20 1350,140 1440,100 L1440,200 L0,200Z" fill="#7c3aed"/>
+    </svg>
+    <svg class="wave-svg-mid" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,10 480,150 720,80 C960,10 1200,150 1440,80 L1440,160 L0,160Z" fill="#4c1d95"/>
+    </svg>
+    <svg class="wave-svg-top" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C120,10 240,110 360,60 C480,10 600,110 720,60 C840,10 960,110 1080,60 C1200,10 1320,110 1440,60 L1440,120 L0,120Z" fill="#7c3aed"/>
+    </svg>
+
+    <!-- Waveform bars visualizer -->
+    <div class="waveform-bars" aria-hidden="true">
+      <span style="--dur:1.2s;height:30%"></span><span style="--dur:2.1s;height:60%"></span>
+      <span style="--dur:1.7s;height:40%"></span><span style="--dur:0.9s;height:80%"></span>
+      <span style="--dur:2.4s;height:50%"></span><span style="--dur:1.4s;height:90%"></span>
+      <span style="--dur:1.9s;height:35%"></span><span style="--dur:2.7s;height:70%"></span>
+      <span style="--dur:1.1s;height:55%"></span><span style="--dur:2.0s;height:45%"></span>
+      <span style="--dur:1.6s;height:85%"></span><span style="--dur:0.8s;height:40%"></span>
+      <span style="--dur:2.2s;height:65%"></span><span style="--dur:1.5s;height:30%"></span>
+      <span style="--dur:1.8s;height:75%"></span><span style="--dur:2.5s;height:50%"></span>
+      <span style="--dur:1.3s;height:95%"></span><span style="--dur:2.8s;height:40%"></span>
+      <span style="--dur:1.0s;height:60%"></span><span style="--dur:2.3s;height:80%"></span>
+      <span style="--dur:1.7s;height:45%"></span><span style="--dur:0.9s;height:70%"></span>
+      <span style="--dur:2.1s;height:55%"></span><span style="--dur:1.4s;height:35%"></span>
+      <span style="--dur:1.9s;height:90%"></span><span style="--dur:2.6s;height:60%"></span>
+      <span style="--dur:1.2s;height:40%"></span><span style="--dur:2.0s;height:75%"></span>
+      <span style="--dur:1.6s;height:50%"></span><span style="--dur:0.7s;height:85%"></span>
+      <span style="--dur:2.4s;height:30%"></span><span style="--dur:1.5s;height:65%"></span>
+      <span style="--dur:1.1s;height:45%"></span><span style="--dur:2.2s;height:95%"></span>
+      <span style="--dur:1.8s;height:55%"></span><span style="--dur:2.7s;height:40%"></span>
+      <span style="--dur:1.3s;height:70%"></span><span style="--dur:2.0s;height:80%"></span>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link active" href="/league" aria-current="page">Boolin League</a>
+      <a class="nav-link" href="/shop">Shop</a>
+      <a class="nav-link" href="/coaching">Coaching</a>
+      <a class="nav-link" href="/contact">Contact</a>
+    </div>
+
+    <div id="nav-auth" style="display:flex;align-items:center;gap:0.75rem;">
+      <!-- populated by initAuth() -->
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/league">Boolin League</a>
+    <a class="mobile-menu-link" href="/shop">Shop</a>
+    <a class="mobile-menu-link" href="/coaching">Coaching</a>
+    <a class="mobile-menu-link" href="/contact">Contact</a>
+  </div>
+
+  <div class="page" id="page-bracket">
+    <div style="min-height:100vh;background:#07030f;padding:0 0 6rem;">
+
+      <div style="padding:1.5rem 2rem 0;max-width:900px;margin:0 auto;">
+        <button onclick="location.href='/league'" style="display:inline-flex;align-items:center;gap:0.5rem;background:none;border:none;color:rgba(255,255,255,0.5);font-size:0.8rem;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;padding:0.5rem 0;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back to Home
+        </button>
+      </div>
+
+      <div style="text-align:center;padding:3rem 2rem 1rem;max-width:900px;margin:0 auto;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:0.75rem;">Boolin League · 1v1</div>
+        <h1 style="font-family:'Rajdhani',sans-serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;letter-spacing:-0.02em;line-height:1;margin-bottom:0.5rem;color:#fff;text-shadow:0 0 40px rgba(124,58,237,0.4);">1V1 TOURNAMENT</h1>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;">Tournament Completed · Mar 2026</div>
+        <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);border-radius:20px;padding:0.35rem 1rem;font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#fbbf24;margin-top:0.5rem;">
+          &#x1F3C6; Champion: SwiftCheetah
+        </div>
+      </div>
+
+      <div style="max-width:900px;margin:0 auto 2.5rem;padding:0 2rem;">
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent);"></div>
+      </div>
+
+      <div style="max-width:900px;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:2rem;">
+
+        <!-- ── 1st Place ── -->
+        <div>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+            <span style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#fbbf24;">&#x1F947; Champion</span>
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(251,191,36,0.35),transparent);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,420px));gap:1.25rem;justify-content:center;">
+            <div style="background:linear-gradient(145deg,rgba(251,191,36,0.1),rgba(10,6,24,0.9));border:1px solid rgba(251,191,36,0.4);border-radius:14px;overflow:hidden;box-shadow:0 8px 40px rgba(251,191,36,0.15),0 2px 8px rgba(0,0,0,0.6);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:#fbbf24;filter:drop-shadow(0 0 6px rgba(251,191,36,0.5));">SwiftCheetah</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 2nd Place ── -->
+        <div>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+            <span style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#d1d5db;">&#x1F948; Runner-up</span>
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(209,213,219,0.3),transparent);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,420px));gap:1.25rem;justify-content:center;">
+            <div style="background:linear-gradient(145deg,rgba(209,213,219,0.08),rgba(10,6,24,0.9));border:1px solid rgba(209,213,219,0.25);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:#d1d5db;">Epiphany</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 3rd / 4th Place ── -->
+        <div>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+            <span style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:#cd7c3a;">&#x1F949; 3rd / 4th Place</span>
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(205,124,58,0.35),transparent);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,420px));gap:1.25rem;justify-content:center;">
+            <div style="background:linear-gradient(145deg,rgba(205,124,58,0.08),rgba(10,6,24,0.9));border:1px solid rgba(205,124,58,0.25);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:#cd7c3a;">Helio</span></div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(145deg,rgba(205,124,58,0.08),rgba(10,6,24,0.9));border:1px solid rgba(205,124,58,0.25);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:#cd7c3a;">Exequtive</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── 5th–8th Place ── -->
+        <div>
+          <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;">
+            <span style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:900;letter-spacing:0.18em;text-transform:uppercase;color:rgba(167,139,250,0.8);">5th &ndash; 8th Place</span>
+            <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(124,58,237,0.35),transparent);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,420px));gap:1.25rem;justify-content:center;">
+            <div style="background:linear-gradient(145deg,rgba(124,58,237,0.08),rgba(10,6,24,0.9));border:1px solid rgba(124,58,237,0.25);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:rgba(255,255,255,0.85);">AustinMan</span></div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(145deg,rgba(124,58,237,0.08),rgba(10,6,24,0.9));border:1px solid rgba(124,58,237,0.25);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:rgba(255,255,255,0.85);">Seb</span></div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(145deg,rgba(124,58,237,0.08),rgba(10,6,24,0.9));border:1px solid rgba(124,58,237,0.25);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:rgba(255,255,255,0.85);">AssassinDavid</span></div>
+              </div>
+            </div>
+            <div style="background:linear-gradient(145deg,rgba(124,58,237,0.08),rgba(10,6,24,0.9));border:1px solid rgba(124,58,237,0.25);border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.4);">
+              <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:0.75rem;">
+                <div style="display:flex;align-items:center;gap:0.75rem;"><div style="width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg></div><span style="font-weight:700;font-size:1rem;color:rgba(255,255,255,0.85);">x.Lion</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /page-bracket -->
+
+  <script src="/assets/common.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roadmap — Boolin League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG wave layers -->
+    <svg class="wave-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,100 C180,20 360,180 540,100 C720,20 900,180 1080,100 C1260,20 1350,140 1440,100 L1440,200 L0,200Z" fill="#7c3aed"/>
+    </svg>
+    <svg class="wave-svg-mid" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,10 480,150 720,80 C960,10 1200,150 1440,80 L1440,160 L0,160Z" fill="#4c1d95"/>
+    </svg>
+    <svg class="wave-svg-top" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C120,10 240,110 360,60 C480,10 600,110 720,60 C840,10 960,110 1080,60 C1200,10 1320,110 1440,60 L1440,120 L0,120Z" fill="#7c3aed"/>
+    </svg>
+
+    <!-- Waveform bars visualizer -->
+    <div class="waveform-bars" aria-hidden="true">
+      <span style="--dur:1.2s;height:30%"></span><span style="--dur:2.1s;height:60%"></span>
+      <span style="--dur:1.7s;height:40%"></span><span style="--dur:0.9s;height:80%"></span>
+      <span style="--dur:2.4s;height:50%"></span><span style="--dur:1.4s;height:90%"></span>
+      <span style="--dur:1.9s;height:35%"></span><span style="--dur:2.7s;height:70%"></span>
+      <span style="--dur:1.1s;height:55%"></span><span style="--dur:2.0s;height:45%"></span>
+      <span style="--dur:1.6s;height:85%"></span><span style="--dur:0.8s;height:40%"></span>
+      <span style="--dur:2.2s;height:65%"></span><span style="--dur:1.5s;height:30%"></span>
+      <span style="--dur:1.8s;height:75%"></span><span style="--dur:2.5s;height:50%"></span>
+      <span style="--dur:1.3s;height:95%"></span><span style="--dur:2.8s;height:40%"></span>
+      <span style="--dur:1.0s;height:60%"></span><span style="--dur:2.3s;height:80%"></span>
+      <span style="--dur:1.7s;height:45%"></span><span style="--dur:0.9s;height:70%"></span>
+      <span style="--dur:2.1s;height:55%"></span><span style="--dur:1.4s;height:35%"></span>
+      <span style="--dur:1.9s;height:90%"></span><span style="--dur:2.6s;height:60%"></span>
+      <span style="--dur:1.2s;height:40%"></span><span style="--dur:2.0s;height:75%"></span>
+      <span style="--dur:1.6s;height:50%"></span><span style="--dur:0.7s;height:85%"></span>
+      <span style="--dur:2.4s;height:30%"></span><span style="--dur:1.5s;height:65%"></span>
+      <span style="--dur:1.1s;height:45%"></span><span style="--dur:2.2s;height:95%"></span>
+      <span style="--dur:1.8s;height:55%"></span><span style="--dur:2.7s;height:40%"></span>
+      <span style="--dur:1.3s;height:70%"></span><span style="--dur:2.0s;height:80%"></span>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link active" href="/league" aria-current="page">Boolin League</a>
+      <a class="nav-link" href="/shop">Shop</a>
+      <a class="nav-link" href="/coaching">Coaching</a>
+      <a class="nav-link" href="/contact">Contact</a>
+    </div>
+
+    <div id="nav-auth" style="display:flex;align-items:center;gap:0.75rem;">
+      <!-- populated by initAuth() -->
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/league">Boolin League</a>
+    <a class="mobile-menu-link" href="/shop">Shop</a>
+    <a class="mobile-menu-link" href="/coaching">Coaching</a>
+    <a class="mobile-menu-link" href="/contact">Contact</a>
+  </div>
+
+  <div class="page" id="page-roadmap">
+    <div style="min-height:100vh;background:#07030f;padding:0 0 6rem;">
+
+      <!-- back -->
+      <div style="padding:1.5rem 2rem 0;max-width:680px;margin:0 auto;">
+        <button onclick="location.href='/league'" style="display:inline-flex;align-items:center;gap:0.5rem;background:none;border:none;color:rgba(255,255,255,0.5);font-size:0.8rem;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;padding:0.5rem 0;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back to Home
+        </button>
+      </div>
+
+      <!-- header -->
+      <div style="text-align:center;padding:3rem 2rem 3.5rem;max-width:680px;margin:0 auto;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:0.75rem;">Boolin League</div>
+        <h1 style="font-family:'Rajdhani',sans-serif;font-size:clamp(2.75rem,6vw,4.25rem);font-weight:900;letter-spacing:-0.02em;color:#fff;line-height:1;margin-bottom:0.5rem;">Season Roadmap</h1>
+        <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;line-height:1.7;margin-top:0.75rem;">All tournaments · 2026</p>
+      </div>
+
+      <!-- timeline -->
+      <div style="max-width:560px;margin:0 auto;padding:0 2rem;">
+
+        <!-- divider -->
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.35),transparent);margin-bottom:3rem;"></div>
+
+        <div style="display:flex;flex-direction:column;">
+
+          <!-- ── 1: BOOLIN INVITATIONAL (top / GRAND FINALE) ── -->
+          <div style="display:flex;align-items:stretch;gap:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0;">
+              <div style="width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,#f59e0b,#fbbf24);box-shadow:0 0 18px rgba(251,191,36,0.7);flex-shrink:0;margin-top:3px;animation:trophyGlow 2.5s ease-in-out infinite alternate;"></div>
+              <div style="flex:1;width:1px;background:linear-gradient(to bottom,rgba(251,191,36,0.3),rgba(124,58,237,0.15));margin-top:6px;min-height:60px;"></div>
+            </div>
+            <div style="padding:0 0 2.5rem 1rem;flex:1;">
+              <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.3);border-radius:20px;padding:0.2rem 0.75rem;margin-bottom:0.6rem;">
+                <span style="width:6px;height:6px;border-radius:50%;background:#fbbf24;box-shadow:0 0 6px #fbbf24;display:inline-block;"></span>
+                <span style="font-family:'Rajdhani',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:#fbbf24;">GRAND FINALE</span>
+              </div>
+              <div style="font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:0.02em;line-height:1;margin-bottom:0.35rem;background:linear-gradient(90deg,#f59e0b,#fbbf24);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">BOOLIN INVITATIONAL 🏆</div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.25);font-weight:500;">End of 2026</div>
+              <div style="margin-top:0.75rem;">
+                <button onclick="location.href='/invitational'" style="display:inline-flex;align-items:center;gap:0.4rem;background:none;border:none;color:rgba(251,191,36,0.6);font-size:0.72rem;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#fbbf24'" onmouseout="this.style.color='rgba(251,191,36,0.6)'">View Rosters →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 2: 3v3 Tournament (Summer 2026) ── -->
+          <div style="display:flex;align-items:stretch;gap:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0;">
+              <div style="width:12px;height:12px;border-radius:50%;background:transparent;border:1px dashed rgba(255,255,255,0.2);flex-shrink:0;margin-top:4px;"></div>
+              <div style="flex:1;width:1px;background:linear-gradient(to bottom,rgba(255,255,255,0.08),rgba(255,255,255,0.04));margin-top:6px;min-height:60px;"></div>
+            </div>
+            <div style="padding:0 0 2.5rem 1rem;flex:1;">
+              <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:0.2rem 0.75rem;margin-bottom:0.6rem;">
+                <span style="font-family:'Rajdhani',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.28);">Coming Soon</span>
+              </div>
+              <div style="font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:0.02em;color:rgba(255,255,255,0.4);line-height:1;margin-bottom:0.35rem;">3v3 Tournament</div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.2);font-weight:500;">Summer 2026</div>
+            </div>
+          </div>
+
+          <!-- ── 3: ALL PRO 2v2 TOURNAMENT ── -->
+          <div style="display:flex;align-items:stretch;gap:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0;">
+              <div style="width:12px;height:12px;border-radius:50%;background:#7c3aed;box-shadow:0 0 8px rgba(124,58,237,0.5);flex-shrink:0;margin-top:4px;"></div>
+              <div style="flex:1;width:1px;background:linear-gradient(to bottom,rgba(124,58,237,0.3),rgba(124,58,237,0.1));margin-top:6px;min-height:60px;"></div>
+            </div>
+            <div style="padding:0 0 2.5rem 1rem;flex:1;">
+              <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:20px;padding:0.2rem 0.75rem;margin-bottom:0.6rem;">
+                <span style="font-family:'Rajdhani',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(167,139,250,0.8);">Finished</span>
+              </div>
+              <div style="font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:0.02em;color:rgba(255,255,255,0.55);line-height:1;margin-bottom:0.35rem;">All Pro 2v2</div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.25);font-weight:500;">May 1, 2026 · Champions: UNI &amp; notBubbaa</div>
+              <div style="margin-top:0.75rem;">
+                <button onclick="location.href='/allpro2v2'" style="display:inline-flex;align-items:center;gap:0.4rem;background:none;border:none;color:var(--purple-glow);font-size:0.72rem;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--purple-glow)'">View Results →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 4: 2v2 Tournament (Finished) ── -->
+          <div style="display:flex;align-items:stretch;gap:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0;">
+              <div style="width:12px;height:12px;border-radius:50%;background:#7c3aed;box-shadow:0 0 8px rgba(124,58,237,0.5);flex-shrink:0;margin-top:4px;"></div>
+              <div style="flex:1;width:1px;background:linear-gradient(to bottom,rgba(124,58,237,0.3),rgba(124,58,237,0.1));margin-top:6px;min-height:60px;"></div>
+            </div>
+            <div style="padding:0 0 2.5rem 1rem;flex:1;">
+              <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:20px;padding:0.2rem 0.75rem;margin-bottom:0.6rem;">
+                <span style="font-family:'Rajdhani',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(167,139,250,0.8);">Finished</span>
+              </div>
+              <div style="font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:0.02em;color:rgba(255,255,255,0.55);line-height:1;margin-bottom:0.35rem;">2v2 Tournament</div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.25);font-weight:500;">Apr 3, 2026</div>
+              <div style="margin-top:0.75rem;">
+                <button onclick="location.href='/2v2bracket'" style="display:inline-flex;align-items:center;gap:0.4rem;background:none;border:none;color:var(--purple-glow);font-size:0.72rem;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--purple-glow)'">View Results →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── 5: 1v1 Tournament (Finished) ── -->
+          <div style="display:flex;align-items:stretch;gap:0;">
+            <div style="display:flex;flex-direction:column;align-items:center;width:40px;flex-shrink:0;">
+              <div style="width:12px;height:12px;border-radius:50%;background:#7c3aed;box-shadow:0 0 8px rgba(124,58,237,0.5);flex-shrink:0;margin-top:4px;"></div>
+            </div>
+            <div style="padding:0 0 0 1rem;flex:1;">
+              <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:20px;padding:0.2rem 0.75rem;margin-bottom:0.6rem;">
+                <span style="font-family:'Rajdhani',sans-serif;font-size:0.6rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:rgba(167,139,250,0.8);">Finished</span>
+              </div>
+              <div style="font-family:'Rajdhani',sans-serif;font-size:1.5rem;font-weight:900;letter-spacing:0.02em;color:rgba(255,255,255,0.55);line-height:1;margin-bottom:0.35rem;">1v1 Tournament</div>
+              <div style="font-size:0.8rem;color:rgba(255,255,255,0.25);font-weight:500;">Mar 2026</div>
+              <div style="margin-top:0.75rem;">
+                <button onclick="location.href='/bracket'" style="display:inline-flex;align-items:center;gap:0.4rem;background:none;border:none;color:var(--purple-glow);font-size:0.72rem;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;padding:0;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--purple-glow)'">View Results →</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /page-roadmap -->
+
+  <script src="/assets/common.js"></script>
+
+</body>
+</html>

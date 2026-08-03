@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shop — Boolin League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG wave layers -->
+    <svg class="wave-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,100 C180,20 360,180 540,100 C720,20 900,180 1080,100 C1260,20 1350,140 1440,100 L1440,200 L0,200Z" fill="#7c3aed"/>
+    </svg>
+    <svg class="wave-svg-mid" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,10 480,150 720,80 C960,10 1200,150 1440,80 L1440,160 L0,160Z" fill="#4c1d95"/>
+    </svg>
+    <svg class="wave-svg-top" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C120,10 240,110 360,60 C480,10 600,110 720,60 C840,10 960,110 1080,60 C1200,10 1320,110 1440,60 L1440,120 L0,120Z" fill="#7c3aed"/>
+    </svg>
+
+    <!-- Waveform bars visualizer -->
+    <div class="waveform-bars" aria-hidden="true">
+      <span style="--dur:1.2s;height:30%"></span><span style="--dur:2.1s;height:60%"></span>
+      <span style="--dur:1.7s;height:40%"></span><span style="--dur:0.9s;height:80%"></span>
+      <span style="--dur:2.4s;height:50%"></span><span style="--dur:1.4s;height:90%"></span>
+      <span style="--dur:1.9s;height:35%"></span><span style="--dur:2.7s;height:70%"></span>
+      <span style="--dur:1.1s;height:55%"></span><span style="--dur:2.0s;height:45%"></span>
+      <span style="--dur:1.6s;height:85%"></span><span style="--dur:0.8s;height:40%"></span>
+      <span style="--dur:2.2s;height:65%"></span><span style="--dur:1.5s;height:30%"></span>
+      <span style="--dur:1.8s;height:75%"></span><span style="--dur:2.5s;height:50%"></span>
+      <span style="--dur:1.3s;height:95%"></span><span style="--dur:2.8s;height:40%"></span>
+      <span style="--dur:1.0s;height:60%"></span><span style="--dur:2.3s;height:80%"></span>
+      <span style="--dur:1.7s;height:45%"></span><span style="--dur:0.9s;height:70%"></span>
+      <span style="--dur:2.1s;height:55%"></span><span style="--dur:1.4s;height:35%"></span>
+      <span style="--dur:1.9s;height:90%"></span><span style="--dur:2.6s;height:60%"></span>
+      <span style="--dur:1.2s;height:40%"></span><span style="--dur:2.0s;height:75%"></span>
+      <span style="--dur:1.6s;height:50%"></span><span style="--dur:0.7s;height:85%"></span>
+      <span style="--dur:2.4s;height:30%"></span><span style="--dur:1.5s;height:65%"></span>
+      <span style="--dur:1.1s;height:45%"></span><span style="--dur:2.2s;height:95%"></span>
+      <span style="--dur:1.8s;height:55%"></span><span style="--dur:2.7s;height:40%"></span>
+      <span style="--dur:1.3s;height:70%"></span><span style="--dur:2.0s;height:80%"></span>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/league">Boolin League</a>
+      <a class="nav-link active" href="/shop" aria-current="page">Shop</a>
+      <a class="nav-link" href="/coaching">Coaching</a>
+      <a class="nav-link" href="/contact">Contact</a>
+    </div>
+
+    <div id="nav-auth" style="display:flex;align-items:center;gap:0.75rem;">
+      <!-- populated by initAuth() -->
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/league">Boolin League</a>
+    <a class="mobile-menu-link" href="/shop">Shop</a>
+    <a class="mobile-menu-link" href="/coaching">Coaching</a>
+    <a class="mobile-menu-link" href="/contact">Contact</a>
+  </div>
+
+  <div class="page" id="page-shop" style="background:#e8e8e8;">
+    <div style="min-height:100vh;padding:7rem 1.5rem 6rem;">
+      <div style="max-width:1200px;margin:0 auto;">
+
+        <!-- Header -->
+        <div style="text-align:center;margin-bottom:4rem;">
+          <p style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.28em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.75rem;">Official Merch</p>
+          <h1 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:clamp(3rem,8vw,5.5rem);color:#111;text-transform:uppercase;line-height:1;margin-bottom:0;">Shop</h1>
+        </div>
+
+        <!-- ── SECTION: BOOLIN ── -->
+        <div style="margin-bottom:5rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.25rem;">
+            <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:2rem;color:#111;text-transform:uppercase;letter-spacing:0.04em;margin:0;">Boolin</h2>
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.12);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3rem;">
+
+            <!-- Boolin Hoodie -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="location.href='/shop/boolin-hoodie'" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-hoodie-black.png" alt="Boolin Hoodie" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">Boolin Hoodie</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">3 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="location.href='/shop/boolin-hoodie'" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702336" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Boolin Tee -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="location.href='/shop/boolin-tee'" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-tee-black.png" alt="Boolin Tee" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">Boolin Tee</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">3 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="location.href='/shop/boolin-tee'" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702319" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── SECTION: FINALS ── -->
+        <div style="margin-bottom:5rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.25rem;">
+            <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:2rem;color:#111;text-transform:uppercase;letter-spacing:0.04em;margin:0;">Finals</h2>
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.12);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3rem;">
+
+            <!-- Heavy Tee -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="location.href='/shop/heavy-tee'" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/heavy-tee.png" alt="Heavy Tee" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">Heavy Tee</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">1 Color &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="location.href='/shop/heavy-tee'" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702315" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cashbox Tee -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="location.href='/shop/cashbox-tee'" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/PLUG-BLACK.png" alt="Cashbox Tee" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">Cashbox Tee</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">3 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="location.href='/shop/cashbox-tee'" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── SECTION: BOOLIN LEAGUE ── -->
+        <div style="margin-bottom:2rem;">
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2.25rem;">
+            <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:2rem;color:#111;text-transform:uppercase;letter-spacing:0.04em;margin:0;">Boolin League</h2>
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.12);"></div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:3rem;">
+
+            <!-- League Hoodie -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="location.href='/shop/bl-hoodie'" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-league-hoodie-black.png" alt="League Hoodie" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">League Hoodie</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">2 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="location.href='/shop/bl-hoodie'" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702333" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- League Tee -->
+            <div style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+              <div onclick="location.href='/shop/bl-tee'" style="cursor:pointer;width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                <img src="/merch/boolin-league-tee-black.png" alt="League Tee" style="width:100%;height:100%;object-fit:contain;" />
+              </div>
+              <div style="text-align:center;">
+                <div style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:1.45rem;color:#111;text-transform:uppercase;letter-spacing:0.02em;margin-bottom:0.2rem;">League Tee</div>
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#7c3aed;margin-bottom:0.85rem;">3 Colors &nbsp;·&nbsp; 1 Style</div>
+                <div style="display:flex;gap:0.6rem;justify-content:center;">
+                  <button onclick="location.href='/shop/bl-tee'" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:transparent;border:1.5px solid #ccc;color:#555;cursor:pointer;transition:border-color 0.2s,color 0.2s;" onmouseover="this.style.borderColor='#7c3aed';this.style.color='#7c3aed'" onmouseout="this.style.borderColor='#ccc';this.style.color='#555'">View Colors</button>
+                  <a href="https://luiboolin.printify.me/product/29702329" target="_blank" style="font-family:'Rajdhani',sans-serif;font-size:0.73rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;padding:0.55rem 1.1rem;border-radius:6px;background:#111;border:1.5px solid #111;color:#fff;cursor:pointer;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#7c3aed';this.style.borderColor='#7c3aed'" onmouseout="this.style.background='#111';this.style.borderColor='#111'">Shop Now</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div><!-- /page-shop -->
+
+  <script src="/assets/common.js"></script>
+
+</body>
+</html>

@@ -669,7 +669,15 @@ const handler = async (req, res) => {
 
   // ── Static files ──────────────────────────────────────────────
   const BLOCKED = new Set(['config.json','db.json','.gitignore','package.json','package-lock.json','server.js']);
-  const safePath = pathname === '/' ? '/index.html' : pathname === '/admin' ? '/admin.html' : pathname;
+  // Clean-URL routing: extensionless paths map to a same-named .html file
+  // (e.g. /schedule -> schedule.html), with a few special cases below.
+  let safePath;
+  if (pathname === '/') safePath = '/index.html';
+  else if (pathname === '/admin') safePath = '/admin.html';
+  else if (pathname === '/league') safePath = '/league.html';
+  else if (pathname.startsWith('/shop/') && pathname !== '/shop/') safePath = '/shop-product.html';
+  else if (path.extname(pathname)) safePath = pathname;
+  else safePath = pathname + '.html';
   const filePath = path.join(BASE, safePath);
   if (!filePath.startsWith(BASE)) { res.writeHead(403); res.end('Forbidden'); return; }
   if (BLOCKED.has(path.basename(filePath))) { res.writeHead(404); res.end('Not found'); return; }
