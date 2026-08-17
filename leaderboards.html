@@ -320,6 +320,14 @@
         ]
       },
       {
+        id: 5, name: 'SwiftCheetah', tag: '', wins: 1, points: 250, champ: '1v1',
+        history: [
+          { place: 1, name: '1v1 Tournament', date: 'Mar 2026', pts: 150 },
+          { place: 5, name: '2v2 Tournament', date: 'Apr 2026', pts: 0 },
+          { place: 'bonus', name: 'Complimentary Bonus', date: 'Aug 2026', pts: 100 },
+        ]
+      },
+      {
         id: 17, name: 'Seb', tag: '', wins: 1, points: 210,
         history: [
           { place: 5, name: '1v1 Tournament', date: 'Mar 2026', pts: 0 },
@@ -341,13 +349,6 @@
         ]
       },
       {
-        id: 5, name: 'SwiftCheetah', tag: '', wins: 1, points: 150, champ: '1v1',
-        history: [
-          { place: 1, name: '1v1 Tournament', date: 'Mar 2026', pts: 150 },
-          { place: 5, name: '2v2 Tournament', date: 'Apr 2026', pts: 0 },
-        ]
-      },
-      {
         id: 35, name: 'LuiBoolin', tag: '', wins: 1, points: 150, champ: 's1',
         history: [
           { place: 1, name: 'Boolin League S1', date: 'Aug 2026', pts: 150 },
@@ -364,6 +365,13 @@
         history: [
           { place: 3, name: '2v2 Tournament', date: 'Apr 2026', pts: 50 },
           { place: 2, name: 'Boolin League S1', date: 'Aug 2026', pts: 100 },
+        ]
+      },
+      {
+        id: 13, name: 'Helio', tag: '', wins: 0, points: 150,
+        history: [
+          { place: 3, name: '1v1 Tournament', date: 'Mar 2026', pts: 50 },
+          { place: 'bonus', name: 'Complimentary Bonus', date: 'Aug 2026', pts: 100 },
         ]
       },
       {
@@ -461,12 +469,6 @@
         id: 11, name: 'KIPKIP', tag: '', wins: 0, points: 50,
         history: [
           { place: 3, name: '2v2 Tournament', date: 'Apr 2026', pts: 50 },
-        ]
-      },
-      {
-        id: 13, name: 'Helio', tag: '', wins: 0, points: 50,
-        history: [
-          { place: 3, name: '1v1 Tournament', date: 'Mar 2026', pts: 50 },
         ]
       },
       {
@@ -735,6 +737,7 @@
       if (place === 3) return '3rd';
       if (place === 5) return '5/8th';
       if (place === 7) return '6th-8th';
+      if (place === 'bonus') return 'Bonus';
       return place + 'th';
     }
 
