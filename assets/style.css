@@ -926,9 +926,10 @@
     }
 
     .status-closed {
-      background: rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.5);
-      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(251,191,36,0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(251,191,36,0.4);
+      text-shadow: 0 0 8px rgba(251,191,36,0.4);
     }
 
     .tourney-card-body { padding: 1.5rem; }

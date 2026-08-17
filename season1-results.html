@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Season 01 Results — Boolin League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+</head>
+<body>
+
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG wave layers -->
+    <svg class="wave-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,100 C180,20 360,180 540,100 C720,20 900,180 1080,100 C1260,20 1350,140 1440,100 L1440,200 L0,200Z" fill="#7c3aed"/>
+    </svg>
+    <svg class="wave-svg-mid" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,10 480,150 720,80 C960,10 1200,150 1440,80 L1440,160 L0,160Z" fill="#4c1d95"/>
+    </svg>
+    <svg class="wave-svg-top" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C120,10 240,110 360,60 C480,10 600,110 720,60 C840,10 960,110 1080,60 C1200,10 1320,110 1440,60 L1440,120 L0,120Z" fill="#7c3aed"/>
+    </svg>
+
+    <!-- Waveform bars visualizer -->
+    <div class="waveform-bars" aria-hidden="true">
+      <span style="--dur:1.2s;height:30%"></span><span style="--dur:2.1s;height:60%"></span>
+      <span style="--dur:1.7s;height:40%"></span><span style="--dur:0.9s;height:80%"></span>
+      <span style="--dur:2.4s;height:50%"></span><span style="--dur:1.4s;height:90%"></span>
+      <span style="--dur:1.9s;height:35%"></span><span style="--dur:2.7s;height:70%"></span>
+      <span style="--dur:1.1s;height:55%"></span><span style="--dur:2.0s;height:45%"></span>
+      <span style="--dur:1.6s;height:85%"></span><span style="--dur:0.8s;height:40%"></span>
+      <span style="--dur:2.2s;height:65%"></span><span style="--dur:1.5s;height:30%"></span>
+      <span style="--dur:1.8s;height:75%"></span><span style="--dur:2.5s;height:50%"></span>
+      <span style="--dur:1.3s;height:95%"></span><span style="--dur:2.8s;height:40%"></span>
+      <span style="--dur:1.0s;height:60%"></span><span style="--dur:2.3s;height:80%"></span>
+      <span style="--dur:1.7s;height:45%"></span><span style="--dur:0.9s;height:70%"></span>
+      <span style="--dur:2.1s;height:55%"></span><span style="--dur:1.4s;height:35%"></span>
+      <span style="--dur:1.9s;height:90%"></span><span style="--dur:2.6s;height:60%"></span>
+      <span style="--dur:1.2s;height:40%"></span><span style="--dur:2.0s;height:75%"></span>
+      <span style="--dur:1.6s;height:50%"></span><span style="--dur:0.7s;height:85%"></span>
+      <span style="--dur:2.4s;height:30%"></span><span style="--dur:1.5s;height:65%"></span>
+      <span style="--dur:1.1s;height:45%"></span><span style="--dur:2.2s;height:95%"></span>
+      <span style="--dur:1.8s;height:55%"></span><span style="--dur:2.7s;height:40%"></span>
+      <span style="--dur:1.3s;height:70%"></span><span style="--dur:2.0s;height:80%"></span>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link active" href="/league" aria-current="page">Boolin League</a>
+      <a class="nav-link" href="/shop">Shop</a>
+      <a class="nav-link" href="/contact">Contact</a>
+    </div>
+
+    <div id="nav-auth" style="display:flex;align-items:center;gap:0.75rem;">
+      <!-- populated by initAuth() -->
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/league">Boolin League</a>
+    <a class="mobile-menu-link" href="/shop">Shop</a>
+    <a class="mobile-menu-link" href="/contact">Contact</a>
+  </div>
+
+  <div class="page" id="page-season1-results">
+    <div style="min-height:100vh;background:#07030f;padding:0 0 6rem;">
+
+      <div style="padding:1.5rem 2rem 0;max-width:900px;margin:0 auto;">
+        <button onclick="location.href='/league'" style="display:inline-flex;align-items:center;gap:0.5rem;background:none;border:none;color:rgba(255,255,255,0.5);font-size:0.8rem;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;padding:0.5rem 0;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.5)'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Back to League
+        </button>
+      </div>
+
+      <div style="text-align:center;padding:3rem 2rem 1rem;max-width:900px;margin:0 auto;">
+        <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:0.75rem;">Boolin League · Season 01</div>
+        <h1 style="font-family:'Rajdhani',sans-serif;font-size:clamp(2.5rem,6vw,4rem);font-weight:900;letter-spacing:-0.02em;line-height:1;margin-bottom:0.5rem;color:#fff;text-shadow:0 0 40px rgba(124,58,237,0.4);">SEASON 01 RESULTS</h1>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:0.5rem;">Tournament Completed</div>
+        <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(251,191,36,0.1);border:1px solid rgba(251,191,36,0.35);border-radius:20px;padding:0.35rem 1rem;font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#fbbf24;margin-top:0.5rem;">
+          &#x1F3C6; Champion: DOG POUND
+        </div>
+      </div>
+
+      <div style="max-width:700px;margin:2.5rem auto 0;padding:0 2rem;">
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent);margin-bottom:2rem;"></div>
+        <p style="text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:1.25rem;">Final Leaderboard &amp; Placements</p>
+        <div id="s1-final-slots" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+      </div>
+
+    </div>
+  </div><!-- /page-season1-results -->
+
+  <script src="/assets/common.js"></script>
+  <script>
+    (function() {
+      var logos = {
+        'DOG POUND':    '/teamphotos/dogpound-logo.png',
+        'washed':       '/teamphotos/washed.jpg',
+        'Spongeboiz':   '/teamphotos/spongeboiz.png',
+        'oOmOo':        '/teamphotos/oomoo.png',
+        'ForEmbarkRob': '/teamphotos/forembarkrob.png',
+        'Prophets':     '/teamphotos/prophets.jpeg',
+        'THE NOBELS':   '/teamphotos/thenobels.jpg',
+        'Super Nova':   '/teamphotos/supernova.png',
+      };
+      var rows = [
+        { team: 'DOG POUND',    place: '1ST'     },
+        { team: 'washed',       place: '2ND/3RD' },
+        { team: 'Spongeboiz',   place: '2ND/3RD' },
+        { team: 'oOmOo',        place: '4TH'     },
+        { team: 'ForEmbarkRob', place: '5TH'     },
+        { team: 'Prophets',     place: '6TH-8TH' },
+        { team: 'THE NOBELS',   place: '6TH-8TH' },
+        { team: 'Super Nova',   place: '6TH-8TH' },
+      ];
+      document.getElementById('s1-final-slots').innerHTML = rows.map(function(r, i) {
+        var top = i === 0;
+        var name = String(r.team).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+        var logo = logos[r.team];
+        return '<div class="s1-slot-row" style="background:' + (top ? 'rgba(251,191,36,0.08)' : 'rgba(17,10,42,0.6)') + ';border-color:' + (top ? 'rgba(251,191,36,0.35)' : 'rgba(255,255,255,0.06)') + ';">'
+          + '<span class="s1-slot-rank" style="color:' + (top ? 'rgba(251,191,36,0.7)' : 'rgba(255,255,255,0.15)') + ';">' + (i + 1) + '</span>'
+          + '<img class="s1-slot-logo" src="' + logo + '" alt="' + name + ' logo" />'
+          + '<span class="s1-slot-name" style="color:' + (top ? '#fff' : 'rgba(255,255,255,0.6)') + ';">' + name + '</span>'
+          + '<span class="s1-slot-right">'
+          + (top ? '<span class="s1-slot-badge">CHAMPION</span>' : '')
+          + '<span class="s1-slot-points" style="color:' + (top ? '#fbbf24' : '#a855f7') + ';">' + r.place + '</span></span>'
+          + '</div>';
+      }).join('');
+    })();
+  </script>
+
+</body>
+</html>
