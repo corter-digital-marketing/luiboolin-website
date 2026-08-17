@@ -514,15 +514,12 @@
 
     function getRankClass(rank) {
       if (rank === 1) return 'rank-1';
-      if (rank === 2) return 'rank-2';
-      if (rank === 3) return 'rank-3';
+      if (rank >= 2 && rank <= 4) return 'rank-red';
+      if (rank >= 5 && rank <= 10) return 'rank-white';
       return 'rank-other';
     }
 
     function getRankLabel(rank) {
-      if (rank === 1) return '🥇';
-      if (rank === 2) return '🥈';
-      if (rank === 3) return '🥉';
       return rank;
     }
 
