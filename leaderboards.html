@@ -99,6 +99,7 @@
             <thead>
               <tr>
                 <th scope="col" style="width:56px;">#</th>
+                <th scope="col" style="width:48px;"></th>
                 <th scope="col">Player</th>
                 <th scope="col">Wins</th>
                 <th scope="col">Points</th>
@@ -513,12 +514,15 @@
 
     function getRankClass(rank) {
       if (rank === 1) return 'rank-1';
-      if (rank >= 2 && rank <= 4) return 'rank-red';
-      if (rank >= 5 && rank <= 10) return 'rank-white';
+      if (rank === 2) return 'rank-2';
+      if (rank === 3) return 'rank-3';
       return 'rank-other';
     }
 
     function getRankLabel(rank) {
+      if (rank === 1) return '🥇';
+      if (rank === 2) return '🥈';
+      if (rank === 3) return '🥉';
       return rank;
     }
 
@@ -527,11 +531,16 @@
       tbody.innerHTML = '';
       players.forEach((p, i) => {
         const rank = i + 1;
-        const rankClass = getRankClass(rank);
+        const isTop3 = rank <= 3;
         const isTbd = p.tbd;
         const isUnknown = p.unknown;
         const tr = document.createElement('tr');
-        tr.className = 'lb-row' + (rankClass !== 'rank-other' ? ' ' + rankClass : '');
+        tr.className = 'lb-row' + (isTop3 ? ' top-3' : '');
+
+        const silSvg = `<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg>`;
+        const avatarHtml = (isUnknown || isTbd)
+          ? `<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.05);border:2px dashed rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.2);">${silSvg}</div>`
+          : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);">${silSvg}</div>`;
 
         const trophies = (!isUnknown && !isTbd && p.wins > 0) ? ' ' + '🏆'.repeat(p.wins) : '';
         const nameHtml = isUnknown
@@ -551,7 +560,8 @@
           : '';
 
         tr.innerHTML = `
-          <td><span class="lb-rank ${rankClass}">${getRankLabel(rank)}</span></td>
+          <td><span class="lb-rank ${getRankClass(rank)}">${getRankLabel(rank)}</span></td>
+          <td>${avatarHtml}</td>
           <td>${nameHtml}</td>
           <td>${winsHtml}</td>
           <td>${ptsHtml}</td>

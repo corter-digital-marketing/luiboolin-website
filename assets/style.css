@@ -1044,17 +1044,18 @@
       vertical-align: middle;
     }
 
-    .lb-row td:first-child { border-radius: 8px 0 0 8px; }
+    .lb-row td:first-child { border-radius: 8px 0 0 8px; border-right: 1px solid rgba(255,255,255,0.25); }
     .lb-row td:last-child  { border-radius: 0 8px 8px 0; text-align: right; }
 
     .lb-rank {
       font-family: 'Rajdhani', sans-serif;
-      font-weight: 900; font-size: 2.25rem;
-      width: 56px;
-      text-align: center;
+      font-weight: 900; font-size: 1.25rem;
+      width: 48px;
     }
 
-    .rank-1, .rank-red, .rank-white { color: #000; text-shadow: none; }
+    .rank-1 { color: #fbbf24; text-shadow: 0 0 12px rgba(251,191,36,0.5); }
+    .rank-2 { color: #d1d5db; }
+    .rank-3 { color: #cd7c3a; }
     .rank-other { color: rgba(255,255,255,0.3); }
 
     .lb-avatar {
@@ -1064,9 +1065,7 @@
     }
 
     .lb-name {
-      font-family: 'Rajdhani', sans-serif;
-      font-weight: 800; font-size: 1.2rem;
-      letter-spacing: 0.02em;
+      font-weight: 700; font-size: 0.95rem;
       color: #fff;
     }
 
@@ -1097,50 +1096,10 @@
       transform: translateX(3px);
     }
 
-    /* Rank glow — whole bar lit up, inside and out. Numbers stay black,
-       fully disconnected from this coloring. */
-    .lb-row.rank-1 {
-      background: linear-gradient(135deg, rgba(251,191,36,0.55), rgba(251,191,36,0.22));
-      border-color: #fbbf24;
-      box-shadow:
-        inset 0 0 22px rgba(255,223,120,0.6),
-        inset 0 0 4px rgba(255,255,255,0.5),
-        0 0 20px rgba(251,191,36,0.7),
-        0 0 46px rgba(251,191,36,0.4);
-    }
-    .lb-row.rank-red {
-      background: linear-gradient(135deg, rgba(239,68,68,0.5), rgba(239,68,68,0.2));
-      border-color: #ef4444;
-      box-shadow:
-        inset 0 0 20px rgba(255,120,120,0.55),
-        inset 0 0 4px rgba(255,255,255,0.35),
-        0 0 18px rgba(239,68,68,0.65),
-        0 0 42px rgba(239,68,68,0.35);
-    }
-    .lb-row.rank-white {
-      background: linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0.16));
-      border-color: rgba(255,255,255,0.9);
-      box-shadow:
-        inset 0 0 18px rgba(255,255,255,0.55),
-        inset 0 0 4px rgba(255,255,255,0.6),
-        0 0 16px rgba(255,255,255,0.6),
-        0 0 38px rgba(255,255,255,0.3);
-    }
-
-    /* Dark, legible text on the lit-up bars (kept separate from rank-number coloring) */
-    .lb-row.rank-1 .lb-name, .lb-row.rank-red .lb-name, .lb-row.rank-white .lb-name,
-    .lb-row.rank-1 .lb-points, .lb-row.rank-red .lb-points, .lb-row.rank-white .lb-points,
-    .lb-row.rank-1 .lb-wins, .lb-row.rank-red .lb-wins, .lb-row.rank-white .lb-wins {
-      color: #1a1a1a;
-    }
-    .lb-row.rank-1 .lb-tag, .lb-row.rank-red .lb-tag, .lb-row.rank-white .lb-tag {
-      color: rgba(0,0,0,0.5);
-    }
-    .lb-row.rank-1 .lb-chevron, .lb-row.rank-red .lb-chevron, .lb-row.rank-white .lb-chevron {
-      color: rgba(0,0,0,0.4);
-    }
-    .lb-row.rank-1:hover .lb-chevron, .lb-row.rank-red:hover .lb-chevron, .lb-row.rank-white:hover .lb-chevron {
-      color: rgba(0,0,0,0.7);
+    /* Top 3 highlight */
+    .lb-row.top-3 {
+      background: rgba(124,58,237,0.1);
+      border-color: rgba(124,58,237,0.2);
     }
 
 
@@ -1178,13 +1137,15 @@
 
       /* Column widths on mobile */
       .lb-table thead th:nth-child(1) { width: 36px; }
-      .lb-table thead th:nth-child(2) { width: auto; }
-      .lb-table thead th:nth-child(4) { width: 56px; }
-      .lb-table thead th:nth-child(5) { width: 24px; }
+      .lb-table thead th:nth-child(2) { width: 44px; }
+      .lb-table thead th:nth-child(3) { width: auto; }
+      .lb-table thead th:nth-child(4) { width: 44px; }
+      .lb-table thead th:nth-child(5) { width: 56px; }
+      .lb-table thead th:nth-child(6) { width: 24px; }
 
       /* Hide wins column */
-      .lb-table thead th:nth-child(3),
-      .lb-row td:nth-child(3) {
+      .lb-table thead th:nth-child(4),
+      .lb-row td:nth-child(4) {
         display: none;
       }
 
@@ -1202,11 +1163,11 @@
         overflow: hidden;
       }
 
-      .lb-row td:first-child { border-radius: 6px 0 0 6px; padding-left: 0.625rem; }
+      .lb-row td:first-child { border-radius: 6px 0 0 6px; padding-left: 0.625rem; border-right: 1px solid rgba(255,255,255,0.25); }
       .lb-row td:last-child  { border-radius: 0 6px 6px 0; padding-right: 0.625rem; }
 
       .lb-rank {
-        font-size: 1.5rem;
+        font-size: 1rem;
         width: auto;
       }
 
@@ -1220,9 +1181,21 @@
       .lb-points {
         font-size: 0.95rem;
       }
+
+      /* Avatar size */
+      .lb-row td:nth-child(2) > div {
+        width: 30px !important;
+        height: 30px !important;
+        font-size: 0.75rem !important;
+      }
     }
 
     @media (max-width: 380px) {
+      /* Hide avatar too on very small screens */
+      .lb-table thead th:nth-child(2),
+      .lb-row td:nth-child(2) {
+        display: none;
+      }
       .lb-name { font-size: 0.78rem; }
       .lb-points { font-size: 0.85rem; }
       .lb-row td { padding: 0.625rem 0.4rem; }
