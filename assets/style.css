@@ -1054,9 +1054,7 @@
       text-align: center;
     }
 
-    .rank-1 { color: #fbbf24; text-shadow: 0 0 14px rgba(251,191,36,0.85), 0 0 28px rgba(251,191,36,0.5); }
-    .rank-red { color: #ef4444; text-shadow: 0 0 14px rgba(239,68,68,0.85), 0 0 28px rgba(239,68,68,0.5); }
-    .rank-white { color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.85), 0 0 24px rgba(255,255,255,0.5); }
+    .rank-1, .rank-red, .rank-white { color: #000; text-shadow: none; }
     .rank-other { color: rgba(255,255,255,0.3); }
 
     .lb-avatar {
@@ -1099,21 +1097,50 @@
       transform: translateX(3px);
     }
 
-    /* Rank glow — whole row, not just the number */
+    /* Rank glow — whole bar lit up, inside and out. Numbers stay black,
+       fully disconnected from this coloring. */
     .lb-row.rank-1 {
-      background: rgba(251,191,36,0.1);
-      border-color: rgba(251,191,36,0.5);
-      box-shadow: 0 0 18px rgba(251,191,36,0.35), 0 0 36px rgba(251,191,36,0.15);
+      background: linear-gradient(135deg, rgba(251,191,36,0.55), rgba(251,191,36,0.22));
+      border-color: #fbbf24;
+      box-shadow:
+        inset 0 0 22px rgba(255,223,120,0.6),
+        inset 0 0 4px rgba(255,255,255,0.5),
+        0 0 20px rgba(251,191,36,0.7),
+        0 0 46px rgba(251,191,36,0.4);
     }
     .lb-row.rank-red {
-      background: rgba(239,68,68,0.08);
-      border-color: rgba(239,68,68,0.45);
-      box-shadow: 0 0 16px rgba(239,68,68,0.3), 0 0 32px rgba(239,68,68,0.12);
+      background: linear-gradient(135deg, rgba(239,68,68,0.5), rgba(239,68,68,0.2));
+      border-color: #ef4444;
+      box-shadow:
+        inset 0 0 20px rgba(255,120,120,0.55),
+        inset 0 0 4px rgba(255,255,255,0.35),
+        0 0 18px rgba(239,68,68,0.65),
+        0 0 42px rgba(239,68,68,0.35);
     }
     .lb-row.rank-white {
-      background: rgba(255,255,255,0.07);
-      border-color: rgba(255,255,255,0.35);
-      box-shadow: 0 0 14px rgba(255,255,255,0.25), 0 0 28px rgba(255,255,255,0.1);
+      background: linear-gradient(135deg, rgba(255,255,255,0.45), rgba(255,255,255,0.16));
+      border-color: rgba(255,255,255,0.9);
+      box-shadow:
+        inset 0 0 18px rgba(255,255,255,0.55),
+        inset 0 0 4px rgba(255,255,255,0.6),
+        0 0 16px rgba(255,255,255,0.6),
+        0 0 38px rgba(255,255,255,0.3);
+    }
+
+    /* Dark, legible text on the lit-up bars (kept separate from rank-number coloring) */
+    .lb-row.rank-1 .lb-name, .lb-row.rank-red .lb-name, .lb-row.rank-white .lb-name,
+    .lb-row.rank-1 .lb-points, .lb-row.rank-red .lb-points, .lb-row.rank-white .lb-points,
+    .lb-row.rank-1 .lb-wins, .lb-row.rank-red .lb-wins, .lb-row.rank-white .lb-wins {
+      color: #1a1a1a;
+    }
+    .lb-row.rank-1 .lb-tag, .lb-row.rank-red .lb-tag, .lb-row.rank-white .lb-tag {
+      color: rgba(0,0,0,0.5);
+    }
+    .lb-row.rank-1 .lb-chevron, .lb-row.rank-red .lb-chevron, .lb-row.rank-white .lb-chevron {
+      color: rgba(0,0,0,0.4);
+    }
+    .lb-row.rank-1:hover .lb-chevron, .lb-row.rank-red:hover .lb-chevron, .lb-row.rank-white:hover .lb-chevron {
+      color: rgba(0,0,0,0.7);
     }
 
 
