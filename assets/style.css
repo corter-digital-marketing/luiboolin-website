@@ -1021,7 +1021,7 @@
     .lb-table thead th:last-child { text-align: right; }
 
     .lb-row {
-      background: #fff;
+      background: rgba(17,10,42,0.5);
       border-radius: 8px;
       cursor: pointer;
       transition: background 0.2s ease, transform 0.25s cubic-bezier(0.34,1.4,0.64,1);
@@ -1029,7 +1029,7 @@
     }
 
     .lb-row:hover {
-      background: #f2ecfc;
+      background: rgba(124,58,237,0.15);
       border-color: rgba(124,58,237,0.3);
       transform: translateX(4px);
     }
@@ -1066,24 +1066,24 @@
 
     .lb-name {
       font-weight: 700; font-size: 0.95rem;
-      color: #111;
+      color: #fff;
     }
 
     .lb-tag {
       font-size: 0.75rem;
-      color: rgba(0,0,0,0.4);
+      color: rgba(255,255,255,0.4);
     }
 
     .lb-wins {
       font-family: 'Rajdhani', sans-serif;
       font-weight: 700; font-size: 1.15rem;
-      color: #7c3aed;
+      color: var(--purple-light);
     }
 
     .lb-points {
       font-family: 'Rajdhani', sans-serif;
       font-weight: 900; font-size: 1.15rem;
-      color: #111;
+      color: #fff;
     }
 
     .lb-chevron {
@@ -1098,8 +1098,8 @@
 
     /* Top 3 highlight */
     .lb-row.top-3 {
-      background: #fff;
-      border-color: rgba(251,191,36,0.35);
+      background: rgba(124,58,237,0.1);
+      border-color: rgba(124,58,237,0.2);
     }
 
 

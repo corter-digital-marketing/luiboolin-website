@@ -152,6 +152,14 @@
   <script>
     const players = [
       {
+        id: 5, name: 'SwiftCheetah', tag: '', wins: 2, points: 300, champ: '1v1',
+        history: [
+          { place: 1, name: '1v1 Tournament', date: 'Mar 2026', pts: 150 },
+          { place: 5, name: '2v2 Tournament', date: 'Apr 2026', pts: 0 },
+          { place: 1, name: 'Boolin League S1 (Sub)', date: 'Aug 2026', pts: 150 },
+        ]
+      },
+      {
         id: 1, name: 'Gremlin', tag: '', wins: 1, points: 250, champ: '2v2',
         history: [
           { place: 1, name: '2v2 Tournament', date: 'Apr 2026', pts: 150 },
@@ -166,20 +174,19 @@
         ]
       },
       {
-        id: 5, name: 'SwiftCheetah', tag: '', wins: 2, points: 250, champ: '1v1',
-        history: [
-          { place: 1, name: '1v1 Tournament', date: 'Mar 2026', pts: 150 },
-          { place: 5, name: '2v2 Tournament', date: 'Apr 2026', pts: 0 },
-          { place: 1, name: 'Boolin League S1 (Sub)', date: 'Aug 2026', pts: 100 },
-        ]
-      },
-      {
         id: 17, name: 'Seb', tag: '', wins: 1, points: 210,
         history: [
           { place: 5, name: '1v1 Tournament', date: 'Mar 2026', pts: 0 },
           { place: 5, name: '2v2 Tournament', date: 'Apr 2026', pts: 0 },
           { place: 3, name: 'ALL PRO 2V2', date: 'Jun 2026', pts: 60 },
           { place: 1, name: 'Boolin League S1', date: 'Aug 2026', pts: 150 },
+        ]
+      },
+      {
+        id: 13, name: 'Helio', tag: '', wins: 1, points: 200,
+        history: [
+          { place: 3, name: '1v1 Tournament', date: 'Mar 2026', pts: 50 },
+          { place: 1, name: 'Boolin League S1 (Sub)', date: 'Aug 2026', pts: 150 },
         ]
       },
       {
@@ -211,13 +218,6 @@
         history: [
           { place: 3, name: '2v2 Tournament', date: 'Apr 2026', pts: 50 },
           { place: 2, name: 'Boolin League S1', date: 'Aug 2026', pts: 100 },
-        ]
-      },
-      {
-        id: 13, name: 'Helio', tag: '', wins: 1, points: 150,
-        history: [
-          { place: 3, name: '1v1 Tournament', date: 'Mar 2026', pts: 50 },
-          { place: 1, name: 'Boolin League S1 (Sub)', date: 'Aug 2026', pts: 100 },
         ]
       },
       {
@@ -539,20 +539,20 @@
 
         const silSvg = `<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg>`;
         const avatarHtml = (isUnknown || isTbd)
-          ? `<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.03);border:2px dashed rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(0,0,0,0.2);">${silSvg}</div>`
-          : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(0,0,0,0.45);">${silSvg}</div>`;
+          ? `<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.05);border:2px dashed rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.2);">${silSvg}</div>`
+          : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);">${silSvg}</div>`;
 
         const trophies = (!isUnknown && !isTbd && p.wins > 0) ? ' ' + '🏆'.repeat(p.wins) : '';
         const nameHtml = isUnknown
-          ? `<div class="lb-name" style="color:rgba(0,0,0,0.25);letter-spacing:0.1em;">— TBD —</div>`
-          : `<div class="lb-name" style="${isTbd ? 'color:rgba(0,0,0,0.4);' : ''}">${p.name}${trophies}</div>`;
+          ? `<div class="lb-name" style="color:rgba(255,255,255,0.2);letter-spacing:0.1em;">— TBD —</div>`
+          : `<div class="lb-name" style="${isTbd ? 'color:rgba(255,255,255,0.55);' : ''}">${p.name}${trophies}</div>`;
 
         const winsHtml = isTbd
-          ? `<span class="lb-wins" style="color:rgba(0,0,0,0.3);font-size:0.85rem;">TBD</span>`
+          ? `<span class="lb-wins" style="color:rgba(255,255,255,0.25);font-size:0.85rem;">TBD</span>`
           : `<span class="lb-wins">${p.wins}</span>`;
 
         const ptsHtml = isTbd
-          ? `<span class="lb-points" style="color:rgba(0,0,0,0.3);font-size:0.85rem;">TBD</span>`
+          ? `<span class="lb-points" style="color:rgba(255,255,255,0.25);font-size:0.85rem;">TBD</span>`
           : `<span class="lb-points">${p.points.toLocaleString()}</span>`;
 
         const chevronHtml = (!isTbd)
