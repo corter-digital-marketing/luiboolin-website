@@ -145,152 +145,76 @@
           <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
         </div>
 
-        <style>
-          #past-tourney-track { display:flex; gap:1.25rem; width:max-content; animation:merch-scroll 26s linear infinite; }
-          #past-tourney-track:hover { animation-play-state:paused; }
-          #past-tourney-track .tourney-card { width:300px; flex-shrink:0; }
-        </style>
-        <div style="position:relative;width:100%;overflow:hidden;">
-          <div id="past-tourney-track">
+        <div class="tourney-bottom-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
 
-            <article class="tourney-card" onclick="location.href='/season1-results'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View Boolin League Season 01 results" onkeydown="if(event.key==='Enter')location.href='/season1-results'">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="BL-S1.png" alt="Boolin League Season 01" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">BOOLIN LEAGUE S1</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winner</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 DOG POUND</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
+          <article class="tourney-card" onclick="location.href='/season1-results'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View Boolin League Season 01 results" onkeydown="if(event.key==='Enter')location.href='/season1-results'">
+            <div class="tourney-card-img-wrap">
+              <img class="tourney-card-img" src="BL-S1.png" alt="Boolin League Season 01" loading="lazy" />
+              <span class="tourney-status status-closed">Completed</span>
+            </div>
+            <div class="tourney-card-body">
+              <h3 class="tourney-name">BOOLIN LEAGUE S1</h3>
+              <div class="tourney-prize">
+                <div>
+                  <div class="prize-label">Winner</div>
+                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 DOG POUND</div>
                 </div>
+                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <article class="tourney-card" onclick="location.href='/allpro2v2'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View All Pro 2v2 Tournament rosters" onkeydown="if(event.key==='Enter')location.href='/allpro2v2'">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="REAL2V2POISTER.jpg" alt="All Pro 2v2 Tournament" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">ALL PRO 2V2</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winners</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 UNI &amp; notBubbaa</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
+          <article class="tourney-card" onclick="location.href='/allpro2v2'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View All Pro 2v2 Tournament rosters" onkeydown="if(event.key==='Enter')location.href='/allpro2v2'">
+            <div class="tourney-card-img-wrap">
+              <img class="tourney-card-img" src="REAL2V2POISTER.jpg" alt="All Pro 2v2 Tournament" loading="lazy" />
+              <span class="tourney-status status-closed">Completed</span>
+            </div>
+            <div class="tourney-card-body">
+              <h3 class="tourney-name">ALL PRO 2V2</h3>
+              <div class="tourney-prize">
+                <div>
+                  <div class="prize-label">Winners</div>
+                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 UNI &amp; notBubbaa</div>
                 </div>
+                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <article class="tourney-card" onclick="location.href='/2v2bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 2v2 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/2v2bracket'">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="2v2-teaser.jpg" alt="2v2 Tournament" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">2v2 Tournament</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winners</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 Gremlin &amp; Azuri</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
+          <article class="tourney-card" onclick="location.href='/2v2bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 2v2 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/2v2bracket'">
+            <div class="tourney-card-img-wrap">
+              <img class="tourney-card-img" src="2v2-teaser.jpg" alt="2v2 Tournament" loading="lazy" />
+              <span class="tourney-status status-closed">Completed</span>
+            </div>
+            <div class="tourney-card-body">
+              <h3 class="tourney-name">2v2 Tournament</h3>
+              <div class="tourney-prize">
+                <div>
+                  <div class="prize-label">Winners</div>
+                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 Gremlin &amp; Azuri</div>
                 </div>
+                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <article class="tourney-card" onclick="location.href='/bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 1v1 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/bracket'">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="1V1CHAMP.jpg" alt="1v1 Tournament Champion SwiftCheetah" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">1v1 Tournament</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winner</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 SwiftCheetah</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
+          <article class="tourney-card" onclick="location.href='/bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 1v1 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/bracket'">
+            <div class="tourney-card-img-wrap">
+              <img class="tourney-card-img" src="1V1CHAMP.jpg" alt="1v1 Tournament Champion SwiftCheetah" loading="lazy" />
+              <span class="tourney-status status-closed">Completed</span>
+            </div>
+            <div class="tourney-card-body">
+              <h3 class="tourney-name">1v1 Tournament</h3>
+              <div class="tourney-prize">
+                <div>
+                  <div class="prize-label">Winner</div>
+                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 SwiftCheetah</div>
                 </div>
+                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
               </div>
-            </article>
+            </div>
+          </article>
 
-            <!-- duplicated for seamless infinite scroll -->
-            <article class="tourney-card" onclick="location.href='/season1-results'" style="cursor:pointer;" aria-hidden="true" tabindex="-1">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="BL-S1.png" alt="" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">BOOLIN LEAGUE S1</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winner</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 DOG POUND</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
-                </div>
-              </div>
-            </article>
-
-            <article class="tourney-card" onclick="location.href='/allpro2v2'" style="cursor:pointer;" aria-hidden="true" tabindex="-1">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="REAL2V2POISTER.jpg" alt="" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">ALL PRO 2V2</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winners</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 UNI &amp; notBubbaa</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
-                </div>
-              </div>
-            </article>
-
-            <article class="tourney-card" onclick="location.href='/2v2bracket'" style="cursor:pointer;" aria-hidden="true" tabindex="-1">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="2v2-teaser.jpg" alt="" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">2v2 Tournament</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winners</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 Gremlin &amp; Azuri</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
-                </div>
-              </div>
-            </article>
-
-            <article class="tourney-card" onclick="location.href='/bracket'" style="cursor:pointer;" aria-hidden="true" tabindex="-1">
-              <div class="tourney-card-img-wrap">
-                <img class="tourney-card-img" src="1V1CHAMP.jpg" alt="" loading="lazy" />
-                <span class="tourney-status status-closed">Completed</span>
-              </div>
-              <div class="tourney-card-body">
-                <h3 class="tourney-name">1v1 Tournament</h3>
-                <div class="tourney-prize">
-                  <div>
-                    <div class="prize-label">Winner</div>
-                    <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 SwiftCheetah</div>
-                  </div>
-                  <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
-                </div>
-              </div>
-            </article>
-
-          </div>
         </div>
       </div>
     </section>
