@@ -80,20 +80,8 @@
     <!-- Header -->
     <div class="lb-header" style="padding-top:80px;padding-bottom:0;padding-left:1.5rem;padding-right:1.5rem;">
       <h1 class="section-title" style="text-align:center;margin-bottom:1.75rem;">
-        <span class="accent">Leaderboards</span>
+        <span class="accent">Leaderboard</span>
       </h1>
-
-      <!-- Tab bar -->
-      <div style="display:flex;justify-content:center;gap:0.5rem;padding-bottom:0;">
-        <button id="lb-tab-players" onclick="switchLbTab('players')"
-          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.75rem;border-radius:6px 6px 0 0;border:1px solid rgba(124,58,237,0.4);border-bottom:none;background:rgba(124,58,237,0.2);color:#fff;cursor:pointer;transition:background 0.2s,color 0.2s;">
-          Top Players
-        </button>
-        <button id="lb-tab-season1" onclick="switchLbTab('season1')"
-          style="font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:0.65rem 1.75rem;border-radius:6px 6px 0 0;border:1px solid rgba(255,255,255,0.08);border-bottom:none;background:transparent;color:rgba(255,255,255,0.4);cursor:pointer;transition:background 0.2s,color 0.2s;">
-          Boolin League Season 1
-        </button>
-      </div>
       <div style="height:1px;background:rgba(124,58,237,0.25);margin:0 0 0;"></div>
     </div>
 
@@ -103,39 +91,6 @@
       <!-- Heading -->
       <div style="text-align:center;padding:2.5rem 1.5rem 0;">
         <h2 style="font-family:'Rajdhani',sans-serif;font-size:clamp(2.5rem,7vw,4.5rem);font-weight:900;letter-spacing:0.04em;text-transform:uppercase;color:#fff;text-shadow:0 0 40px rgba(124,58,237,0.5);line-height:1;">TOP PLAYERS</h2>
-      </div>
-
-      <!-- Points distribution key -->
-      <div style="max-width:480px;margin:2rem auto 1.5rem;padding:0 1.5rem;">
-        <div style="background:rgba(17,10,42,0.7);border:1px solid rgba(124,58,237,0.2);border-radius:10px;padding:1.5rem 1.75rem;backdrop-filter:blur(12px);">
-          <p style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:1rem;">Points Distribution</p>
-          <div style="display:flex;flex-direction:column;gap:0.55rem;">
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">1st Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#fbbf24;letter-spacing:0.04em;">150 pts</span>
-            </div>
-            <div style="height:1px;background:rgba(255,255,255,0.05);"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">2nd Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#d1d5db;letter-spacing:0.04em;">100 pts</span>
-            </div>
-            <div style="height:1px;background:rgba(255,255,255,0.05);"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">3rd / 4th Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#cd7c3a;letter-spacing:0.04em;">50 pts</span>
-            </div>
-            <div style="height:1px;background:rgba(255,255,255,0.05);"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">5th – 8th Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:var(--purple-light);letter-spacing:0.04em;">25 pts</span>
-            </div>
-            <div style="height:1px;background:rgba(255,255,255,0.05);"></div>
-            <div style="display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">First Round Exit</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:rgba(255,255,255,0.3);letter-spacing:0.04em;">0 pts</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="section" style="padding-top:2.5rem;">
@@ -159,115 +114,6 @@
       </div>
 
     </div><!-- /lb-panel-players -->
-
-    <!-- ── TAB: BOOLIN LEAGUE SEASON 1 ── -->
-    <div id="lb-panel-season1" style="display:none;">
-      <div style="max-width:860px;margin:2.5rem auto;padding:0 1.5rem;">
-
-        <!-- Logo -->
-        <div style="text-align:center;margin-bottom:1.25rem;">
-          <img src="BL-S1.png" alt="Boolin League Season 1" style="width:min(420px,82%);display:inline-block;" />
-        </div>
-
-        <!-- Registration status pill -->
-        <div style="display:flex;justify-content:center;margin-bottom:1.75rem;">
-          <div style="display:inline-flex;align-items:center;gap:0.6rem;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.3);border-radius:20px;padding:0.4rem 1.1rem;">
-            <span style="width:8px;height:8px;border-radius:50%;background:var(--purple-glow);box-shadow:0 0 8px var(--purple-glow);display:inline-block;"></span>
-            <span style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--purple-light);">Registration Open · 0 / 8 Teams</span>
-          </div>
-        </div>
-
-        <!-- Top 5 qualifier — plain text, no box -->
-        <p style="text-align:center;font-family:'Rajdhani',sans-serif;font-size:1.35rem;font-weight:900;color:#fbbf24;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:2rem;text-shadow:0 0 18px rgba(251,191,36,0.4);">★ Top 5 Teams Qualify for the Season 1 Major ★</p>
-
-        <!-- Season 1 Points — plain, no box -->
-        <div style="max-width:420px;margin:0 auto 2.5rem;">
-          <p style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:700;letter-spacing:0.22em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:0.75rem;text-align:center;">Season 1 Points</p>
-          <div style="display:flex;flex-direction:column;gap:0.5rem;">
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">1st Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#fbbf24;">12 pts</span>
-            </div>
-            <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">2nd Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#d1d5db;">7 pts</span>
-            </div>
-            <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">3rd / 4th Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:#cd7c3a;">3 pts</span>
-            </div>
-            <div style="height:1px;background:rgba(255,255,255,0.08);"></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:0.95rem;color:rgba(255,255,255,0.6);">5th – 8th Place</span>
-              <span style="font-family:'Rajdhani',sans-serif;font-weight:900;font-size:1.1rem;color:rgba(255,255,255,0.3);">0 pts</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Standings slots -->
-        <style>
-          .s1-slot-row { display:flex; align-items:center; gap:1.25rem; border-radius:10px; padding:1.1rem 1.5rem; backdrop-filter:blur(12px); border:1px solid; box-sizing:border-box; max-width:100%; overflow:hidden; }
-          .s1-slot-rank { font-family:'Rajdhani',sans-serif; font-size:1.5rem; font-weight:900; width:36px; flex-shrink:0; text-align:center; }
-          .s1-slot-logo { width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0; }
-          .s1-slot-name { font-family:'Rajdhani',sans-serif; font-size:1.2rem; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-          .s1-slot-right { margin-left:auto; display:flex; align-items:center; gap:0.6rem; flex-shrink:0; }
-          .s1-slot-badge { font-family:'Rajdhani',sans-serif; font-size:0.62rem; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:rgba(251,191,36,0.9); background:rgba(251,191,36,0.1); border:1px solid rgba(251,191,36,0.35); padding:0.15rem 0.45rem; border-radius:4px; white-space:nowrap; }
-          .s1-slot-points { font-family:'Rajdhani',sans-serif; font-weight:900; font-size:1.1rem; color:#a855f7; white-space:nowrap; }
-          @media (max-width:480px) {
-            .s1-slot-row { gap:0.65rem; padding:0.75rem 0.85rem; }
-            .s1-slot-rank { font-size:1.05rem; width:20px; }
-            .s1-slot-logo { width:30px; height:30px; }
-            .s1-slot-name { font-size:0.85rem; }
-            .s1-slot-points { font-size:0.85rem; }
-            .s1-slot-badge { padding:0.1rem 0.3rem; font-size:0.52rem; }
-          }
-          @media (max-width:360px) {
-            .s1-slot-badge { display:none; }
-          }
-        </style>
-        <div id="s1-slots" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
-        <script>
-          (function(){
-            var logos = {
-              'washed':       '/teamphotos/washed.jpg',
-              'Spongeboiz':   '/teamphotos/spongeboiz.png',
-              'ForEmbarkRob': '/teamphotos/forembarkrob.png',
-              'DOG POUND':    '/teamphotos/dogpound-logo.png',
-              'Super Nova':   '/teamphotos/supernova.png',
-              'oOmOo':        '/teamphotos/oomoo.png',
-              'THE NOBELS':   '/teamphotos/thenobels.jpg',
-              'Prophets':     '/teamphotos/prophets.jpeg',
-            };
-            var rows = [
-              { team: 'washed',       points: 48 },
-              { team: 'Spongeboiz',   points: 20 },
-              { team: 'DOG POUND',    points: 16 },
-              { team: 'ForEmbarkRob', points: 10 },
-              { team: 'oOmOo',        points: 3 },
-              { team: 'THE NOBELS',   points: 3 },
-              { team: 'Prophets',     points: 0 },
-              { team: 'Super Nova',   points: 0 },
-            ];
-            document.getElementById('s1-slots').innerHTML = rows.map(function(r,i){
-              var top = i < 5;
-              var name = String(r.team).replace(/&/g,'&amp;').replace(/</g,'&lt;');
-              var logo = logos[r.team];
-              var majorBadge = top ? '<span class="s1-slot-badge">MAJOR</span>' : '';
-              return '<div class="s1-slot-row" style="background:'+(top?'rgba(251,191,36,0.06)':'rgba(17,10,42,0.6)')+';border-color:'+(top?'rgba(251,191,36,0.3)':'rgba(255,255,255,0.06)')+';">'
-                + '<span class="s1-slot-rank" style="color:'+(top?'rgba(251,191,36,0.7)':'rgba(255,255,255,0.15)')+';">' + (i+1) + '</span>'
-                + '<img class="s1-slot-logo" src="' + logo + '" alt="' + name + ' logo" />'
-                + '<span class="s1-slot-name" style="color:'+(top?'#fff':'rgba(255,255,255,0.6)')+';">' + name + '</span>'
-                + '<span class="s1-slot-right">' + majorBadge
-                + '<span class="s1-slot-points">' + r.points + ' pts</span></span>'
-                + '</div>';
-            }).join('');
-          })();
-        </script>
-
-      </div>
-    </div><!-- /lb-panel-season1 -->
 
   </div><!-- /page-leaderboards -->
   <div class="modal-overlay" id="playerModal" role="dialog" aria-modal="true" aria-labelledby="modal-player-name" onclick="closePlayerModal(event)">
@@ -320,11 +166,11 @@
         ]
       },
       {
-        id: 5, name: 'SwiftCheetah', tag: '', wins: 1, points: 250, champ: '1v1',
+        id: 5, name: 'SwiftCheetah', tag: '', wins: 2, points: 250, champ: '1v1',
         history: [
           { place: 1, name: '1v1 Tournament', date: 'Mar 2026', pts: 150 },
           { place: 5, name: '2v2 Tournament', date: 'Apr 2026', pts: 0 },
-          { place: 'bonus', name: 'Complimentary Bonus', date: 'Aug 2026', pts: 100 },
+          { place: 1, name: 'Boolin League S1 (Sub)', date: 'Aug 2026', pts: 100 },
         ]
       },
       {
@@ -368,10 +214,10 @@
         ]
       },
       {
-        id: 13, name: 'Helio', tag: '', wins: 0, points: 150,
+        id: 13, name: 'Helio', tag: '', wins: 1, points: 150,
         history: [
           { place: 3, name: '1v1 Tournament', date: 'Mar 2026', pts: 50 },
-          { place: 'bonus', name: 'Complimentary Bonus', date: 'Aug 2026', pts: 100 },
+          { place: 1, name: 'Boolin League S1 (Sub)', date: 'Aug 2026', pts: 100 },
         ]
       },
       {
@@ -693,19 +539,20 @@
 
         const silSvg = `<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 20c0-4.4 3.6-8 8-8s8 3.6 8 8" fill="currentColor"/></svg>`;
         const avatarHtml = (isUnknown || isTbd)
-          ? `<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.05);border:2px dashed rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.2);">${silSvg}</div>`
-          : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(255,255,255,0.65);">${silSvg}</div>`;
+          ? `<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.03);border:2px dashed rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(0,0,0,0.2);">${silSvg}</div>`
+          : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:rgba(0,0,0,0.45);">${silSvg}</div>`;
 
+        const trophies = (!isUnknown && !isTbd && p.wins > 0) ? ' ' + '🏆'.repeat(p.wins) : '';
         const nameHtml = isUnknown
-          ? `<div class="lb-name" style="color:rgba(255,255,255,0.2);letter-spacing:0.1em;">— TBD —</div>`
-          : `<div class="lb-name" style="${isTbd ? 'color:rgba(255,255,255,0.55);' : ''}">${p.name}</div>`;
+          ? `<div class="lb-name" style="color:rgba(0,0,0,0.25);letter-spacing:0.1em;">— TBD —</div>`
+          : `<div class="lb-name" style="${isTbd ? 'color:rgba(0,0,0,0.4);' : ''}">${p.name}${trophies}</div>`;
 
         const winsHtml = isTbd
-          ? `<span class="lb-wins" style="color:rgba(255,255,255,0.25);font-size:0.85rem;">TBD</span>`
+          ? `<span class="lb-wins" style="color:rgba(0,0,0,0.3);font-size:0.85rem;">TBD</span>`
           : `<span class="lb-wins">${p.wins}</span>`;
 
         const ptsHtml = isTbd
-          ? `<span class="lb-points" style="color:rgba(255,255,255,0.25);font-size:0.85rem;">TBD</span>`
+          ? `<span class="lb-points" style="color:rgba(0,0,0,0.3);font-size:0.85rem;">TBD</span>`
           : `<span class="lb-points">${p.points.toLocaleString()}</span>`;
 
         const chevronHtml = (!isTbd)
@@ -749,7 +596,6 @@
       if (place === 3) return '3rd';
       if (place === 5) return '5/8th';
       if (place === 7) return '6th-8th';
-      if (place === 'bonus') return 'Bonus';
       return place + 'th';
     }
 
@@ -794,26 +640,7 @@
       }
     }
 
-    function switchLbTab(tab) {
-      const tabs   = { players: 'lb-tab-players',  season1: 'lb-tab-season1'  };
-      const panels = { players: 'lb-panel-players', season1: 'lb-panel-season1' };
-
-      Object.entries(tabs).forEach(([key, id]) => {
-        const btn   = document.getElementById(id);
-        const panel = document.getElementById(panels[key]);
-        const active = key === tab;
-        btn.style.background    = active ? 'rgba(124,58,237,0.2)' : 'transparent';
-        btn.style.color         = active ? '#fff' : 'rgba(255,255,255,0.4)';
-        btn.style.borderColor   = active ? 'rgba(124,58,237,0.4)' : 'rgba(255,255,255,0.08)';
-        panel.style.display     = active ? '' : 'none';
-      });
-    }
-
-buildLeaderboard();
-
-var _lbTab = new URLSearchParams(location.search).get('tab');
-
-if (_lbTab === 'season1') switchLbTab('season1');
+    buildLeaderboard();
   </script>
 </body>
 </html>
