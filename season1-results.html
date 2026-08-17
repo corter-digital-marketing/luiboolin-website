@@ -94,14 +94,38 @@
         </div>
       </div>
 
-      <div style="max-width:700px;margin:2.5rem auto 0;padding:0 2rem;">
-        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent);margin-bottom:2rem;"></div>
-        <p style="text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:1.25rem;">Final Leaderboard &amp; Placements</p>
-        <div id="s1-final-slots" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+      <div style="max-width:1100px;margin:2.5rem auto 0;padding:0 2rem;">
+        <div style="height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,0.4),transparent);margin-bottom:2.5rem;"></div>
+        <div id="s1-results-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;">
+          <div>
+            <p style="text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:rgba(167,139,250,0.7);margin-bottom:1.25rem;">Playdays Leaderboard</p>
+            <div id="s1-playdays-slots" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+          </div>
+          <div>
+            <p style="text-align:center;font-family:'Rajdhani',sans-serif;font-size:0.65rem;font-weight:700;letter-spacing:0.25em;text-transform:uppercase;color:var(--purple-glow);margin-bottom:1.25rem;">Final Leaderboard</p>
+            <div id="s1-final-slots" style="display:flex;flex-direction:column;gap:0.75rem;"></div>
+          </div>
+        </div>
       </div>
 
     </div>
   </div><!-- /page-season1-results -->
+
+  <style>
+    @media (max-width:760px) {
+      #s1-results-grid { grid-template-columns:1fr !important; gap:2.5rem !important; }
+    }
+    .s1-slot-row { cursor:pointer; transition:background 0.2s,border-color 0.2s; }
+    .s1-slot-chevron { color:rgba(255,255,255,0.25); transition:transform 0.2s; flex-shrink:0; }
+    .s1-team-block.open .s1-slot-chevron { transform:rotate(90deg); }
+    .s1-roster-panel { max-height:0; overflow:hidden; transition:max-height 0.25s ease; background:rgba(0,0,0,0.2); border-radius:0 0 10px 10px; }
+    .s1-team-block.open .s1-roster-panel { max-height:200px; }
+    .s1-roster-player {
+      padding:0.55rem 1.5rem 0.55rem 4.75rem; font-family:'Rajdhani',sans-serif; font-size:0.85rem;
+      font-weight:600; letter-spacing:0.03em; color:rgba(255,255,255,0.6);
+      border-top:1px solid rgba(255,255,255,0.05);
+    }
+  </style>
 
   <script src="/assets/common.js"></script>
   <script>
@@ -116,7 +140,61 @@
         'THE NOBELS':   '/teamphotos/thenobels.jpg',
         'Super Nova':   '/teamphotos/supernova.png',
       };
-      var rows = [
+      var rosters = {
+        'DOG POUND':    ['LuiBoolin', 'Seb', 'x.Lion'],
+        'Spongeboiz':   ['MrAzuri', 'lascur', 'wasdwsads'],
+        'ForEmbarkRob': ['AustinMan', 'nvr', 'ye'],
+        'washed':       ['3RIE', 'Thing1', 'tecniq'],
+        'Super Nova':   ['TheIceKing', 'JustBacon', 'Glubtupus_Wepple'],
+        'oOmOo':        ['BLEACH', 'INSANETRAIN', 'BoonChi'],
+        'THE NOBELS':   ['Fmso_511', 'MFMO-10', 'VITO'],
+        'Prophets':     ['archangelfear', 'themanyourlookingfor', 'itslobotomingtime'],
+      };
+
+      function renderSlots(containerId, rows, opts) {
+        var chevron = '<svg class="s1-slot-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        document.getElementById(containerId).innerHTML = rows.map(function(r, i) {
+          var top = opts.isTop(r, i);
+          var name = String(r.team).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+          var logo = logos[r.team];
+          var roster = rosters[r.team] || [];
+          var rosterHtml = roster.map(function(p) {
+            return '<div class="s1-roster-player">' + String(p).replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</div>';
+          }).join('');
+          return '<div class="s1-team-block">'
+            + '<div class="s1-slot-row" onclick="this.parentElement.classList.toggle(\'open\')" style="background:' + (top ? 'rgba(251,191,36,0.08)' : 'rgba(17,10,42,0.6)') + ';border-color:' + (top ? 'rgba(251,191,36,0.35)' : 'rgba(255,255,255,0.06)') + ';">'
+            + '<span class="s1-slot-rank" style="color:' + (top ? 'rgba(251,191,36,0.7)' : 'rgba(255,255,255,0.15)') + ';">' + (i + 1) + '</span>'
+            + '<img class="s1-slot-logo" src="' + logo + '" alt="' + name + ' logo" />'
+            + '<span class="s1-slot-name" style="color:' + (top ? '#fff' : 'rgba(255,255,255,0.6)') + ';">' + name + '</span>'
+            + '<span class="s1-slot-right">'
+            + (top ? '<span class="s1-slot-badge">' + opts.topBadge + '</span>' : '')
+            + '<span class="s1-slot-points" style="color:' + (top ? '#fbbf24' : '#a855f7') + ';">' + opts.valueLabel(r) + '</span>'
+            + chevron
+            + '</span>'
+            + '</div>'
+            + '<div class="s1-roster-panel">' + rosterHtml + '</div>'
+            + '</div>';
+        }).join('');
+      }
+
+      // ── Playdays Leaderboard (regular-season points, weeks 1-4) ──
+      renderSlots('s1-playdays-slots', [
+        { team: 'washed',       points: 48 },
+        { team: 'Spongeboiz',   points: 20 },
+        { team: 'DOG POUND',    points: 16 },
+        { team: 'ForEmbarkRob', points: 10 },
+        { team: 'oOmOo',        points: 3  },
+        { team: 'THE NOBELS',   points: 3  },
+        { team: 'Prophets',     points: 0  },
+        { team: 'Super Nova',   points: 0  },
+      ], {
+        isTop: function(r, i) { return i === 0; },
+        topBadge: 'TOP SEED',
+        valueLabel: function(r) { return r.points + ' pts'; },
+      });
+
+      // ── Final Leaderboard (Major placement) ──
+      renderSlots('s1-final-slots', [
         { team: 'DOG POUND',    place: '1ST'     },
         { team: 'washed',       place: '2ND/3RD' },
         { team: 'Spongeboiz',   place: '2ND/3RD' },
@@ -125,20 +203,11 @@
         { team: 'Prophets',     place: '6TH-8TH' },
         { team: 'THE NOBELS',   place: '6TH-8TH' },
         { team: 'Super Nova',   place: '6TH-8TH' },
-      ];
-      document.getElementById('s1-final-slots').innerHTML = rows.map(function(r, i) {
-        var top = i === 0;
-        var name = String(r.team).replace(/&/g, '&amp;').replace(/</g, '&lt;');
-        var logo = logos[r.team];
-        return '<div class="s1-slot-row" style="background:' + (top ? 'rgba(251,191,36,0.08)' : 'rgba(17,10,42,0.6)') + ';border-color:' + (top ? 'rgba(251,191,36,0.35)' : 'rgba(255,255,255,0.06)') + ';">'
-          + '<span class="s1-slot-rank" style="color:' + (top ? 'rgba(251,191,36,0.7)' : 'rgba(255,255,255,0.15)') + ';">' + (i + 1) + '</span>'
-          + '<img class="s1-slot-logo" src="' + logo + '" alt="' + name + ' logo" />'
-          + '<span class="s1-slot-name" style="color:' + (top ? '#fff' : 'rgba(255,255,255,0.6)') + ';">' + name + '</span>'
-          + '<span class="s1-slot-right">'
-          + (top ? '<span class="s1-slot-badge">CHAMPION</span>' : '')
-          + '<span class="s1-slot-points" style="color:' + (top ? '#fbbf24' : '#a855f7') + ';">' + r.place + '</span></span>'
-          + '</div>';
-      }).join('');
+      ], {
+        isTop: function(r, i) { return i === 0; },
+        topBadge: 'CHAMPION',
+        valueLabel: function(r) { return r.place; },
+      });
     })();
   </script>
 
