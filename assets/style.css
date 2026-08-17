@@ -1066,7 +1066,9 @@
     }
 
     .lb-name {
-      font-weight: 700; font-size: 0.95rem;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 800; font-size: 1.2rem;
+      letter-spacing: 0.02em;
       color: #fff;
     }
 
@@ -1097,10 +1099,21 @@
       transform: translateX(3px);
     }
 
-    /* Top 3 highlight */
-    .lb-row.top-3 {
-      background: rgba(124,58,237,0.1);
-      border-color: rgba(124,58,237,0.2);
+    /* Rank glow — whole row, not just the number */
+    .lb-row.rank-1 {
+      background: rgba(251,191,36,0.1);
+      border-color: rgba(251,191,36,0.5);
+      box-shadow: 0 0 18px rgba(251,191,36,0.35), 0 0 36px rgba(251,191,36,0.15);
+    }
+    .lb-row.rank-red {
+      background: rgba(239,68,68,0.08);
+      border-color: rgba(239,68,68,0.45);
+      box-shadow: 0 0 16px rgba(239,68,68,0.3), 0 0 32px rgba(239,68,68,0.12);
+    }
+    .lb-row.rank-white {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.35);
+      box-shadow: 0 0 14px rgba(255,255,255,0.25), 0 0 28px rgba(255,255,255,0.1);
     }
 
 
@@ -1138,15 +1151,13 @@
 
       /* Column widths on mobile */
       .lb-table thead th:nth-child(1) { width: 36px; }
-      .lb-table thead th:nth-child(2) { width: 44px; }
-      .lb-table thead th:nth-child(3) { width: auto; }
-      .lb-table thead th:nth-child(4) { width: 44px; }
-      .lb-table thead th:nth-child(5) { width: 56px; }
-      .lb-table thead th:nth-child(6) { width: 24px; }
+      .lb-table thead th:nth-child(2) { width: auto; }
+      .lb-table thead th:nth-child(4) { width: 56px; }
+      .lb-table thead th:nth-child(5) { width: 24px; }
 
       /* Hide wins column */
-      .lb-table thead th:nth-child(4),
-      .lb-row td:nth-child(4) {
+      .lb-table thead th:nth-child(3),
+      .lb-row td:nth-child(3) {
         display: none;
       }
 
@@ -1182,21 +1193,9 @@
       .lb-points {
         font-size: 0.95rem;
       }
-
-      /* Avatar size */
-      .lb-row td:nth-child(2) > div {
-        width: 30px !important;
-        height: 30px !important;
-        font-size: 0.75rem !important;
-      }
     }
 
     @media (max-width: 380px) {
-      /* Hide avatar too on very small screens */
-      .lb-table thead th:nth-child(2),
-      .lb-row td:nth-child(2) {
-        display: none;
-      }
       .lb-name { font-size: 0.78rem; }
       .lb-points { font-size: 0.85rem; }
       .lb-row td { padding: 0.625rem 0.4rem; }
