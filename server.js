@@ -444,7 +444,10 @@ async function getRankedWins(userId) {
 
 async function addRankedWin(userId) {
   if (pool) {
-    await pool.query('UPDATE users SET ranked_wins = COALESCE(ranked_wins,0) + 1 WHERE id=$1', [userId]);
+    await pool.query(
+      `INSERT INTO users (id, ranked_wins) VALUES ($1, 1)
+       ON CONFLICT (id) DO UPDATE SET ranked_wins = COALESCE(users.ranked_wins,0) + 1`,
+      [userId]);
     return;
   }
   const db = readDb();
@@ -455,7 +458,10 @@ async function addRankedWin(userId) {
 
 async function addCasualWin(userId) {
   if (pool) {
-    await pool.query('UPDATE users SET casual_wins = COALESCE(casual_wins,0) + 1 WHERE id=$1', [userId]);
+    await pool.query(
+      `INSERT INTO users (id, casual_wins) VALUES ($1, 1)
+       ON CONFLICT (id) DO UPDATE SET casual_wins = COALESCE(users.casual_wins,0) + 1`,
+      [userId]);
     return;
   }
   const db = readDb();
@@ -484,7 +490,10 @@ async function getEmbarkId(userId) {
 
 async function setEmbarkId(userId, embarkId) {
   if (pool) {
-    await pool.query('UPDATE users SET embark_id=$1 WHERE id=$2', [embarkId || null, userId]);
+    await pool.query(
+      `INSERT INTO users (id, embark_id) VALUES ($1, $2)
+       ON CONFLICT (id) DO UPDATE SET embark_id = $2`,
+      [userId, embarkId || null]);
     return;
   }
   const db = readDb();
