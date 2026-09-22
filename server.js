@@ -17,10 +17,14 @@ const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET || localConfig.DISCORD_C
 const REDIRECT_URI  = process.env.REDIRECT_URI          || localConfig.REDIRECT_URI          || `http://localhost:${PORT}/auth/discord/callback`;
 
 // ── PostgreSQL (production) ───────────────────────────────────────
+// Vercel's own Postgres storage integration names its connection string
+// POSTGRES_URL rather than DATABASE_URL — accept either so connecting a
+// database there doesn't also require manually renaming an env var.
+const DATABASE_URL = process.env.DATABASE_URL || process.env.POSTGRES_URL || '';
 let pool = null;
-if (process.env.DATABASE_URL) {
+if (DATABASE_URL) {
   const { Pool } = require('pg');
-  pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+  pool = new Pool({ connectionString: DATABASE_URL, ssl: { rejectUnauthorized: false } });
   pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY, username TEXT, display_name TEXT, avatar TEXT,
