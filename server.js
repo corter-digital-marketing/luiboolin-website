@@ -29,6 +29,21 @@ if (process.env.DATABASE_URL) {
     ALTER TABLE users ADD COLUMN IF NOT EXISTS ranked_wins INTEGER DEFAULT 0;
     ALTER TABLE users ADD COLUMN IF NOT EXISTS casual_wins INTEGER DEFAULT 0;
     ALTER TABLE users ADD COLUMN IF NOT EXISTS embark_id TEXT;
+    CREATE TABLE IF NOT EXISTS pug_queue (
+      user_id TEXT PRIMARY KEY, mode TEXT NOT NULL,
+      display_name TEXT, avatar TEXT,
+      joined_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS pug_lobbies (
+      id TEXT PRIMARY KEY, mode TEXT NOT NULL,
+      map TEXT, weapon TEXT, host TEXT, code TEXT,
+      team_a JSONB NOT NULL, team_b JSONB NOT NULL,
+      votes JSONB NOT NULL DEFAULT '{}', chat JSONB NOT NULL DEFAULT '[]',
+      result TEXT, created_at TIMESTAMPTZ DEFAULT NOW()
+    );
+    CREATE TABLE IF NOT EXISTS pug_user_lobby (
+      user_id TEXT PRIMARY KEY, lobby_id TEXT NOT NULL
+    );
     CREATE TABLE IF NOT EXISTS teams (
       id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL, captain_id TEXT NOT NULL,
       invite_code TEXT UNIQUE NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW()
@@ -502,7 +517,9 @@ async function getWinsLeaderboard(column, limit) {
     .slice(0, limit);
 }
 
-async function makePugLobby(mode, players) {
+// Pure construction of a lobby's contents — no storage side effects, so it's
+// safe to call from either the Postgres path or the in-memory path.
+async function buildPugLobby(mode, players) {
   const id = generateId();
   const eligibleMaps = MAP_POOL.filter(m => mode === 'casual' || !m.banned).map(m => m.name);
   const map = pick(eligibleMaps);
@@ -526,18 +543,7 @@ async function makePugLobby(mode, players) {
   for (let i = 1; i < allPlayers.length; i++) if (winCounts[i] > winCounts[hostIdx]) hostIdx = i;
   const host = allPlayers[hostIdx].userId;
 
-  const lobby = {
-    id, mode, map, weapon, host,
-    code: null,
-    teamA, teamB,
-    votes: {},   // userId -> 'teamA' | 'teamB'
-    chat: [],    // [{ userId, displayName, text, ts }]
-    result: null,
-    createdAt: Date.now(),
-  };
-  pugLobbies[id] = lobby;
-  [...teamA, ...teamB].forEach(p => { userLobbyId[p.userId] = id; });
-  return lobby;
+  return { id, mode, map, weapon, host, code: null, teamA, teamB, votes: {}, chat: [], result: null };
 }
 
 function serializePugLobby(lobby, forUserId) {
@@ -558,6 +564,213 @@ function serializePugLobby(lobby, forUserId) {
     chat: lobby.chat,
     result: lobby.result,
   };
+}
+
+function pugRowToLobby(row) {
+  return {
+    id: row.id, mode: row.mode, map: row.map, weapon: row.weapon, host: row.host, code: row.code,
+    teamA: row.team_a, teamB: row.team_b, votes: row.votes, chat: row.chat, result: row.result,
+  };
+}
+
+// ── Pugs: unified queue/lobby operations ──────────────────────────
+// Each of these branches on `pool`: with Postgres configured, queue/lobby
+// state is a shared DB row so it's consistent across every Vercel serverless
+// instance; without it (local dev), it falls back to the original in-memory
+// objects, which is safe there because local dev is always a single process.
+
+async function pugQueueCounts() {
+  if (pool) {
+    const r = await pool.query('SELECT mode, COUNT(*)::int AS n FROM pug_queue GROUP BY mode');
+    const counts = { casual: 0, competitive: 0 };
+    r.rows.forEach(row => { counts[row.mode] = row.n; });
+    return counts;
+  }
+  return { casual: pugQueues.casual.length, competitive: pugQueues.competitive.length };
+}
+
+async function pugGamesLiveCounts() {
+  if (pool) {
+    const r = await pool.query('SELECT mode, COUNT(*)::int AS n FROM pug_lobbies WHERE result IS NULL GROUP BY mode');
+    const counts = { casual: 0, competitive: 0 };
+    r.rows.forEach(row => { counts[row.mode] = row.n; });
+    return counts;
+  }
+  const counts = { casual: 0, competitive: 0 };
+  Object.values(pugLobbies).forEach(l => { if (!l.result) counts[l.mode]++; });
+  return counts;
+}
+
+async function pugUserQueueMode(userId) {
+  if (pool) {
+    const r = await pool.query('SELECT mode FROM pug_queue WHERE user_id=$1', [userId]);
+    return r.rows[0] ? r.rows[0].mode : null;
+  }
+  if (pugQueues.casual.some(p => p.userId === userId)) return 'casual';
+  if (pugQueues.competitive.some(p => p.userId === userId)) return 'competitive';
+  return null;
+}
+
+async function pugFindUserLobby(userId) {
+  if (pool) {
+    const r = await pool.query(
+      `SELECT l.* FROM pug_lobbies l JOIN pug_user_lobby ul ON ul.lobby_id = l.id WHERE ul.user_id = $1`,
+      [userId]);
+    return r.rows[0] ? pugRowToLobby(r.rows[0]) : null;
+  }
+  const lobbyId = userLobbyId[userId];
+  return (lobbyId && pugLobbies[lobbyId]) || null;
+}
+
+async function pugJoinQueue(mode, player) {
+  if (pool) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      // Serialize all join attempts for this mode so two players can't both
+      // read "5 in queue" and both think they're the one completing the 6th.
+      await client.query('SELECT pg_advisory_xact_lock(hashtext($1)::bigint)', [mode]);
+      const inLobby = await client.query('SELECT 1 FROM pug_user_lobby WHERE user_id=$1', [player.userId]);
+      if (inLobby.rows[0]) { await client.query('ROLLBACK'); return { error: 'You are already in a lobby.' }; }
+      const inQueue = await client.query('SELECT 1 FROM pug_queue WHERE user_id=$1', [player.userId]);
+      if (inQueue.rows[0]) { await client.query('ROLLBACK'); return { error: 'You are already in a queue.' }; }
+      await client.query(
+        'INSERT INTO pug_queue (user_id, mode, display_name, avatar) VALUES ($1,$2,$3,$4)',
+        [player.userId, mode, player.displayName, player.avatar]);
+      const queued = await client.query(
+        'SELECT user_id, display_name, avatar FROM pug_queue WHERE mode=$1 ORDER BY joined_at ASC LIMIT 6',
+        [mode]);
+      let lobby = null;
+      if (queued.rows.length >= 6) {
+        const players = queued.rows.map(r => ({ userId: r.user_id, displayName: r.display_name, avatar: r.avatar }));
+        await client.query('DELETE FROM pug_queue WHERE user_id = ANY($1::text[])', [players.map(p => p.userId)]);
+        lobby = await buildPugLobby(mode, players);
+        await client.query(
+          `INSERT INTO pug_lobbies (id, mode, map, weapon, host, code, team_a, team_b, votes, chat, result)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+          [lobby.id, lobby.mode, lobby.map, lobby.weapon, lobby.host, lobby.code,
+           JSON.stringify(lobby.teamA), JSON.stringify(lobby.teamB), JSON.stringify(lobby.votes), JSON.stringify(lobby.chat), lobby.result]);
+        for (const p of players) {
+          await client.query('INSERT INTO pug_user_lobby (user_id, lobby_id) VALUES ($1,$2)', [p.userId, lobby.id]);
+        }
+      }
+      await client.query('COMMIT');
+      return { lobby };
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  }
+
+  if (userLobbyId[player.userId]) return { error: 'You are already in a lobby.' };
+  if (pugQueues.casual.some(p => p.userId === player.userId) || pugQueues.competitive.some(p => p.userId === player.userId)) {
+    return { error: 'You are already in a queue.' };
+  }
+  pugQueues[mode].push(player);
+  let lobby = null;
+  if (pugQueues[mode].length >= 6) {
+    const players = pugQueues[mode].splice(0, 6);
+    lobby = await buildPugLobby(mode, players);
+    pugLobbies[lobby.id] = lobby;
+    [...lobby.teamA, ...lobby.teamB].forEach(p => { userLobbyId[p.userId] = lobby.id; });
+  }
+  return { lobby };
+}
+
+async function pugLeaveQueue(userId) {
+  if (pool) { await pool.query('DELETE FROM pug_queue WHERE user_id=$1', [userId]); return; }
+  removeFromPugQueues(userId);
+}
+
+async function pugSetLobbyCode(userId, code) {
+  const lobby = await pugFindUserLobby(userId);
+  if (!lobby) return { error: 'No active lobby.', status: 404 };
+  if (lobby.host !== userId) return { error: 'Only the host can set the lobby code.', status: 403 };
+  lobby.code = code;
+  if (pool) await pool.query('UPDATE pug_lobbies SET code=$1 WHERE id=$2', [code, lobby.id]);
+  return { lobby };
+}
+
+async function pugSendChat(userId, text, fallbackDisplayName) {
+  const lobby = await pugFindUserLobby(userId);
+  if (!lobby) return { error: 'No active lobby.', status: 404 };
+  const me = [...lobby.teamA, ...lobby.teamB].find(p => p.userId === userId);
+  lobby.chat.push({ userId, displayName: (me && me.displayName) || fallbackDisplayName, text, ts: Date.now() });
+  if (lobby.chat.length > 100) lobby.chat = lobby.chat.slice(-100);
+  if (pool) await pool.query('UPDATE pug_lobbies SET chat=$1 WHERE id=$2', [JSON.stringify(lobby.chat), lobby.id]);
+  return { lobby };
+}
+
+async function pugVote(userId, team) {
+  if (pool) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      // Lock this lobby row for the duration of the read-modify-write so two
+      // concurrent votes can't clobber each other or double-finalize a result.
+      const r = await client.query(
+        `SELECT l.* FROM pug_lobbies l JOIN pug_user_lobby ul ON ul.lobby_id = l.id WHERE ul.user_id = $1 FOR UPDATE OF l`,
+        [userId]);
+      if (!r.rows[0]) { await client.query('ROLLBACK'); return { error: 'No active lobby.', status: 404 }; }
+      const lobby = pugRowToLobby(r.rows[0]);
+      let justResolved = false;
+      if (!lobby.result) {
+        lobby.votes[userId] = team;
+        const counts = { teamA: 0, teamB: 0 };
+        Object.values(lobby.votes).forEach(v => { counts[v]++; });
+        if (counts.teamA >= 4) { lobby.result = 'teamA'; justResolved = true; }
+        else if (counts.teamB >= 4) { lobby.result = 'teamB'; justResolved = true; }
+        await client.query('UPDATE pug_lobbies SET votes=$1, result=$2 WHERE id=$3', [JSON.stringify(lobby.votes), lobby.result, lobby.id]);
+      }
+      await client.query('COMMIT');
+      if (justResolved) {
+        const winners = lobby.result === 'teamA' ? lobby.teamA : lobby.teamB;
+        for (const p of winners) await (lobby.mode === 'competitive' ? addRankedWin(p.userId) : addCasualWin(p.userId));
+      }
+      return { lobby };
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  }
+
+  const lobby = await pugFindUserLobby(userId);
+  if (!lobby) return { error: 'No active lobby.', status: 404 };
+  if (!lobby.result) {
+    lobby.votes[userId] = team;
+    const counts = { teamA: 0, teamB: 0 };
+    Object.values(lobby.votes).forEach(v => { counts[v]++; });
+    if (counts.teamA >= 4) lobby.result = 'teamA';
+    else if (counts.teamB >= 4) lobby.result = 'teamB';
+    if (lobby.result) {
+      const winners = lobby.result === 'teamA' ? lobby.teamA : lobby.teamB;
+      for (const p of winners) await (lobby.mode === 'competitive' ? addRankedWin(p.userId) : addCasualWin(p.userId));
+    }
+  }
+  return { lobby };
+}
+
+async function pugLeaveLobby(userId) {
+  if (pool) {
+    const r = await pool.query('DELETE FROM pug_user_lobby WHERE user_id=$1 RETURNING lobby_id', [userId]);
+    const lobbyId = r.rows[0] && r.rows[0].lobby_id;
+    if (lobbyId) {
+      const remaining = await pool.query('SELECT COUNT(*)::int AS n FROM pug_user_lobby WHERE lobby_id=$1', [lobbyId]);
+      if (remaining.rows[0].n === 0) await pool.query('DELETE FROM pug_lobbies WHERE id=$1', [lobbyId]);
+    }
+    return;
+  }
+  const lobbyId = userLobbyId[userId];
+  delete userLobbyId[userId];
+  if (lobbyId) {
+    const lobby = pugLobbies[lobbyId];
+    const stillIn = lobby && [...lobby.teamA, ...lobby.teamB].some(p => userLobbyId[p.userId] === lobbyId);
+    if (!stillIn) delete pugLobbies[lobbyId];
+  }
 }
 
 function removeFromPugQueues(userId) {
@@ -916,17 +1129,13 @@ const handler = async (req, res) => {
 
   // ── Pugs: status (poll target) ───────────────────────────────────────────────
   if (pathname === '/api/pugs/status') {
-    const counts    = { casual: pugQueues.casual.length, competitive: pugQueues.competitive.length };
-    const gamesLive = { casual: 0, competitive: 0 };
-    Object.values(pugLobbies).forEach(l => { if (!l.result) gamesLive[l.mode]++; });
+    const counts = await pugQueueCounts();
+    const gamesLive = await pugGamesLiveCounts();
     let lobby = null, inQueue = null, rankedWins = null;
     if (user) {
-      const lobbyId = userLobbyId[user.userId];
-      if (lobbyId && pugLobbies[lobbyId]) lobby = serializePugLobby(pugLobbies[lobbyId], user.userId);
-      if (!lobby) {
-        if (pugQueues.casual.some(p => p.userId === user.userId)) inQueue = 'casual';
-        else if (pugQueues.competitive.some(p => p.userId === user.userId)) inQueue = 'competitive';
-      }
+      const found = await pugFindUserLobby(user.userId);
+      if (found) lobby = serializePugLobby(found, user.userId);
+      if (!lobby) inQueue = await pugUserQueueMode(user.userId);
       rankedWins = await getRankedWins(user.userId);
     }
     json(res, 200, { counts, gamesLive, inQueue, lobby, rankedWins });
@@ -936,26 +1145,18 @@ const handler = async (req, res) => {
   // ── Pugs: join queue ──────────────────────────────────────────────────────────
   if (pathname === '/api/pugs/queue/join' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Log in with Discord to queue.' }); return; }
-    if (userLobbyId[user.userId]) { json(res, 409, { error: 'You are already in a lobby.' }); return; }
     const body = await readBody(req);
     const mode = body.mode === 'competitive' ? 'competitive' : 'casual';
-    if (pugQueues.casual.some(p => p.userId === user.userId) || pugQueues.competitive.some(p => p.userId === user.userId)) {
-      json(res, 409, { error: 'You are already in a queue.' }); return;
-    }
-    pugQueues[mode].push({ userId: user.userId, displayName: user.displayName, avatar: user.avatar });
-    let lobby = null;
-    if (pugQueues[mode].length >= 6) {
-      const players = pugQueues[mode].splice(0, 6);
-      lobby = await makePugLobby(mode, players);
-    }
-    json(res, 200, { ok: true, lobby: lobby ? serializePugLobby(lobby, user.userId) : null });
+    const result = await pugJoinQueue(mode, { userId: user.userId, displayName: user.displayName, avatar: user.avatar });
+    if (result.error) { json(res, 409, { error: result.error }); return; }
+    json(res, 200, { ok: true, lobby: result.lobby ? serializePugLobby(result.lobby, user.userId) : null });
     return;
   }
 
   // ── Pugs: leave queue ─────────────────────────────────────────────────────────
   if (pathname === '/api/pugs/queue/leave' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
-    removeFromPugQueues(user.userId);
+    await pugLeaveQueue(user.userId);
     json(res, 200, { ok: true });
     return;
   }
@@ -963,64 +1164,42 @@ const handler = async (req, res) => {
   // ── Pugs: host sets the lobby code ────────────────────────────────────────────
   if (pathname === '/api/pugs/lobby/code' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
-    const lobby = pugLobbies[userLobbyId[user.userId]];
-    if (!lobby) { json(res, 404, { error: 'No active lobby.' }); return; }
-    if (lobby.host !== user.userId) { json(res, 403, { error: 'Only the host can set the lobby code.' }); return; }
     const body = await readBody(req);
     const code = (body.code || '').trim().slice(0, 32);
     if (!code) { json(res, 400, { error: 'Code is required.' }); return; }
-    lobby.code = code;
-    json(res, 200, { ok: true, lobby: serializePugLobby(lobby, user.userId) });
+    const result = await pugSetLobbyCode(user.userId, code);
+    if (result.error) { json(res, result.status, { error: result.error }); return; }
+    json(res, 200, { ok: true, lobby: serializePugLobby(result.lobby, user.userId) });
     return;
   }
 
   // ── Pugs: send a lobby chat message ───────────────────────────────────────────
   if (pathname === '/api/pugs/lobby/chat' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
-    const lobby = pugLobbies[userLobbyId[user.userId]];
-    if (!lobby) { json(res, 404, { error: 'No active lobby.' }); return; }
     const body = await readBody(req);
     const text = (body.text || '').trim().slice(0, 300);
     if (!text) { json(res, 400, { error: 'Message is empty.' }); return; }
-    const me = [...lobby.teamA, ...lobby.teamB].find(p => p.userId === user.userId);
-    lobby.chat.push({ userId: user.userId, displayName: (me && me.displayName) || user.displayName, text, ts: Date.now() });
-    if (lobby.chat.length > 100) lobby.chat = lobby.chat.slice(-100);
-    json(res, 200, { ok: true, lobby: serializePugLobby(lobby, user.userId) });
+    const result = await pugSendChat(user.userId, text, user.displayName);
+    if (result.error) { json(res, result.status, { error: result.error }); return; }
+    json(res, 200, { ok: true, lobby: serializePugLobby(result.lobby, user.userId) });
     return;
   }
 
   // ── Pugs: vote for the winning team (4 votes finalizes it) ───────────────────
   if (pathname === '/api/pugs/lobby/vote' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
-    const lobby = pugLobbies[userLobbyId[user.userId]];
-    if (!lobby) { json(res, 404, { error: 'No active lobby.' }); return; }
-    if (!lobby.result) {
-      const body = await readBody(req);
-      if (body.team !== 'teamA' && body.team !== 'teamB') { json(res, 400, { error: 'Invalid team.' }); return; }
-      lobby.votes[user.userId] = body.team;
-      const counts = { teamA: 0, teamB: 0 };
-      Object.values(lobby.votes).forEach(v => { counts[v]++; });
-      if (counts.teamA >= 4) lobby.result = 'teamA';
-      else if (counts.teamB >= 4) lobby.result = 'teamB';
-      if (lobby.result) {
-        const winners = lobby.result === 'teamA' ? lobby.teamA : lobby.teamB;
-        for (const p of winners) await (lobby.mode === 'competitive' ? addRankedWin(p.userId) : addCasualWin(p.userId));
-      }
-    }
-    json(res, 200, { ok: true, lobby: serializePugLobby(lobby, user.userId) });
+    const body = await readBody(req);
+    if (body.team !== 'teamA' && body.team !== 'teamB') { json(res, 400, { error: 'Invalid team.' }); return; }
+    const result = await pugVote(user.userId, body.team);
+    if (result.error) { json(res, result.status, { error: result.error }); return; }
+    json(res, 200, { ok: true, lobby: serializePugLobby(result.lobby, user.userId) });
     return;
   }
 
   // ── Pugs: leave the lobby / return to the mode select screen ─────────────────
   if (pathname === '/api/pugs/lobby/leave' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
-    const lobbyId = userLobbyId[user.userId];
-    delete userLobbyId[user.userId];
-    if (lobbyId) {
-      const lobby = pugLobbies[lobbyId];
-      const stillIn = lobby && [...lobby.teamA, ...lobby.teamB].some(p => userLobbyId[p.userId] === lobbyId);
-      if (!stillIn) delete pugLobbies[lobbyId];
-    }
+    await pugLeaveLobby(user.userId);
     json(res, 200, { ok: true });
     return;
   }
