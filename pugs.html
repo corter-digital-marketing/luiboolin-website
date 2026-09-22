@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boolin Pugs — Boolin League</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Saira+Extra+Condensed:ital,wght@1,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/assets/style.css" />
+  <style>
+    .pugs-columns {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 3rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .pugs-category { flex: 1; min-width: 0; }
+    .pugs-column-divider {
+      align-self: stretch;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(210,31,60,0.5), transparent);
+      flex-shrink: 0;
+    }
+    @media (max-width: 680px) {
+      .pugs-columns { flex-direction: column; gap: 2.5rem; }
+      .pugs-column-divider { width: 100%; height: 1px; background: linear-gradient(90deg, transparent, rgba(210,31,60,0.5), transparent); }
+    }
+    .pugs-category-header {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: clamp(1.75rem, 4vw, 2.25rem);
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 1;
+      text-align: left;
+      padding-bottom: 0.85rem;
+      margin-bottom: 1.25rem;
+      border-bottom: 2px solid #d21f3c;
+    }
+    .pugs-option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .pugs-option {
+      background: rgba(210,31,60,0.06);
+      border: 1px solid rgba(210,31,60,0.35);
+      padding: 1.75rem;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .pugs-option:hover {
+      background: rgba(210,31,60,0.12);
+      border-color: rgba(210,31,60,0.6);
+    }
+    .pugs-option-name {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-style: italic;
+      font-weight: 800;
+      font-size: 1.6rem;
+      text-transform: uppercase;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 1.35rem;
+    }
+    .pugs-option-stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+    .pugs-stat { display: flex; flex-direction: column; gap: 0.2rem; }
+    .pugs-stat-value {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.9rem;
+      color: #fff;
+      line-height: 1;
+    }
+    .pugs-stat-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .pugs-queue-btn {
+      display: block;
+      width: 100%;
+      background: #d21f3c;
+      border: 1px solid #d21f3c;
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.85rem 1.35rem;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    }
+    .pugs-queue-btn:hover {
+      background: #ef2a49;
+      border-color: #ef2a49;
+      transform: translateY(-1px);
+    }
+    .pugs-queue-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    .pugs-queue-btn:disabled { cursor: default; opacity: 0.7; }
+    .pugs-queue-btn.pugs-btn-cancel { background: transparent; border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.7); }
+    .pugs-queue-btn.pugs-btn-cancel:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+    @keyframes pugsSearchSweep {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 200% 50%; }
+    }
+    @keyframes pugsSearchPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.55), inset 0 0 12px rgba(0,0,0,0.15); }
+      50% { box-shadow: 0 0 20px 5px rgba(34,197,94,0.55), inset 0 0 12px rgba(0,0,0,0.15); }
+    }
+    .pugs-queue-btn.pugs-btn-queued {
+      background: linear-gradient(90deg, #15803d 0%, #22c55e 25%, #4ade80 50%, #22c55e 75%, #15803d 100%);
+      background-size: 250% 100%;
+      border-color: #22c55e;
+      color: #fff;
+      animation: pugsSearchSweep 1.8s linear infinite, pugsSearchPulse 1.6s ease-in-out infinite;
+    }
+    .pugs-queue-btn.pugs-btn-queued:hover { border-color: #4ade80; }
+    .pugs-note {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.4);
+      margin-top: 0.9rem;
+      line-height: 1.5;
+    }
+
+    /* ── Lobby ────────────────────────────────────────────────── */
+    .pugs-lobby {
+      background: rgba(210,31,60,0.06);
+      border: 1px solid rgba(210,31,60,0.35);
+      padding: 2rem;
+    }
+    .pugs-lobby-head {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .pugs-lobby-line {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #fff;
+    }
+    .pugs-ranked-wins {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.7);
+    }
+    .pugs-ranked-wins b { color: #fff; font-size: 1.1rem; }
+    .pugs-teams {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 680px) { .pugs-teams { flex-direction: column; } }
+    .pugs-team { flex: 1; min-width: 0; }
+    .pugs-team-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 0.75rem;
+    }
+    .pugs-player-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+    .pugs-player-row img { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; }
+    .pugs-player-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pugs-player-rank-badge {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.7);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .pugs-crown { flex-shrink: 0; font-size: 0.9rem; }
+    .pugs-lobby-code-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .pugs-lobby-code-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .pugs-lobby-code-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: 0.08em;
+      color: #fff;
+    }
+    .pugs-code-input-row { display: flex; gap: 0.6rem; }
+    .pugs-code-input {
+      flex: 1; min-width: 0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      padding: 0.6rem 0.8rem;
+    }
+    .pugs-code-input:focus { outline: none; border-color: #d21f3c; }
+    .pugs-btn-sm { width: auto; padding: 0.6rem 1.1rem; }
+
+    /* ── Chat ─────────────────────────────────────────────────── */
+    .pugs-chat {
+      flex: 1.3;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 1rem;
+    }
+    .pugs-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 220px;
+      min-height: 100px;
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .pugs-chat-msg {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.4;
+      word-break: break-word;
+    }
+    .pugs-chat-msg b { color: #fff; }
+    .pugs-chat-empty { font-family: 'Space Grotesk', sans-serif; font-size: 0.85rem; color: rgba(255,255,255,0.35); }
+    .pugs-chat-input-row { display: flex; gap: 0.5rem; }
+    .pugs-chat-input {
+      flex: 1; min-width: 0;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.85rem;
+      padding: 0.55rem 0.75rem;
+    }
+    .pugs-chat-input:focus { outline: none; border-color: #d21f3c; }
+    .pugs-vote-row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    @media (max-width: 680px) { .pugs-vote-row { flex-direction: column; } }
+    .pugs-vote-btn {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .pugs-vote-btn:hover { background: rgba(210,31,60,0.15); border-color: rgba(210,31,60,0.6); }
+    .pugs-vote-btn.voted { background: rgba(210,31,60,0.3); border-color: #d21f3c; }
+    .pugs-vote-tally { font-size: 0.75rem; color: rgba(255,255,255,0.45); display: block; margin-top: 0.4rem; }
+    .pugs-result-banner {
+      text-align: center;
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: clamp(1.6rem, 4vw, 2.1rem);
+      text-transform: uppercase;
+      color: #fbbf24;
+      text-shadow: 0 0 24px rgba(251,191,36,0.5);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Leaderboards ─────────────────────────────────────────── */
+    .pugs-leaderboard-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.95rem;
+      color: #fff;
+    }
+    .pugs-leaderboard-rank {
+      width: 1.75rem;
+      flex-shrink: 0;
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.4);
+    }
+    .pugs-leaderboard-row img { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; }
+    .pugs-leaderboard-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pugs-leaderboard-tier {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      flex-shrink: 0;
+    }
+    .pugs-leaderboard-wins { font-weight: 700; color: #fff; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+
+  <div class="wave-bg" aria-hidden="true">
+    <!-- SVG wave layers -->
+    <svg class="wave-svg" viewBox="0 0 1440 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,100 C180,20 360,180 540,100 C720,20 900,180 1080,100 C1260,20 1350,140 1440,100 L1440,200 L0,200Z" fill="#d21f3c"/>
+    </svg>
+    <svg class="wave-svg-mid" viewBox="0 0 1440 160" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,80 C240,10 480,150 720,80 C960,10 1200,150 1440,80 L1440,160 L0,160Z" fill="#7a0e1f"/>
+    </svg>
+    <svg class="wave-svg-top" viewBox="0 0 1440 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,60 C120,10 240,110 360,60 C480,10 600,110 720,60 C840,10 960,110 1080,60 C1200,10 1320,110 1440,60 L1440,120 L0,120Z" fill="#d21f3c"/>
+    </svg>
+
+    <!-- Waveform bars visualizer -->
+    <div class="waveform-bars" aria-hidden="true">
+      <span style="--dur:1.2s;height:30%"></span><span style="--dur:2.1s;height:60%"></span>
+      <span style="--dur:1.7s;height:40%"></span><span style="--dur:0.9s;height:80%"></span>
+      <span style="--dur:2.4s;height:50%"></span><span style="--dur:1.4s;height:90%"></span>
+      <span style="--dur:1.9s;height:35%"></span><span style="--dur:2.7s;height:70%"></span>
+      <span style="--dur:1.1s;height:55%"></span><span style="--dur:2.0s;height:45%"></span>
+      <span style="--dur:1.6s;height:85%"></span><span style="--dur:0.8s;height:40%"></span>
+      <span style="--dur:2.2s;height:65%"></span><span style="--dur:1.5s;height:30%"></span>
+      <span style="--dur:1.8s;height:75%"></span><span style="--dur:2.5s;height:50%"></span>
+      <span style="--dur:1.3s;height:95%"></span><span style="--dur:2.8s;height:40%"></span>
+      <span style="--dur:1.0s;height:60%"></span><span style="--dur:2.3s;height:80%"></span>
+      <span style="--dur:1.7s;height:45%"></span><span style="--dur:0.9s;height:70%"></span>
+      <span style="--dur:2.1s;height:55%"></span><span style="--dur:1.4s;height:35%"></span>
+      <span style="--dur:1.9s;height:90%"></span><span style="--dur:2.6s;height:60%"></span>
+      <span style="--dur:1.2s;height:40%"></span><span style="--dur:2.0s;height:75%"></span>
+      <span style="--dur:1.6s;height:50%"></span><span style="--dur:0.7s;height:85%"></span>
+      <span style="--dur:2.4s;height:30%"></span><span style="--dur:1.5s;height:65%"></span>
+      <span style="--dur:1.1s;height:45%"></span><span style="--dur:2.2s;height:95%"></span>
+      <span style="--dur:1.8s;height:55%"></span><span style="--dur:2.7s;height:40%"></span>
+      <span style="--dur:1.3s;height:70%"></span><span style="--dur:2.0s;height:80%"></span>
+    </div>
+  </div>
+
+  <!-- ══ NAV ══ -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" onclick="toggleMobileMenu()">
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="nav-links">
+      <a class="nav-link" href="/">Home</a>
+      <a class="nav-link active" href="/pugs" aria-current="page">Pugs</a>
+      <a class="nav-link" href="/league">Boolin League</a>
+      <a class="nav-link" href="/shop">Shop</a>
+      <a class="nav-link" href="/contact">Contact</a>
+    </div>
+
+    <div id="nav-auth" style="display:flex;align-items:center;gap:0.75rem;">
+      <!-- populated by initAuth() -->
+    </div>
+
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+    <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/pugs">Pugs</a>
+    <a class="mobile-menu-link" href="/league">Boolin League</a>
+    <a class="mobile-menu-link" href="/shop">Shop</a>
+    <a class="mobile-menu-link" href="/contact">Contact</a>
+  </div>
+
+  <div class="page" id="page-pugs">
+    <div style="min-height:100vh;background:#050308;padding:7rem 1.5rem 6rem;">
+      <div style="max-width:900px;margin:0 auto;text-align:center;">
+        <img src="/BOOLIN-PUGS.png" alt="Boolin Pugs" style="width:min(680px,88vw);height:auto;display:inline-block;margin-bottom:1rem;filter:drop-shadow(0 0 40px rgba(210,31,60,0.4));" />
+        <p style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:3.5rem;">Choose how you want to scrim.</p>
+      </div>
+
+      <div id="pugs-queue-view" class="pugs-columns">
+        <div class="pugs-category">
+          <div class="pugs-category-header">Casual</div>
+          <div class="pugs-option-list">
+            <div class="pugs-option">
+              <div class="pugs-option-name">3v3 Random Weapon</div>
+              <div class="pugs-option-stats">
+                <div class="pugs-stat">
+                  <span class="pugs-stat-value" id="casual-queue-count">0</span>
+                  <span class="pugs-stat-label">In Queue</span>
+                </div>
+                <div class="pugs-stat">
+                  <span class="pugs-stat-value" id="casual-live-count">0</span>
+                  <span class="pugs-stat-label">Games Live</span>
+                </div>
+              </div>
+              <button type="button" class="pugs-queue-btn" id="casual-queue-btn" onclick="pugsQueueClick('casual')">Queue</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pugs-column-divider" aria-hidden="true"></div>
+
+        <div class="pugs-category">
+          <div class="pugs-category-header">Competitive</div>
+          <div class="pugs-option-list">
+            <div class="pugs-option">
+              <div class="pugs-option-name">3v3 Final Round</div>
+              <div class="pugs-option-stats">
+                <div class="pugs-stat">
+                  <span class="pugs-stat-value" id="competitive-queue-count">0</span>
+                  <span class="pugs-stat-label">In Queue</span>
+                </div>
+                <div class="pugs-stat">
+                  <span class="pugs-stat-value" id="competitive-live-count">0</span>
+                  <span class="pugs-stat-label">Games Live</span>
+                </div>
+              </div>
+              <button type="button" class="pugs-queue-btn" id="competitive-queue-btn" onclick="pugsQueueClick('competitive')">Queue</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="pugs-lobby-view" style="display:none;max-width:760px;margin:0 auto;"></div>
+
+      <div class="pugs-columns" style="margin-top:5rem;">
+        <div class="pugs-category">
+          <div class="pugs-category-header">Casual Wins</div>
+          <div id="pugs-leaderboard-casual"></div>
+        </div>
+
+        <div class="pugs-column-divider" aria-hidden="true"></div>
+
+        <div class="pugs-category">
+          <div class="pugs-category-header">Ranked Wins</div>
+          <div id="pugs-leaderboard-ranked"></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /page-pugs -->
+
+  <script src="/assets/common.js"></script>
+  <script src="/assets/pugs.js"></script>
+
+</body>
+</html>

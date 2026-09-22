@@ -26,6 +26,9 @@ if (process.env.DATABASE_URL) {
       id TEXT PRIMARY KEY, username TEXT, display_name TEXT, avatar TEXT,
       updated_at TIMESTAMPTZ DEFAULT NOW()
     );
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS ranked_wins INTEGER DEFAULT 0;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS casual_wins INTEGER DEFAULT 0;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS embark_id TEXT;
     CREATE TABLE IF NOT EXISTS teams (
       id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL, captain_id TEXT NOT NULL,
       invite_code TEXT UNIQUE NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW()
@@ -378,6 +381,190 @@ function computeLeaderboard(matches) {
   return Object.values(teams).sort((a, b) => b.points - a.points || b.wins - a.wins);
 }
 
+// ── Pugs (3v3 matchmaking) ─────────────────────────────────────────────────
+const MAP_POOL = [
+  { name: 'Fangwai City',      banned: false },
+  { name: 'NOZOMI/CITADEL',    banned: false },
+  { name: 'Las Vegas Stadium', banned: false },
+  { name: 'Bernal',            banned: false },
+  { name: 'Fortune Stadium',   banned: false },
+  { name: 'Kyoto',             banned: true  },
+  { name: 'SYS$HORIZON',       banned: false },
+  { name: 'Skyway Stadium',    banned: false },
+  { name: 'Seoul',             banned: true  },
+  { name: 'Monoco',            banned: false },
+];
+
+const WEAPON_POOL = [
+  '93R','ARN-220','DAGGER','LH1','M11','M26 MATTER','RECURVE BOW','SH1900','SR-84','SWORD',
+  'THROWING KNIVES','V9S','XP-54','AKM','CB-01 REPEATER','CERBERUS 12GA','CHIMERA-XB','CL-40',
+  'DUAL BLADES','FAMAS','FCAR','MODEL 1887','P90','PIKE-556','R.357','RIOT SHIELD','.50 AKIMBO',
+  'BFR TITAN','FLAMETHROWER','KS-23','LEWIS GUN','M134 MINIGUN','M60','MGL32','SA1216','SHAK-50',
+  'SLEDGEHAMMER','SPEAR',
+];
+
+function pick(arr)    { return arr[Math.floor(Math.random() * arr.length)]; }
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+const pugQueues = { casual: [], competitive: [] }; // [{ userId, displayName, avatar }]
+const pugLobbies = {};   // lobbyId -> lobby
+const userLobbyId = {};  // userId -> lobbyId
+
+async function getRankedWins(userId) {
+  if (pool) {
+    const r = await pool.query('SELECT ranked_wins FROM users WHERE id=$1', [userId]);
+    return (r.rows[0] && r.rows[0].ranked_wins) || 0;
+  }
+  const db = readDb();
+  return (db.users[userId] && db.users[userId].rankedWins) || 0;
+}
+
+async function addRankedWin(userId) {
+  if (pool) {
+    await pool.query('UPDATE users SET ranked_wins = COALESCE(ranked_wins,0) + 1 WHERE id=$1', [userId]);
+    return;
+  }
+  const db = readDb();
+  if (!db.users[userId]) db.users[userId] = {};
+  db.users[userId].rankedWins = (db.users[userId].rankedWins || 0) + 1;
+  writeDb(db);
+}
+
+async function addCasualWin(userId) {
+  if (pool) {
+    await pool.query('UPDATE users SET casual_wins = COALESCE(casual_wins,0) + 1 WHERE id=$1', [userId]);
+    return;
+  }
+  const db = readDb();
+  if (!db.users[userId]) db.users[userId] = {};
+  db.users[userId].casualWins = (db.users[userId].casualWins || 0) + 1;
+  writeDb(db);
+}
+
+async function getCasualWins(userId) {
+  if (pool) {
+    const r = await pool.query('SELECT casual_wins FROM users WHERE id=$1', [userId]);
+    return (r.rows[0] && r.rows[0].casual_wins) || 0;
+  }
+  const db = readDb();
+  return (db.users[userId] && db.users[userId].casualWins) || 0;
+}
+
+async function getEmbarkId(userId) {
+  if (pool) {
+    const r = await pool.query('SELECT embark_id FROM users WHERE id=$1', [userId]);
+    return (r.rows[0] && r.rows[0].embark_id) || null;
+  }
+  const db = readDb();
+  return (db.users[userId] && db.users[userId].embarkId) || null;
+}
+
+async function setEmbarkId(userId, embarkId) {
+  if (pool) {
+    await pool.query('UPDATE users SET embark_id=$1 WHERE id=$2', [embarkId || null, userId]);
+    return;
+  }
+  const db = readDb();
+  if (!db.users[userId]) db.users[userId] = {};
+  db.users[userId].embarkId = embarkId || null;
+  writeDb(db);
+}
+
+const RANK_TIERS = [
+  { wins: 30, name: 'BOOLIN' },
+  { wins: 15, name: 'Beamer' },
+  { wins: 10, name: 'Gamer' },
+  { wins: 5,  name: 'Pup' },
+  { wins: 1,  name: 'Trainee' },
+];
+function getRankName(wins) {
+  for (const tier of RANK_TIERS) if (wins >= tier.wins) return tier.name;
+  return 'Unranked';
+}
+
+async function getWinsLeaderboard(column, limit) {
+  if (pool) {
+    const r = await pool.query(
+      `SELECT id, display_name, avatar, ${column} AS wins FROM users WHERE ${column} > 0 ORDER BY ${column} DESC, updated_at ASC LIMIT $1`,
+      [limit]);
+    return r.rows.map(row => ({ userId: row.id, displayName: row.display_name, avatar: row.avatar, wins: row.wins }));
+  }
+  const db = readDb();
+  const field = column === 'ranked_wins' ? 'rankedWins' : 'casualWins';
+  return Object.entries(db.users)
+    .map(([id, u]) => ({ userId: id, displayName: u.displayName || u.display_name || id, avatar: u.avatar, wins: u[field] || 0 }))
+    .filter(u => u.wins > 0)
+    .sort((a, b) => b.wins - a.wins)
+    .slice(0, limit);
+}
+
+async function makePugLobby(mode, players) {
+  const id = generateId();
+  const eligibleMaps = MAP_POOL.filter(m => mode === 'casual' || !m.banned).map(m => m.name);
+  const map = pick(eligibleMaps);
+  const weapon = mode === 'casual' ? pick(WEAPON_POOL) : null;
+  const shuffled = shuffle(players);
+  const teamA = shuffled.slice(0, 3);
+  const teamB = shuffled.slice(3, 6);
+  const allPlayers = [...teamA, ...teamB];
+
+  for (const p of allPlayers) {
+    const embarkId = await getEmbarkId(p.userId);
+    if (embarkId) p.displayName = embarkId;
+  }
+
+  const winsGetter = mode === 'competitive' ? getRankedWins : getCasualWins;
+  const winCounts = await Promise.all(allPlayers.map(p => winsGetter(p.userId)));
+  if (mode === 'competitive') {
+    allPlayers.forEach((p, i) => { p.rankedWins = winCounts[i]; });
+  }
+  let hostIdx = 0;
+  for (let i = 1; i < allPlayers.length; i++) if (winCounts[i] > winCounts[hostIdx]) hostIdx = i;
+  const host = allPlayers[hostIdx].userId;
+
+  const lobby = {
+    id, mode, map, weapon, host,
+    code: null,
+    teamA, teamB,
+    votes: {},   // userId -> 'teamA' | 'teamB'
+    chat: [],    // [{ userId, displayName, text, ts }]
+    result: null,
+    createdAt: Date.now(),
+  };
+  pugLobbies[id] = lobby;
+  [...teamA, ...teamB].forEach(p => { userLobbyId[p.userId] = id; });
+  return lobby;
+}
+
+function serializePugLobby(lobby, forUserId) {
+  const voteCounts = { teamA: 0, teamB: 0 };
+  Object.values(lobby.votes).forEach(v => { voteCounts[v]++; });
+  return {
+    id: lobby.id,
+    mode: lobby.mode,
+    map: lobby.map,
+    weapon: lobby.weapon,
+    host: lobby.host,
+    isHost: lobby.host === forUserId,
+    code: lobby.code,
+    teamA: lobby.teamA,
+    teamB: lobby.teamB,
+    myVote: lobby.votes[forUserId] || null,
+    voteCounts,
+    chat: lobby.chat,
+    result: lobby.result,
+  };
+}
+
+function removeFromPugQueues(userId) {
+  pugQueues.casual      = pugQueues.casual.filter(p => p.userId !== userId);
+  pugQueues.competitive = pugQueues.competitive.filter(p => p.userId !== userId);
+}
+
 // ── MIME types ───────────────────────────────────────────────────
 const MIME = {
   '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
@@ -454,6 +641,27 @@ const handler = async (req, res) => {
   if (pathname === '/auth/me') {
     if (!user) { json(res, 200, null); return; }
     json(res, 200, { ...user });
+    return;
+  }
+
+  // ── Profile: stats + Embark ID ────────────────────────────────────────────────
+  if (pathname === '/api/profile') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    const [casualWins, rankedWins, embarkId] = await Promise.all([
+      getCasualWins(user.userId),
+      getRankedWins(user.userId),
+      getEmbarkId(user.userId),
+    ]);
+    json(res, 200, { ...user, casualWins, rankedWins, embarkId });
+    return;
+  }
+
+  if (pathname === '/api/profile/embark-id' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    const body = await readBody(req);
+    const embarkId = (body.embarkId || '').trim().slice(0, 40);
+    await setEmbarkId(user.userId, embarkId || null);
+    json(res, 200, { ok: true, embarkId: embarkId || null });
     return;
   }
 
@@ -664,6 +872,133 @@ const handler = async (req, res) => {
     (downstream[matchId] || []).forEach(id => { b.results[id] = null; });
     writeBracket(b);
     json(res, 200, { ok: true, bracket: deriveBracket(b) });
+    return;
+  }
+
+  // ── Pugs: map pool ────────────────────────────────────────────────────────────
+  if (pathname === '/api/pugs/maps') {
+    json(res, 200, MAP_POOL);
+    return;
+  }
+
+  // ── Pugs: win leaderboards (casual + ranked) ──────────────────────────────────
+  if (pathname === '/api/pugs/leaderboard') {
+    const [casual, ranked] = await Promise.all([
+      getWinsLeaderboard('casual_wins', 20),
+      getWinsLeaderboard('ranked_wins', 20),
+    ]);
+    json(res, 200, { casual, ranked });
+    return;
+  }
+
+  // ── Pugs: status (poll target) ───────────────────────────────────────────────
+  if (pathname === '/api/pugs/status') {
+    const counts    = { casual: pugQueues.casual.length, competitive: pugQueues.competitive.length };
+    const gamesLive = { casual: 0, competitive: 0 };
+    Object.values(pugLobbies).forEach(l => { if (!l.result) gamesLive[l.mode]++; });
+    let lobby = null, inQueue = null, rankedWins = null;
+    if (user) {
+      const lobbyId = userLobbyId[user.userId];
+      if (lobbyId && pugLobbies[lobbyId]) lobby = serializePugLobby(pugLobbies[lobbyId], user.userId);
+      if (!lobby) {
+        if (pugQueues.casual.some(p => p.userId === user.userId)) inQueue = 'casual';
+        else if (pugQueues.competitive.some(p => p.userId === user.userId)) inQueue = 'competitive';
+      }
+      rankedWins = await getRankedWins(user.userId);
+    }
+    json(res, 200, { counts, gamesLive, inQueue, lobby, rankedWins });
+    return;
+  }
+
+  // ── Pugs: join queue ──────────────────────────────────────────────────────────
+  if (pathname === '/api/pugs/queue/join' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Log in with Discord to queue.' }); return; }
+    if (userLobbyId[user.userId]) { json(res, 409, { error: 'You are already in a lobby.' }); return; }
+    const body = await readBody(req);
+    const mode = body.mode === 'competitive' ? 'competitive' : 'casual';
+    if (pugQueues.casual.some(p => p.userId === user.userId) || pugQueues.competitive.some(p => p.userId === user.userId)) {
+      json(res, 409, { error: 'You are already in a queue.' }); return;
+    }
+    pugQueues[mode].push({ userId: user.userId, displayName: user.displayName, avatar: user.avatar });
+    let lobby = null;
+    if (pugQueues[mode].length >= 6) {
+      const players = pugQueues[mode].splice(0, 6);
+      lobby = await makePugLobby(mode, players);
+    }
+    json(res, 200, { ok: true, lobby: lobby ? serializePugLobby(lobby, user.userId) : null });
+    return;
+  }
+
+  // ── Pugs: leave queue ─────────────────────────────────────────────────────────
+  if (pathname === '/api/pugs/queue/leave' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    removeFromPugQueues(user.userId);
+    json(res, 200, { ok: true });
+    return;
+  }
+
+  // ── Pugs: host sets the lobby code ────────────────────────────────────────────
+  if (pathname === '/api/pugs/lobby/code' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    const lobby = pugLobbies[userLobbyId[user.userId]];
+    if (!lobby) { json(res, 404, { error: 'No active lobby.' }); return; }
+    if (lobby.host !== user.userId) { json(res, 403, { error: 'Only the host can set the lobby code.' }); return; }
+    const body = await readBody(req);
+    const code = (body.code || '').trim().slice(0, 32);
+    if (!code) { json(res, 400, { error: 'Code is required.' }); return; }
+    lobby.code = code;
+    json(res, 200, { ok: true, lobby: serializePugLobby(lobby, user.userId) });
+    return;
+  }
+
+  // ── Pugs: send a lobby chat message ───────────────────────────────────────────
+  if (pathname === '/api/pugs/lobby/chat' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    const lobby = pugLobbies[userLobbyId[user.userId]];
+    if (!lobby) { json(res, 404, { error: 'No active lobby.' }); return; }
+    const body = await readBody(req);
+    const text = (body.text || '').trim().slice(0, 300);
+    if (!text) { json(res, 400, { error: 'Message is empty.' }); return; }
+    const me = [...lobby.teamA, ...lobby.teamB].find(p => p.userId === user.userId);
+    lobby.chat.push({ userId: user.userId, displayName: (me && me.displayName) || user.displayName, text, ts: Date.now() });
+    if (lobby.chat.length > 100) lobby.chat = lobby.chat.slice(-100);
+    json(res, 200, { ok: true, lobby: serializePugLobby(lobby, user.userId) });
+    return;
+  }
+
+  // ── Pugs: vote for the winning team (4 votes finalizes it) ───────────────────
+  if (pathname === '/api/pugs/lobby/vote' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    const lobby = pugLobbies[userLobbyId[user.userId]];
+    if (!lobby) { json(res, 404, { error: 'No active lobby.' }); return; }
+    if (!lobby.result) {
+      const body = await readBody(req);
+      if (body.team !== 'teamA' && body.team !== 'teamB') { json(res, 400, { error: 'Invalid team.' }); return; }
+      lobby.votes[user.userId] = body.team;
+      const counts = { teamA: 0, teamB: 0 };
+      Object.values(lobby.votes).forEach(v => { counts[v]++; });
+      if (counts.teamA >= 4) lobby.result = 'teamA';
+      else if (counts.teamB >= 4) lobby.result = 'teamB';
+      if (lobby.result) {
+        const winners = lobby.result === 'teamA' ? lobby.teamA : lobby.teamB;
+        for (const p of winners) await (lobby.mode === 'competitive' ? addRankedWin(p.userId) : addCasualWin(p.userId));
+      }
+    }
+    json(res, 200, { ok: true, lobby: serializePugLobby(lobby, user.userId) });
+    return;
+  }
+
+  // ── Pugs: leave the lobby / return to the mode select screen ─────────────────
+  if (pathname === '/api/pugs/lobby/leave' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    const lobbyId = userLobbyId[user.userId];
+    delete userLobbyId[user.userId];
+    if (lobbyId) {
+      const lobby = pugLobbies[lobbyId];
+      const stillIn = lobby && [...lobby.teamA, ...lobby.teamB].some(p => userLobbyId[p.userId] === lobbyId);
+      if (!stillIn) delete pugLobbies[lobbyId];
+    }
+    json(res, 200, { ok: true });
     return;
   }
 

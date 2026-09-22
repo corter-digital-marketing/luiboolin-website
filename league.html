@@ -57,6 +57,7 @@
 
     <div class="nav-links">
       <a class="nav-link" href="/">Home</a>
+      <a class="nav-link" href="/pugs">Pugs</a>
       <a class="nav-link active" href="/league" aria-current="page">Boolin League</a>
       <a class="nav-link" href="/shop">Shop</a>
       <a class="nav-link" href="/contact">Contact</a>
@@ -70,6 +71,7 @@
 
   <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
     <a class="mobile-menu-link" href="/">Home</a>
+    <a class="mobile-menu-link" href="/pugs">Pugs</a>
     <a class="mobile-menu-link" href="/league">Boolin League</a>
     <a class="mobile-menu-link" href="/shop">Shop</a>
     <a class="mobile-menu-link" href="/contact">Contact</a>
@@ -77,141 +79,126 @@
 
   <div class="page" id="page-home">
 
-    <!-- HERO -->
-    <section class="hero" aria-label="Hero">
-
-      <div class="hero-video-wrap">
-        <video autoplay muted loop playsinline aria-hidden="true"
-          poster="https://placehold.co/1920x1080/050308/7c3aed?text= ">
-          <source src="" type="video/mp4" />
-        </video>
-        <div style="position:absolute;inset:0;background:#050308;overflow:hidden;">
-          <div class="lava-blob lava-blob-1"></div>
-          <div class="lava-blob lava-blob-2"></div>
-          <div class="lava-blob lava-blob-3"></div>
-          <div class="lava-blob lava-blob-4"></div>
-          <div class="lava-blob lava-blob-5"></div>
-          <div style="position:absolute;inset:0;backdrop-filter:blur(60px);-webkit-backdrop-filter:blur(60px);"></div>
-          <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 90% at 50% 50%,transparent 30%,rgba(5,3,8,0.7) 100%);"></div>
-        </div>
+    <!-- HEADER -->
+    <div style="max-width:640px;margin:0 auto;padding:6rem 1.5rem 0;text-align:center;">
+      <img src="boolin-small.png" alt="Boolin League" style="width:min(720px,92vw);height:auto;display:inline-block;margin-bottom:2.25rem;filter:drop-shadow(0 0 48px rgba(124,58,237,0.4));" />
+      <div style="margin-bottom:3.5rem;">
+        <button class="btn-outline" onclick="location.href='/leaderboards'">Leaderboard</button>
       </div>
-
-      <div class="hero-content">
-        <div style="text-align:center;margin:0 auto 1.25rem;display:block;">
-          <img src="boolin-small.png" alt="Boolin League" style="width:min(680px,88vw);height:auto;display:inline-block;filter:drop-shadow(0 0 48px rgba(124,58,237,0.4));" />
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:0.6rem;margin-bottom:2.5rem;">
-          <img src="/teamphotos/dogpound-logo.png" alt="Dog Pound logo" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid rgba(251,191,36,0.6);box-shadow:0 0 12px rgba(251,191,36,0.4);" />
-          <p style="text-align:center;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:900;letter-spacing:0.16em;text-transform:uppercase;color:#fbbf24;text-shadow:0 0 16px rgba(251,191,36,0.5);margin:0;">Season 01 Champion: Dog Pound</p>
-        </div>
-        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-          <button class="btn-outline" onclick="location.href='/leaderboards'">Leaderboard</button>
-        </div>
-      </div>
-
-    </section>
+    </div>
 
     <!-- TOURNAMENTS SECTION -->
     <section class="section fade-up" id="tournaments" aria-label="Tournaments">
       <div class="section-inner">
-        <p class="section-label">All Time</p>
-        <h2 class="section-title"><span class="accent">Tournaments</span></h2>
-        <div class="purple-line"></div>
+        <h2 style="font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:clamp(2.25rem,6vw,3.25rem);text-transform:uppercase;color:#fff;letter-spacing:0.02em;text-align:center;margin-bottom:2.5rem;">Tournaments</h2>
 
-        <!-- Top: Boolin Invitational — full width horizontal featured card -->
-        <article class="tourney-card featured-card" onclick="location.href='/invitational'" style="cursor:pointer;margin-bottom:1.25rem;" role="button" tabindex="0" aria-label="View Boolin Invitational" onkeydown="if(event.key==='Enter')location.href='/invitational'">
-          <div class="tourney-card-img-wrap" style="min-height:220px;background:linear-gradient(160deg,rgba(8,4,20,1) 0%,rgba(18,10,40,1) 50%,rgba(26,14,58,1) 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:2.5rem 1.5rem;">
-            <!-- Background glow -->
-            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:420px;height:260px;background:radial-gradient(circle,rgba(251,191,36,0.13) 0%,transparent 65%);pointer-events:none;"></div>
-            <img src="BI-2026.png" alt="Boolin Invitational 2026" style="width:min(600px,92%);height:auto;display:block;filter:drop-shadow(0 0 20px rgba(251,191,36,0.6));position:relative;z-index:1;" />
-            <span class="tourney-status status-soon" style="font-size:0.95rem;font-weight:900;color:#fff;">Upcoming</span>
-          </div>
-          <div class="tourney-card-body" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:2rem 2.5rem;">
-            <p class="tourney-game">Boolin League · GRAND FINALE</p>
-            <div class="tourney-prize" style="border-top:none;padding-top:0;justify-content:center;">
-              <div>
-                <div class="prize-label">Date</div>
-                <div class="prize-amount" style="font-size:1.1rem;letter-spacing:0.02em;">End of 2026</div>
-              </div>
+        <!-- Vertical tournament list, most recent/upcoming first -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem;max-width:640px;margin:0 auto;">
+
+          <!-- Boolin Invitational — End of 2026 (Upcoming) -->
+          <article class="tourney-card" onclick="location.href='/invitational'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View Boolin Invitational" onkeydown="if(event.key==='Enter')location.href='/invitational'">
+            <div class="tourney-card-img-wrap" style="min-height:150px;background:linear-gradient(160deg,rgba(8,4,20,1) 0%,rgba(18,10,40,1) 50%,rgba(26,14,58,1) 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:1.5rem 1.25rem;">
+              <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:340px;height:190px;background:radial-gradient(circle,rgba(251,191,36,0.13) 0%,transparent 65%);pointer-events:none;"></div>
+              <img src="BI-2026.png" alt="Boolin Invitational 2026" style="width:min(400px,90%);height:auto;display:block;filter:drop-shadow(0 0 16px rgba(251,191,36,0.6));position:relative;z-index:1;" />
+              <span class="tourney-status status-soon" style="font-size:0.8rem;font-weight:900;color:#fff;">Upcoming</span>
             </div>
-            <div style="margin-top:0.75rem;font-size:0.75rem;color:#fbbf24;font-weight:600;letter-spacing:0.05em;">View Rosters →</div>
-          </div>
-        </article>
+            <div class="tourney-card-body" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:1.85rem 2.1rem;">
+              <p class="tourney-game" style="margin-bottom:0.9rem;">Boolin League · GRAND FINALE</p>
+              <div class="tourney-prize" style="border-top:none;padding-top:0;justify-content:center;">
+                <div>
+                  <div class="prize-label">Date</div>
+                  <div class="prize-amount" style="letter-spacing:0.02em;">End of 2026</div>
+                </div>
+              </div>
+              <div style="margin-top:1rem;font-size:0.9rem;color:#fbbf24;font-weight:600;letter-spacing:0.05em;">View Rosters →</div>
+            </div>
+          </article>
 
-        <!-- Past Tournaments -->
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
-          <span style="font-family:'Rajdhani',sans-serif;font-size:1.15rem;font-weight:900;letter-spacing:0.2em;text-transform:uppercase;color:#fff;">Past Tournaments</span>
-          <div style="flex:1;height:1px;background:rgba(255,255,255,0.07);"></div>
-        </div>
-
-        <div class="tourney-bottom-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
-
+          <!-- Boolin League S1 — Summer 2026 (Completed) -->
           <article class="tourney-card" onclick="location.href='/season1-results'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View Boolin League Season 01 results" onkeydown="if(event.key==='Enter')location.href='/season1-results'">
-            <div class="tourney-card-img-wrap">
-              <img class="tourney-card-img" src="BL-S1.png" alt="Boolin League Season 01" loading="lazy" />
+            <div class="tourney-card-img-wrap" style="min-height:150px;">
+              <img class="tourney-card-img" src="BL-S1.png" alt="Boolin League Season 01" loading="lazy" style="height:150px;" />
               <span class="tourney-status status-closed">Completed</span>
             </div>
-            <div class="tourney-card-body">
-              <h3 class="tourney-name">BOOLIN LEAGUE S1</h3>
-              <div class="tourney-prize">
+            <div class="tourney-card-body" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:1.85rem 2.1rem;">
+              <p class="tourney-game" style="margin-bottom:0.9rem;">Boolin League · Season 01</p>
+              <div class="tourney-prize" style="border-top:none;padding-top:0;justify-content:center;gap:3.25rem;">
                 <div>
-                  <div class="prize-label">Winner</div>
-                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 DOG POUND</div>
+                  <div class="prize-label">Date</div>
+                  <div class="prize-amount">Summer 2026</div>
                 </div>
-                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
+                <div>
+                  <div class="prize-label">Champion</div>
+                  <div class="prize-amount" style="color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 Dog Pound</div>
+                </div>
               </div>
+              <div style="margin-top:1rem;font-size:0.9rem;color:var(--purple-glow);font-weight:600;letter-spacing:0.05em;">View Results →</div>
             </div>
           </article>
 
+          <!-- All Pro 2v2 — May 1, 2026 (Completed) -->
           <article class="tourney-card" onclick="location.href='/allpro2v2'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View All Pro 2v2 Tournament rosters" onkeydown="if(event.key==='Enter')location.href='/allpro2v2'">
-            <div class="tourney-card-img-wrap">
-              <img class="tourney-card-img" src="REAL2V2POISTER.jpg" alt="All Pro 2v2 Tournament" loading="lazy" />
+            <div class="tourney-card-img-wrap" style="min-height:150px;">
+              <img class="tourney-card-img" src="REAL2V2POISTER.jpg" alt="All Pro 2v2 Tournament" loading="lazy" style="height:150px;" />
               <span class="tourney-status status-closed">Completed</span>
             </div>
-            <div class="tourney-card-body">
-              <h3 class="tourney-name">ALL PRO 2V2</h3>
-              <div class="tourney-prize">
+            <div class="tourney-card-body" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:1.85rem 2.1rem;">
+              <p class="tourney-game" style="margin-bottom:0.9rem;">All Pro 2v2</p>
+              <div class="tourney-prize" style="border-top:none;padding-top:0;justify-content:center;gap:3.25rem;">
                 <div>
-                  <div class="prize-label">Winners</div>
-                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 UNI &amp; notBubbaa</div>
+                  <div class="prize-label">Date</div>
+                  <div class="prize-amount">May 1, 2026</div>
                 </div>
-                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Results →</span>
+                <div>
+                  <div class="prize-label">Champions</div>
+                  <div class="prize-amount" style="color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 UNI &amp; notBubbaa</div>
+                </div>
               </div>
+              <div style="margin-top:1rem;font-size:0.9rem;color:var(--purple-glow);font-weight:600;letter-spacing:0.05em;">View Results →</div>
             </div>
           </article>
 
+          <!-- 2v2 Tournament — Apr 3, 2026 (Completed) -->
           <article class="tourney-card" onclick="location.href='/2v2bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 2v2 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/2v2bracket'">
-            <div class="tourney-card-img-wrap">
-              <img class="tourney-card-img" src="2v2-teaser.jpg" alt="2v2 Tournament" loading="lazy" />
+            <div class="tourney-card-img-wrap" style="min-height:150px;">
+              <img class="tourney-card-img" src="2v2-teaser.jpg" alt="2v2 Tournament" loading="lazy" style="height:150px;" />
               <span class="tourney-status status-closed">Completed</span>
             </div>
-            <div class="tourney-card-body">
-              <h3 class="tourney-name">2v2 Tournament</h3>
-              <div class="tourney-prize">
+            <div class="tourney-card-body" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:1.85rem 2.1rem;">
+              <p class="tourney-game" style="margin-bottom:0.9rem;">2v2 Tournament</p>
+              <div class="tourney-prize" style="border-top:none;padding-top:0;justify-content:center;gap:3.25rem;">
                 <div>
-                  <div class="prize-label">Winners</div>
-                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 Gremlin &amp; Azuri</div>
+                  <div class="prize-label">Date</div>
+                  <div class="prize-amount">Apr 3, 2026</div>
                 </div>
-                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
+                <div>
+                  <div class="prize-label">Champions</div>
+                  <div class="prize-amount" style="color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 Gremlin &amp; Azuri</div>
+                </div>
               </div>
+              <div style="margin-top:1rem;font-size:0.9rem;color:var(--purple-glow);font-weight:600;letter-spacing:0.05em;">View Bracket →</div>
             </div>
           </article>
 
+          <!-- 1v1 Tournament — Mar 2026 (Completed) -->
           <article class="tourney-card" onclick="location.href='/bracket'" style="cursor:pointer;" role="button" tabindex="0" aria-label="View 1v1 Tournament bracket" onkeydown="if(event.key==='Enter')location.href='/bracket'">
-            <div class="tourney-card-img-wrap">
-              <img class="tourney-card-img" src="1V1CHAMP.jpg" alt="1v1 Tournament Champion SwiftCheetah" loading="lazy" />
+            <div class="tourney-card-img-wrap" style="min-height:150px;">
+              <img class="tourney-card-img" src="1V1CHAMP.jpg" alt="1v1 Tournament Champion SwiftCheetah" loading="lazy" style="height:150px;" />
               <span class="tourney-status status-closed">Completed</span>
             </div>
-            <div class="tourney-card-body">
-              <h3 class="tourney-name">1v1 Tournament</h3>
-              <div class="tourney-prize">
+            <div class="tourney-card-body" style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:1.85rem 2.1rem;">
+              <p class="tourney-game" style="margin-bottom:0.9rem;">1v1 Tournament</p>
+              <div class="tourney-prize" style="border-top:none;padding-top:0;justify-content:center;gap:3.25rem;">
                 <div>
-                  <div class="prize-label">Winner</div>
-                  <div class="prize-amount" style="font-size:1.25rem;color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 SwiftCheetah</div>
+                  <div class="prize-label">Date</div>
+                  <div class="prize-amount">Mar 2026</div>
                 </div>
-                <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--purple-glow);display:flex;align-items:center;gap:0.3rem;">View Bracket →</span>
+                <div>
+                  <div class="prize-label">Champion</div>
+                  <div class="prize-amount" style="color:#fbbf24;text-shadow:0 0 12px rgba(251,191,36,0.4);">🏆 SwiftCheetah</div>
+                </div>
               </div>
+              <div style="margin-top:1rem;font-size:0.9rem;color:var(--purple-glow);font-weight:600;letter-spacing:0.05em;">View Bracket →</div>
             </div>
           </article>
 
