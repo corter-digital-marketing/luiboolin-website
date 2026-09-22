@@ -575,10 +575,31 @@ const MIME = {
 };
 
 // ── Sessions & OAuth state ────────────────────────────────────────
-const sessions    = {};
-const oauthStates = {};
+// Stateless: sessions and OAuth CSRF state are carried in signed/short-lived
+// cookies rather than server memory, since Vercel serverless functions don't
+// share memory across invocations (a different instance can handle the
+// callback than the one that started the OAuth flow, or the next request).
 const adminSessions = new Set();
 const ADMIN_HASH = crypto.createHash('sha256').update('Boolin2026').digest('hex');
+
+const SESSION_SECRET = crypto.createHash('sha256').update(`bl-session:${CLIENT_SECRET || 'insecure-dev-secret'}`).digest();
+
+function signSession(payload) {
+  const data = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const sig = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('base64url');
+  return `${data}.${sig}`;
+}
+
+function verifySession(token) {
+  if (!token) return null;
+  const parts = token.split('.');
+  if (parts.length !== 2) return null;
+  const [data, sig] = parts;
+  const expected = crypto.createHmac('sha256', SESSION_SECRET).update(data).digest('base64url');
+  const sigBuf = Buffer.from(sig), expectedBuf = Buffer.from(expected);
+  if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) return null;
+  try { return JSON.parse(Buffer.from(data, 'base64url').toString()); } catch { return null; }
+}
 
 // ── HTTP Server ──────────────────────────────────────────────────
 const handler = async (req, res) => {
@@ -586,16 +607,17 @@ const handler = async (req, res) => {
   const pathname = parsed.pathname;
   const cookies  = parseCookies(req.headers['cookie']);
   const sid      = cookies['bl_session'];
-  const user     = sid ? sessions[sid] : null;
+  const user     = verifySession(sid);
 
   // Discord OAuth start
   if (pathname === '/auth/discord') {
     if (!CLIENT_ID) { res.writeHead(500); res.end('Discord credentials not configured.'); return; }
     const state = randomToken();
-    oauthStates[state] = Date.now();
+    const isSecure = REDIRECT_URI.startsWith('https');
     res.writeHead(302, {
       Location: `https://discord.com/api/oauth2/authorize?client_id=${CLIENT_ID}` +
         `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify&state=${state}`,
+      'Set-Cookie': `bl_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600${isSecure ? '; Secure' : ''}`,
     });
     res.end(); return;
   }
@@ -603,10 +625,11 @@ const handler = async (req, res) => {
   // Discord OAuth callback
   if (pathname === '/auth/discord/callback') {
     const { code, state, error } = parsed.query;
-    if (error || !code || !oauthStates[state]) {
-      res.writeHead(302, { Location: '/?auth=failed' }); res.end(); return;
+    const isSecure = REDIRECT_URI.startsWith('https');
+    const clearStateCookie = `bl_oauth_state=; Path=/; Max-Age=0`;
+    if (error || !code || !state || state !== cookies['bl_oauth_state']) {
+      res.writeHead(302, { Location: '/?auth=failed', 'Set-Cookie': clearStateCookie }); res.end(); return;
     }
-    delete oauthStates[state];
     try {
       const tokenData = await discordPost('/api/oauth2/token', {
         client_id: CLIENT_ID, client_secret: CLIENT_SECRET,
@@ -615,24 +638,24 @@ const handler = async (req, res) => {
       if (!tokenData.access_token) throw new Error('No access token');
       const du = await discordGet('/api/users/@me', tokenData.access_token);
       await dbSaveUser({ id: du.id, username: du.username, display_name: du.global_name || du.username, avatar: du.avatar });
-      const newSid = randomToken();
-      sessions[newSid] = { userId: du.id, username: du.username, displayName: du.global_name || du.username, avatar: du.avatar };
-      const isSecure = REDIRECT_URI.startsWith('https');
+      const sessionToken = signSession({ userId: du.id, username: du.username, displayName: du.global_name || du.username, avatar: du.avatar });
       res.writeHead(302, {
         Location: '/',
-        'Set-Cookie': `bl_session=${newSid}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${isSecure ? '; Secure' : ''}`,
+        'Set-Cookie': [
+          `bl_session=${sessionToken}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800${isSecure ? '; Secure' : ''}`,
+          clearStateCookie,
+        ],
       });
       res.end();
     } catch (e) {
       console.error('OAuth error:', e.message);
-      res.writeHead(302, { Location: '/?auth=failed' }); res.end();
+      res.writeHead(302, { Location: '/?auth=failed', 'Set-Cookie': clearStateCookie }); res.end();
     }
     return;
   }
 
   // Logout
   if (pathname === '/auth/logout') {
-    if (sid) delete sessions[sid];
     res.writeHead(302, { Location: '/', 'Set-Cookie': 'bl_session=; Path=/; Max-Age=0' });
     res.end(); return;
   }
