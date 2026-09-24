@@ -45,6 +45,9 @@ if (DATABASE_URL) {
       votes JSONB NOT NULL DEFAULT '{}', chat JSONB NOT NULL DEFAULT '[]',
       result TEXT, created_at TIMESTAMPTZ DEFAULT NOW()
     );
+    ALTER TABLE pug_lobbies ADD COLUMN IF NOT EXISTS map_candidates JSONB;
+    ALTER TABLE pug_lobbies ADD COLUMN IF NOT EXISTS map_bans JSONB;
+    ALTER TABLE pug_lobbies ADD COLUMN IF NOT EXISTS map_ban_votes JSONB;
     CREATE TABLE IF NOT EXISTS pug_user_lobby (
       user_id TEXT PRIMARY KEY, lobby_id TEXT NOT NULL
     );
@@ -553,8 +556,19 @@ async function getWinsLeaderboard(column, limit) {
 async function buildPugLobby(mode, players) {
   const id = generateId();
   const eligibleMaps = MAP_POOL.filter(m => mode === 'casual' || !m.banned).map(m => m.name);
-  const map = pick(eligibleMaps);
   const weapon = mode === 'casual' ? pick(WEAPON_POOL) : null;
+
+  // Competitive goes through a pick/ban: 3 random candidates, Team A bans
+  // first, Team B bans second, the map left standing is what's played.
+  // Casual skips straight to one random map.
+  let map = null, mapCandidates = null, mapBans = null, mapBanVotes = null;
+  if (mode === 'competitive') {
+    mapCandidates = shuffle(eligibleMaps).slice(0, 3);
+    mapBans = { teamA: null, teamB: null };
+    mapBanVotes = { teamA: {}, teamB: {} };
+  } else {
+    map = pick(eligibleMaps);
+  }
   const shuffled = shuffle(players);
   const teamA = shuffled.slice(0, 3);
   const teamB = shuffled.slice(3, 6);
@@ -574,16 +588,36 @@ async function buildPugLobby(mode, players) {
   for (let i = 1; i < allPlayers.length; i++) if (winCounts[i] > winCounts[hostIdx]) hostIdx = i;
   const host = allPlayers[hostIdx].userId;
 
-  return { id, mode, map, weapon, host, code: null, teamA, teamB, votes: {}, chat: [], result: null };
+  return { id, mode, map, weapon, host, code: null, teamA, teamB, votes: {}, chat: [], result: null, mapCandidates, mapBans, mapBanVotes };
 }
 
 function serializePugLobby(lobby, forUserId) {
   const voteCounts = { teamA: 0, teamB: 0 };
   Object.values(lobby.votes).forEach(v => { voteCounts[v]++; });
+  const onTeamA = lobby.teamA.some(p => p.userId === forUserId);
+  const myTeam = onTeamA ? 'teamA' : lobby.teamB.some(p => p.userId === forUserId) ? 'teamB' : null;
+  let mapBanTurn = null, mapBanTally = null, myMapBanVote = null;
+  if (lobby.mode === 'competitive' && !lobby.map && lobby.mapBans) {
+    mapBanTurn = pugMapBanTurn(lobby.mapBans);
+    if (mapBanTurn) {
+      const remaining = (lobby.mapCandidates || []).filter(m => m !== lobby.mapBans.teamA && m !== lobby.mapBans.teamB);
+      const votes = (lobby.mapBanVotes && lobby.mapBanVotes[mapBanTurn]) || {};
+      mapBanTally = {};
+      remaining.forEach(m => { mapBanTally[m] = 0; });
+      Object.values(votes).forEach(m => { if (mapBanTally[m] !== undefined) mapBanTally[m]++; });
+      myMapBanVote = votes[forUserId] || null;
+    }
+  }
   return {
     id: lobby.id,
     mode: lobby.mode,
     map: lobby.map,
+    mapCandidates: lobby.mapCandidates || null,
+    mapBans: lobby.mapBans || null,
+    mapBanTurn,
+    mapBanTally,
+    myMapBanVote,
+    myTeam,
     weapon: lobby.weapon,
     host: lobby.host,
     isHost: lobby.host === forUserId,
@@ -601,6 +635,7 @@ function pugRowToLobby(row) {
   return {
     id: row.id, mode: row.mode, map: row.map, weapon: row.weapon, host: row.host, code: row.code,
     teamA: row.team_a, teamB: row.team_b, votes: row.votes, chat: row.chat, result: row.result,
+    mapCandidates: row.map_candidates, mapBans: row.map_bans, mapBanVotes: row.map_ban_votes,
   };
 }
 
@@ -677,10 +712,13 @@ async function pugJoinQueue(mode, player) {
         await client.query('DELETE FROM pug_queue WHERE user_id = ANY($1::text[])', [players.map(p => p.userId)]);
         lobby = await buildPugLobby(mode, players);
         await client.query(
-          `INSERT INTO pug_lobbies (id, mode, map, weapon, host, code, team_a, team_b, votes, chat, result)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
+          `INSERT INTO pug_lobbies (id, mode, map, weapon, host, code, team_a, team_b, votes, chat, result, map_candidates, map_bans, map_ban_votes)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
           [lobby.id, lobby.mode, lobby.map, lobby.weapon, lobby.host, lobby.code,
-           JSON.stringify(lobby.teamA), JSON.stringify(lobby.teamB), JSON.stringify(lobby.votes), JSON.stringify(lobby.chat), lobby.result]);
+           JSON.stringify(lobby.teamA), JSON.stringify(lobby.teamB), JSON.stringify(lobby.votes), JSON.stringify(lobby.chat), lobby.result,
+           lobby.mapCandidates ? JSON.stringify(lobby.mapCandidates) : null,
+           lobby.mapBans ? JSON.stringify(lobby.mapBans) : null,
+           lobby.mapBanVotes ? JSON.stringify(lobby.mapBanVotes) : null]);
         for (const p of players) {
           await client.query('INSERT INTO pug_user_lobby (user_id, lobby_id) VALUES ($1,$2)', [p.userId, lobby.id]);
         }
@@ -732,6 +770,86 @@ async function pugSendChat(userId, text, fallbackDisplayName) {
   if (lobby.chat.length > 100) lobby.chat = lobby.chat.slice(-100);
   if (pool) await pool.query('UPDATE pug_lobbies SET chat=$1 WHERE id=$2', [JSON.stringify(lobby.chat), lobby.id]);
   return { lobby };
+}
+
+function pugMapBanTurn(mapBans) {
+  if (!mapBans.teamA) return 'teamA';
+  if (!mapBans.teamB) return 'teamB';
+  return null;
+}
+
+// Tallies a team's votes among the maps still eligible for their ban and
+// returns the winner — ties (e.g. 1-1-1) are broken by picking randomly
+// among whichever maps are tied for the most votes.
+function pugTallyMapBanVotes(votes, candidates) {
+  const counts = {};
+  candidates.forEach(m => { counts[m] = 0; });
+  Object.values(votes).forEach(m => { if (counts[m] !== undefined) counts[m]++; });
+  const max = Math.max(...candidates.map(m => counts[m]));
+  const topPicks = candidates.filter(m => counts[m] === max);
+  return pick(topPicks);
+}
+
+function pugApplyMapBanVote(lobby, userId, myTeam, mapName) {
+  if (lobby.mode !== 'competitive') return { error: 'Map bans only apply to Competitive.', status: 400 };
+  if (lobby.map) return { error: 'The map has already been decided.', status: 409 };
+  const bans = lobby.mapBans || { teamA: null, teamB: null };
+  const turn = pugMapBanTurn(bans);
+  if (!turn) return { error: 'Both bans are already in.', status: 409 };
+  if (myTeam !== turn) return { error: `It's ${turn === 'teamA' ? 'Team A' : 'Team B'}'s turn to ban.`, status: 403 };
+  const remaining = (lobby.mapCandidates || []).filter(m => m !== bans.teamA && m !== bans.teamB);
+  if (!remaining.includes(mapName)) return { error: 'Invalid map.', status: 400 };
+
+  const banVotes = lobby.mapBanVotes || { teamA: {}, teamB: {} };
+  if (!banVotes[myTeam]) banVotes[myTeam] = {};
+  banVotes[myTeam][userId] = mapName;
+  lobby.mapBanVotes = banVotes;
+
+  const teamMembers = myTeam === 'teamA' ? lobby.teamA : lobby.teamB;
+  const allVoted = teamMembers.every(p => banVotes[myTeam][p.userId]);
+  if (allVoted) {
+    bans[myTeam] = pugTallyMapBanVotes(banVotes[myTeam], remaining);
+    lobby.mapBans = bans;
+    const stillRemaining = (lobby.mapCandidates || []).filter(m => m !== bans.teamA && m !== bans.teamB);
+    if (stillRemaining.length === 1) lobby.map = stillRemaining[0];
+  }
+  return { lobby };
+}
+
+async function pugBanMap(userId, mapName) {
+  if (pool) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      const r = await client.query(
+        `SELECT l.* FROM pug_lobbies l JOIN pug_user_lobby ul ON ul.lobby_id = l.id WHERE ul.user_id = $1 FOR UPDATE OF l`,
+        [userId]);
+      if (!r.rows[0]) { await client.query('ROLLBACK'); return { error: 'No active lobby.', status: 404 }; }
+      const lobby = pugRowToLobby(r.rows[0]);
+      const onTeamA = lobby.teamA.some(p => p.userId === userId);
+      const myTeam = onTeamA ? 'teamA' : lobby.teamB.some(p => p.userId === userId) ? 'teamB' : null;
+      if (!myTeam) { await client.query('ROLLBACK'); return { error: 'You are not in this lobby.', status: 403 }; }
+      const result = pugApplyMapBanVote(lobby, userId, myTeam, mapName);
+      if (result.error) { await client.query('ROLLBACK'); return result; }
+      await client.query(
+        'UPDATE pug_lobbies SET map_ban_votes=$1, map_bans=$2, map=$3 WHERE id=$4',
+        [JSON.stringify(lobby.mapBanVotes), JSON.stringify(lobby.mapBans), lobby.map, lobby.id]);
+      await client.query('COMMIT');
+      return { lobby };
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+  }
+
+  const lobby = await pugFindUserLobby(userId);
+  if (!lobby) return { error: 'No active lobby.', status: 404 };
+  const onTeamA = lobby.teamA.some(p => p.userId === userId);
+  const myTeam = onTeamA ? 'teamA' : lobby.teamB.some(p => p.userId === userId) ? 'teamB' : null;
+  if (!myTeam) return { error: 'You are not in this lobby.', status: 403 };
+  return pugApplyMapBanVote(lobby, userId, myTeam, mapName);
 }
 
 async function pugVote(userId, team) {
@@ -1190,6 +1308,18 @@ const handler = async (req, res) => {
     if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
     await pugLeaveQueue(user.userId);
     json(res, 200, { ok: true });
+    return;
+  }
+
+  // ── Pugs: ban a map (Competitive pick/ban phase) ──────────────────────────────
+  if (pathname === '/api/pugs/lobby/ban-map' && req.method === 'POST') {
+    if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
+    const body = await readBody(req);
+    const map = (body.map || '').trim();
+    if (!map) { json(res, 400, { error: 'Map is required.' }); return; }
+    const result = await pugBanMap(user.userId, map);
+    if (result.error) { json(res, result.status, { error: result.error }); return; }
+    json(res, 200, { ok: true, lobby: serializePugLobby(result.lobby, user.userId) });
     return;
   }
 

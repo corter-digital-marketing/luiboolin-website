@@ -120,6 +120,15 @@ async function pugsSetCode() {
   }
 }
 
+async function pugsBanMap(map) {
+  try {
+    const result = await pugsApi('/api/pugs/lobby/ban-map', { method: 'POST', body: JSON.stringify({ map }) });
+    pugsRenderLobby(result.lobby);
+  } catch (e) {
+    alert(e.message);
+  }
+}
+
 async function pugsVote(team) {
   try {
     const result = await pugsApi('/api/pugs/lobby/vote', { method: 'POST', body: JSON.stringify({ team }) });
@@ -173,6 +182,36 @@ function pugsMapCardHtml(mapName) {
     </div>`;
 }
 
+function pugsMapBanHtml(lobby) {
+  const turn = lobby.mapBanTurn;
+  const turnLabel = turn === 'teamA' ? 'Team A' : 'Team B';
+  const isMyTurn = lobby.myTeam === turn;
+  const bannedMaps = [lobby.mapBans.teamA, lobby.mapBans.teamB].filter(Boolean);
+  const tally = lobby.mapBanTally || {};
+
+  const cards = lobby.mapCandidates.map(m => {
+    const banned = bannedMaps.includes(m);
+    const img = PUGS_MAP_IMAGES[m];
+    const clickable = isMyTurn && !banned;
+    const voted = lobby.myMapBanVote === m;
+    const count = tally[m];
+    return `
+      <div class="pugs-mapban-card ${banned ? 'banned' : ''} ${clickable ? 'clickable' : ''} ${voted ? 'voted' : ''}"
+           ${clickable ? `onclick="pugsBanMap('${m.replace(/'/g, "\\'")}')"` : ''}>
+        ${img ? `<img src="${img}" alt="${escapeHtml(m)}" class="pugs-mapban-photo" />` : ''}
+        <div class="pugs-mapban-name">${escapeHtml(m)}</div>
+        ${banned ? '<div class="pugs-mapban-tag">BANNED</div>' : (typeof count === 'number' ? `<div class="pugs-mapban-votes">${count}/3 votes</div>` : '')}
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="pugs-map-card pugs-mapban">
+      <div class="pugs-map-card-label">Map Ban — ${isMyTurn ? 'Your Team is Voting' : `Waiting on ${turnLabel}`}</div>
+      <div class="pugs-mapban-grid">${cards}</div>
+      <p class="pugs-note" style="margin-top:0.75rem;margin-bottom:0;">${isMyTurn ? "Vote for the map your team should ban — majority decides, ties are broken randomly." : `Waiting for ${turnLabel} to finish voting on their ban.`}</p>
+    </div>`;
+}
+
 function pugsChatHtml(lobby) {
   const messages = (lobby.chat && lobby.chat.length)
     ? lobby.chat.map(m => `<div class="pugs-chat-msg"><b>${escapeHtml(m.displayName)}:</b> ${escapeHtml(m.text)}</div>`).join('')
@@ -210,8 +249,13 @@ function pugsRenderLobby(lobby) {
   const hostEntry = [...lobby.teamA, ...lobby.teamB].find(p => p.userId === lobby.host);
 
   const headLines = [];
-  if (!isCompetitive) headLines.push('<div class="pugs-lobby-line">Everyone uses the same weapon</div>');
-  if (!isCompetitive) headLines.push(`<div class="pugs-lobby-line">Random Weapon: ${escapeHtml(lobby.weapon)}</div>`);
+  if (!isCompetitive) {
+    headLines.push(`
+      <div class="pugs-weapon-box">
+        <div class="pugs-lobby-line">Everyone uses the same weapon</div>
+        <div class="pugs-lobby-line">Random Weapon: ${escapeHtml(lobby.weapon)}</div>
+      </div>`);
+  }
   if (isCompetitive && myEntry) headLines.push(`<span class="pugs-ranked-wins">Rank: <b>${pugsRankName(myEntry.rankedWins || 0)}</b></span>`);
 
   let codeSectionHtml;
@@ -268,7 +312,7 @@ function pugsRenderLobby(lobby) {
         ${headLines.join('')}
       </div>
 
-      ${pugsMapCardHtml(lobby.map)}
+      ${lobby.map ? pugsMapCardHtml(lobby.map) : pugsMapBanHtml(lobby)}
 
       ${codeSectionHtml}
 

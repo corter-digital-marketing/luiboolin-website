@@ -178,7 +178,15 @@
       margin: 0 auto 1.25rem;
       max-width: 300px;
     }
-    .pugs-map-card { max-width: 220px; margin: 0.25rem auto 1.5rem; text-align: center; }
+    .pugs-map-card {
+      max-width: 220px;
+      margin: 0.25rem auto 1.5rem;
+      text-align: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 0.85rem 1.25rem 1.1rem;
+    }
+    .pugs-map-card.pugs-mapban { max-width: 100%; }
     .pugs-map-card-label {
       font-family: 'Rajdhani', sans-serif;
       font-weight: 700;
@@ -204,6 +212,57 @@
       color: #fff;
       margin-top: 0.5rem;
     }
+    .pugs-mapban-grid {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    .pugs-mapban-card {
+      position: relative;
+      width: 150px;
+      transition: transform 0.15s, opacity 0.2s, border-color 0.2s;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.2);
+      padding: 0.5rem;
+    }
+    .pugs-mapban-card.clickable { cursor: pointer; }
+    .pugs-mapban-card.clickable:hover { transform: translateY(-3px); border-color: rgba(210,31,60,0.6); }
+    .pugs-mapban-card.voted { border-color: #d21f3c; background: rgba(210,31,60,0.15); }
+    .pugs-mapban-card.banned { opacity: 0.35; }
+    .pugs-mapban-photo { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+    .pugs-mapban-name {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      color: #fff;
+      margin-top: 0.4rem;
+    }
+    .pugs-mapban-votes {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.5);
+      margin-top: 0.25rem;
+    }
+    .pugs-mapban-tag {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-8deg);
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 900;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      color: #ef2a49;
+      border: 2px solid #ef2a49;
+      padding: 0.1rem 0.5rem;
+      background: rgba(5,3,8,0.75);
+    }
     .pugs-lobby-head {
       display: flex;
       flex-direction: column;
@@ -220,6 +279,15 @@
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: #fff;
+    }
+    .pugs-weapon-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 0.85rem 1.5rem;
     }
     .pugs-ranked-wins {
       font-family: 'Rajdhani', sans-serif;
@@ -484,7 +552,7 @@
     <div style="min-height:100vh;background:#050308;padding:7rem 1.5rem 6rem;">
       <div style="max-width:900px;margin:0 auto;text-align:center;">
         <img src="/BOOLIN-PUGS.png" alt="Boolin Pugs" style="width:min(680px,88vw);height:auto;display:inline-block;margin-bottom:0.25rem;filter:drop-shadow(0 0 40px rgba(210,31,60,0.4));" />
-        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.3em;text-transform:uppercase;color:#d21f3c;margin-bottom:1rem;">Beta</div>
+        <div style="display:table;margin:0 auto 1.5rem;font-family:'Saira Extra Condensed',sans-serif;font-weight:800;font-style:italic;font-size:clamp(1.5rem,4vw,2.1rem);letter-spacing:0.15em;text-transform:uppercase;color:#fff;background:#d21f3c;padding:0.25rem 1.25rem;box-shadow:0 0 30px rgba(210,31,60,0.6);">Beta</div>
         <p style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:3.5rem;">Choose how you want to scrim.</p>
       </div>
 
