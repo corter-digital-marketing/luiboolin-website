@@ -116,7 +116,13 @@ function discordPost(p, body) {
     const req = https.request({
       hostname: 'discord.com', path: p, method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Content-Length': Buffer.byteLength(encoded) },
-    }, res => { let d = ''; res.on('data', c => d += c); res.on('end', () => resolve(JSON.parse(d))); });
+    }, res => {
+      let d = ''; res.on('data', c => d += c);
+      res.on('end', () => {
+        if (res.statusCode < 200 || res.statusCode >= 300) { reject(new Error(`Discord token exchange failed (${res.statusCode}): ${d}`)); return; }
+        try { resolve(JSON.parse(d)); } catch (e) { reject(new Error(`Discord token exchange returned invalid JSON: ${d}`)); }
+      });
+    });
     req.on('error', reject); req.write(encoded); req.end();
   });
 }
@@ -126,7 +132,13 @@ function discordGet(p, token) {
     const req = https.request({
       hostname: 'discord.com', path: p,
       headers: { Authorization: `Bearer ${token}` },
-    }, res => { let d = ''; res.on('data', c => d += c); res.on('end', () => resolve(JSON.parse(d))); });
+    }, res => {
+      let d = ''; res.on('data', c => d += c);
+      res.on('end', () => {
+        if (res.statusCode < 200 || res.statusCode >= 300) { reject(new Error(`Discord API request failed (${res.statusCode}): ${d}`)); return; }
+        try { resolve(JSON.parse(d)); } catch (e) { reject(new Error(`Discord API returned invalid JSON: ${d}`)); }
+      });
+    });
     req.on('error', reject); req.end();
   });
 }
@@ -517,7 +529,8 @@ function getRankName(wins) {
 async function getWinsLeaderboard(column, limit) {
   if (pool) {
     const r = await pool.query(
-      `SELECT id, display_name, avatar, ${column} AS wins FROM users WHERE ${column} > 0 ORDER BY ${column} DESC, updated_at ASC LIMIT $1`,
+      `SELECT id, COALESCE(display_name, username, 'Unknown Player') AS display_name, avatar, ${column} AS wins
+       FROM users WHERE ${column} > 0 ORDER BY ${column} DESC, updated_at ASC LIMIT $1`,
       [limit]);
     return r.rows.map(row => ({ userId: row.id, displayName: row.display_name, avatar: row.avatar, wins: row.wins }));
   }
@@ -863,6 +876,7 @@ const handler = async (req, res) => {
       });
       if (!tokenData.access_token) throw new Error('No access token');
       const du = await discordGet('/api/users/@me', tokenData.access_token);
+      if (!du.id || !du.username) throw new Error('Discord user response missing id/username');
       await dbSaveUser({ id: du.id, username: du.username, display_name: du.global_name || du.username, avatar: du.avatar });
       const sessionToken = signSession({ userId: du.id, username: du.username, displayName: du.global_name || du.username, avatar: du.avatar });
       res.writeHead(302, {
