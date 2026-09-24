@@ -153,6 +153,7 @@ async function pugsSendChat() {
 }
 
 async function pugsBackToQueue() {
+  pugsStopMapBanTimer();
   try {
     await pugsApi('/api/pugs/lobby/leave', { method: 'POST' });
   } catch (_) {}
@@ -207,9 +208,28 @@ function pugsMapBanHtml(lobby) {
   return `
     <div class="pugs-map-card pugs-mapban">
       <div class="pugs-map-card-label">Map Ban — ${isMyTurn ? 'Your Team is Voting' : `Waiting on ${turnLabel}`}</div>
+      ${lobby.mapBanDeadline ? `<div class="pugs-mapban-timer">You have <span id="pugs-mapban-countdown">30</span> seconds to vote</div>` : ''}
       <div class="pugs-mapban-grid">${cards}</div>
       <p class="pugs-note" style="margin-top:0.75rem;margin-bottom:0;">${isMyTurn ? "Vote for the map your team should ban — majority decides, ties are broken randomly." : `Waiting for ${turnLabel} to finish voting on their ban.`}</p>
     </div>`;
+}
+
+let pugsMapBanTimer = null;
+
+function pugsStopMapBanTimer() {
+  if (pugsMapBanTimer) { clearInterval(pugsMapBanTimer); pugsMapBanTimer = null; }
+}
+
+function pugsStartMapBanTimer(deadline) {
+  pugsStopMapBanTimer();
+  if (!deadline) return;
+  const tick = () => {
+    const node = document.getElementById('pugs-mapban-countdown');
+    if (!node) { pugsStopMapBanTimer(); return; }
+    node.textContent = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+  };
+  tick();
+  pugsMapBanTimer = setInterval(tick, 1000);
 }
 
 function pugsChatHtml(lobby) {
@@ -344,6 +364,9 @@ function pugsRenderLobby(lobby) {
   }
   const chatMessages = document.getElementById('pugs-chat-messages');
   if (chatMessages && chatWasAtBottom) chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  if (!lobby.map && lobby.mapBanDeadline) pugsStartMapBanTimer(lobby.mapBanDeadline);
+  else pugsStopMapBanTimer();
 }
 
 async function pugsRefresh() {
