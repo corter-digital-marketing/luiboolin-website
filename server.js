@@ -514,6 +514,11 @@ async function setEmbarkId(userId, embarkId) {
   writeDb(db);
 }
 
+// Embark IDs look like "Name#1957" — display everywhere without the tag.
+function stripEmbarkTag(name) {
+  return name ? name.replace(/#\d+$/, '') : name;
+}
+
 const RANK_TIERS = [
   { wins: 30, name: 'BOOLIN' },
   { wins: 15, name: 'Beamer' },
@@ -529,15 +534,15 @@ function getRankName(wins) {
 async function getWinsLeaderboard(column, limit) {
   if (pool) {
     const r = await pool.query(
-      `SELECT id, COALESCE(display_name, username, 'Unknown Player') AS display_name, avatar, ${column} AS wins
+      `SELECT id, COALESCE(NULLIF(embark_id, ''), display_name, username, 'Unknown Player') AS display_name, avatar, ${column} AS wins
        FROM users WHERE ${column} > 0 ORDER BY ${column} DESC, updated_at ASC LIMIT $1`,
       [limit]);
-    return r.rows.map(row => ({ userId: row.id, displayName: row.display_name, avatar: row.avatar, wins: row.wins }));
+    return r.rows.map(row => ({ userId: row.id, displayName: stripEmbarkTag(row.display_name), avatar: row.avatar, wins: row.wins }));
   }
   const db = readDb();
   const field = column === 'ranked_wins' ? 'rankedWins' : 'casualWins';
   return Object.entries(db.users)
-    .map(([id, u]) => ({ userId: id, displayName: u.displayName || u.display_name || id, avatar: u.avatar, wins: u[field] || 0 }))
+    .map(([id, u]) => ({ userId: id, displayName: stripEmbarkTag(u.embarkId || u.displayName || u.display_name || id), avatar: u.avatar, wins: u[field] || 0 }))
     .filter(u => u.wins > 0)
     .sort((a, b) => b.wins - a.wins)
     .slice(0, limit);
@@ -557,7 +562,7 @@ async function buildPugLobby(mode, players) {
 
   for (const p of allPlayers) {
     const embarkId = await getEmbarkId(p.userId);
-    if (embarkId) p.displayName = embarkId;
+    if (embarkId) p.displayName = stripEmbarkTag(embarkId);
   }
 
   const winsGetter = mode === 'competitive' ? getRankedWins : getCasualWins;
@@ -1192,7 +1197,7 @@ const handler = async (req, res) => {
   if (pathname === '/api/pugs/lobby/code' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Not logged in' }); return; }
     const body = await readBody(req);
-    const code = (body.code || '').trim().slice(0, 32);
+    const code = (body.code || '').trim().slice(0, 32).toUpperCase();
     if (!code) { json(res, 400, { error: 'Code is required.' }); return; }
     const result = await pugSetLobbyCode(user.userId, code);
     if (result.error) { json(res, result.status, { error: result.error }); return; }

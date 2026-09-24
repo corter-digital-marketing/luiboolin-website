@@ -141,6 +141,69 @@
       border: 1px solid rgba(210,31,60,0.35);
       padding: 2rem;
     }
+    .pugs-lobby-found {
+      text-align: center;
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: clamp(1.85rem, 5vw, 2.5rem);
+      text-transform: uppercase;
+      color: #fff;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin-bottom: 0.85rem;
+      text-shadow: 0 0 24px rgba(210,31,60,0.4);
+    }
+    .pugs-lobby-maker-line {
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 0.6rem;
+    }
+    .pugs-lobby-maker-line b { color: #fff; font-weight: 700; }
+    .pugs-lobby-maker-banner {
+      display: block;
+      text-align: center;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fbbf24;
+      background: rgba(251,191,36,0.1);
+      border: 1px solid rgba(251,191,36,0.35);
+      padding: 0.5rem 1rem;
+      margin: 0 auto 1.25rem;
+      max-width: 300px;
+    }
+    .pugs-map-card { max-width: 220px; margin: 0.25rem auto 1.5rem; text-align: center; }
+    .pugs-map-card-label {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 0.5rem;
+    }
+    .pugs-map-card-photo {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      display: block;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .pugs-map-card-name {
+      font-family: 'Saira Extra Condensed', sans-serif;
+      font-weight: 800;
+      font-style: italic;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      color: #fff;
+      margin-top: 0.5rem;
+    }
     .pugs-lobby-head {
       display: flex;
       flex-direction: column;
@@ -420,7 +483,8 @@
   <div class="page" id="page-pugs">
     <div style="min-height:100vh;background:#050308;padding:7rem 1.5rem 6rem;">
       <div style="max-width:900px;margin:0 auto;text-align:center;">
-        <img src="/BOOLIN-PUGS.png" alt="Boolin Pugs" style="width:min(680px,88vw);height:auto;display:inline-block;margin-bottom:1rem;filter:drop-shadow(0 0 40px rgba(210,31,60,0.4));" />
+        <img src="/BOOLIN-PUGS.png" alt="Boolin Pugs" style="width:min(680px,88vw);height:auto;display:inline-block;margin-bottom:0.25rem;filter:drop-shadow(0 0 40px rgba(210,31,60,0.4));" />
+        <div style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.3em;text-transform:uppercase;color:#d21f3c;margin-bottom:1rem;">Beta</div>
         <p style="font-family:'Space Grotesk',sans-serif;font-size:1.05rem;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:3.5rem;">Choose how you want to scrim.</p>
       </div>
 

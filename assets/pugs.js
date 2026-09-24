@@ -6,6 +6,19 @@ const PUGS_POLL_MS = 3000;
 let pugsBusy = false;
 let pugsUser = null;
 
+const PUGS_MAP_IMAGES = {
+  'Fangwai City':      '/map-photos/FangwaiCity.png',
+  'NOZOMI/CITADEL':    '/map-photos/NOZOMICITADEL.png',
+  'Las Vegas Stadium': '/map-photos/LasvegasStadium.jpg',
+  'Bernal':            '/map-photos/Bernal_Map.png',
+  'Fortune Stadium':   '/map-photos/Fortune_Stadium_Map.png',
+  'Kyoto':             '/map-photos/Kyoto_Map.png',
+  'SYS$HORIZON':       '/map-photos/SYS$HORIZON_Map.png',
+  'Skyway Stadium':    '/map-photos/Skyway_Stadium_Map.png',
+  'Seoul':             '/map-photos/Seoul_Map.png',
+  'Monoco':            '/map-photos/Monaco_Map.png',
+};
+
 const PUGS_RANK_TIERS = [
   { wins: 30, name: 'BOOLIN' },
   { wins: 15, name: 'Beamer' },
@@ -97,7 +110,7 @@ async function pugsLeaveQueue() {
 async function pugsSetCode() {
   const input = document.getElementById('pugs-code-input');
   if (!input) return;
-  const code = input.value.trim();
+  const code = input.value.trim().toUpperCase();
   if (!code) return;
   try {
     const result = await pugsApi('/api/pugs/lobby/code', { method: 'POST', body: JSON.stringify({ code }) });
@@ -146,7 +159,17 @@ function pugsPlayerRow(p, showWins, hostId) {
       <img src="${pugsAvatarUrl(p)}" alt="" />
       <span class="pugs-player-name">${escapeHtml(p.displayName)}${you ? ' (You)' : ''}</span>
       ${showWins && typeof p.rankedWins === 'number' ? `<span class="pugs-player-rank-badge">${p.rankedWins}</span>` : ''}
-      ${p.userId === hostId ? '<span class="pugs-crown" title="Host">👑</span>' : ''}
+      ${p.userId === hostId ? '<span class="pugs-crown" title="Lobby Maker">👑</span>' : ''}
+    </div>`;
+}
+
+function pugsMapCardHtml(mapName) {
+  const img = PUGS_MAP_IMAGES[mapName];
+  return `
+    <div class="pugs-map-card">
+      <div class="pugs-map-card-label">Map:</div>
+      ${img ? `<img src="${img}" alt="${escapeHtml(mapName)}" class="pugs-map-card-photo" />` : ''}
+      <div class="pugs-map-card-name">${escapeHtml(mapName)}</div>
     </div>`;
 }
 
@@ -184,10 +207,10 @@ function pugsRenderLobby(lobby) {
   const isCompetitive = lobby.mode === 'competitive';
   const you = pugsUser;
   const myEntry = you ? [...lobby.teamA, ...lobby.teamB].find(p => p.userId === you.userId) : null;
+  const hostEntry = [...lobby.teamA, ...lobby.teamB].find(p => p.userId === lobby.host);
 
   const headLines = [];
   if (!isCompetitive) headLines.push('<div class="pugs-lobby-line">Everyone uses the same weapon</div>');
-  headLines.push(`<div class="pugs-lobby-line">Map: ${escapeHtml(lobby.map)}</div>`);
   if (!isCompetitive) headLines.push(`<div class="pugs-lobby-line">Random Weapon: ${escapeHtml(lobby.weapon)}</div>`);
   if (isCompetitive && myEntry) headLines.push(`<span class="pugs-ranked-wins">Rank: <b>${pugsRankName(myEntry.rankedWins || 0)}</b></span>`);
 
@@ -196,14 +219,14 @@ function pugsRenderLobby(lobby) {
     codeSectionHtml = `
       <div class="pugs-lobby-code-box">
         <span class="pugs-lobby-code-label">LOBBY CODE:</span>
-        <span class="pugs-lobby-code-value">${escapeHtml(lobby.code)}</span>
+        <span class="pugs-lobby-code-value">${escapeHtml(lobby.code.toUpperCase())}</span>
       </div>`;
   } else if (lobby.isHost) {
     codeSectionHtml = `
       <div class="pugs-lobby-code-box">
         <span class="pugs-lobby-code-label">LOBBY CODE:</span>
         <div class="pugs-code-input-row">
-          <input type="text" id="pugs-code-input" class="pugs-code-input" placeholder="Paste the code" maxlength="32" />
+          <input type="text" id="pugs-code-input" class="pugs-code-input" style="text-transform:uppercase;" placeholder="Paste the code" maxlength="32" />
           <button type="button" class="pugs-queue-btn pugs-btn-sm" onclick="pugsSetCode()">Set</button>
         </div>
       </div>`;
@@ -237,9 +260,15 @@ function pugsRenderLobby(lobby) {
 
   view.innerHTML = `
     <div class="pugs-lobby">
+      <div class="pugs-lobby-found">Lobby Found</div>
+      <div class="pugs-lobby-maker-line">Lobby Maker: <b>${escapeHtml((hostEntry && hostEntry.displayName) || 'Unknown')}</b></div>
+      ${lobby.isHost ? '<div class="pugs-lobby-maker-banner">You are the Lobby Maker</div>' : ''}
+
       <div class="pugs-lobby-head">
         ${headLines.join('')}
       </div>
+
+      ${pugsMapCardHtml(lobby.map)}
 
       ${codeSectionHtml}
 
