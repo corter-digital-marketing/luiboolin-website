@@ -104,6 +104,12 @@
     <button class="btn btn-logout" onclick="logout()">Log out</button>
   </div>
 
+  <!-- Signed-Up Users -->
+  <div class="card">
+    <div class="card-title">Signed-Up Users</div>
+    <div id="users-wrap"><p class="no-data">Loading…</p></div>
+  </div>
+
   <!-- Add Match -->
   <div class="card">
     <div class="card-title">Add Match Result</div>
@@ -194,15 +200,40 @@
   }
 
   async function loadData() {
-    const [lb, matches, bracket] = await Promise.all([
+    const [lb, matches, bracket, users] = await Promise.all([
       fetch('/api/leaderboard').then(r => r.json()),
       fetch('/api/admin/matches', { headers: { 'x-admin-token': adminToken } }).then(r => r.json()),
       fetch('/api/bracket/s1').then(r => r.json()),
+      fetch('/api/admin/users', { headers: { 'x-admin-token': adminToken } }).then(r => r.json()),
     ]);
     renderLb(lb);
     renderHistory(matches);
     renderBracketSeeds(bracket);
     renderBracketResults(bracket);
+    renderUsers(users);
+  }
+
+  function renderUsers(users) {
+    const el = document.getElementById('users-wrap');
+    if (!Array.isArray(users) || !users.length) { el.innerHTML = '<p class="no-data">No one has signed in yet.</p>'; return; }
+    el.innerHTML = `<table class="lb-table">
+      <thead><tr><th></th><th>Name</th><th>Embark ID</th><th>Casual W</th><th>Ranked W</th><th>Last Active</th></tr></thead>
+      <tbody>${users.map(u => {
+        const avatarUrl = u.avatar
+          ? `https://cdn.discordapp.com/avatars/${u.userId}/${u.avatar}.png?size=32`
+          : `https://cdn.discordapp.com/embed/avatars/${parseInt(u.userId, 10) % 5 || 0}.png`;
+        const name = u.displayName || u.username || u.userId;
+        const lastActive = u.updatedAt ? new Date(u.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+        return `<tr>
+          <td><img src="${avatarUrl}" alt="" style="width:24px;height:24px;border-radius:50%;display:block;" /></td>
+          <td style="text-align:left;color:#fff;">${esc(name)}</td>
+          <td>${u.embarkId ? esc(u.embarkId) : '—'}</td>
+          <td>${u.casualWins}</td>
+          <td>${u.rankedWins}</td>
+          <td>${lastActive}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>`;
   }
 
   function renderBracketSeeds(b) {
