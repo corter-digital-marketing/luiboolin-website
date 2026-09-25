@@ -52,6 +52,9 @@ if (DATABASE_URL) {
     CREATE TABLE IF NOT EXISTS pug_user_lobby (
       user_id TEXT PRIMARY KEY, lobby_id TEXT NOT NULL
     );
+    CREATE TABLE IF NOT EXISTS presence (
+      client_id TEXT PRIMARY KEY, last_seen TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
     CREATE TABLE IF NOT EXISTS teams (
       id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL, captain_id TEXT NOT NULL,
       invite_code TEXT UNIQUE NOT NULL, created_at TIMESTAMPTZ DEFAULT NOW()
@@ -145,6 +148,28 @@ function discordGet(p, token) {
     });
     req.on('error', reject); req.end();
   });
+}
+
+// ── Presence (site-wide "how many people are online" counter) ─────
+// Ephemeral, so it's stored the same way as everything else that
+// needs to be consistent across Vercel serverless instances: Postgres
+// when available, in-memory when not (local dev is a single process).
+const PRESENCE_WINDOW_MS = 45000;
+const presenceMem = {}; // clientId -> lastSeen (ms)
+
+async function presenceHeartbeat(clientId) {
+  if (pool) {
+    await pool.query(
+      `INSERT INTO presence (client_id, last_seen) VALUES ($1, NOW())
+       ON CONFLICT (client_id) DO UPDATE SET last_seen = NOW()`,
+      [clientId]);
+    const r = await pool.query(`SELECT COUNT(*)::int AS n FROM presence WHERE last_seen > NOW() - INTERVAL '45 seconds'`);
+    return r.rows[0].n;
+  }
+  presenceMem[clientId] = Date.now();
+  const cutoff = Date.now() - PRESENCE_WINDOW_MS;
+  Object.keys(presenceMem).forEach(id => { if (presenceMem[id] < cutoff) delete presenceMem[id]; });
+  return Object.keys(presenceMem).length;
 }
 
 // ── Live status (Twitch / YouTube) ────────────────────────────────
@@ -1300,6 +1325,20 @@ const handler = async (req, res) => {
     const matchId = pathname.split('/').pop();
     const db = readDb(); db.matches = db.matches.filter(m => m.id !== matchId); writeDb(db);
     json(res, 200, { ok: true });
+    return;
+  }
+
+  // ── Presence: heartbeat + site-wide online count ──────────────────────────────
+  if (pathname === '/api/presence/heartbeat' && req.method === 'POST') {
+    let clientId = cookies['bl_visitor'];
+    const headers = {};
+    if (!clientId) {
+      clientId = randomToken();
+      headers['Set-Cookie'] = `bl_visitor=${clientId}; Path=/; Max-Age=31536000; SameSite=Lax`;
+    }
+    const online = await presenceHeartbeat(clientId);
+    res.writeHead(200, { ...headers, 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ online }));
     return;
   }
 

@@ -153,3 +153,18 @@ document.addEventListener('keydown', e => {
 });
 
 initAuth();
+
+// ══════════════════════════════════════
+// PRESENCE (site-wide "how many people are online" — tracked on every
+// page so any page can show it via a #bl-online-count element)
+// ══════════════════════════════════════
+async function blSendHeartbeat() {
+  try {
+    const res = await fetch('/api/presence/heartbeat', { method: 'POST' });
+    const data = await res.json();
+    const el = document.getElementById('bl-online-count');
+    if (el && typeof data.online === 'number') el.textContent = data.online;
+  } catch (_) {}
+}
+blSendHeartbeat();
+setInterval(blSendHeartbeat, 20000);
