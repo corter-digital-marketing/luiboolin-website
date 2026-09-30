@@ -6,6 +6,9 @@ const PUGS_POLL_MS = 3000;
 let pugsBusy = false;
 let pugsUser = null;
 
+const PUGS_QUEUE_SIZE = { casual: 6, competitive: 6, '1v1': 2 };
+const PUGS_BANNED_WEAPONS_1V1 = ['Dual Blades', 'Riot Shield', 'Spear', 'Sledgehammer', 'Flamethrower'];
+
 const PUGS_MAP_IMAGES = {
   'Fangwai City':      '/map-photos/FangwaiCity.png',
   'NOZOMI/CITADEL':    '/map-photos/NOZOMICITADEL.png',
@@ -71,7 +74,7 @@ function pugsSetButtonState(mode, state, extra) {
     btn.textContent = 'Queue';
     btn.onclick = () => pugsQueueClick(mode);
   } else if (state === 'searching') {
-    btn.textContent = `Searching… (${extra}/6) — Cancel`;
+    btn.textContent = `Searching… (${extra}/${PUGS_QUEUE_SIZE[mode] || 6}) — Cancel`;
     btn.classList.add('pugs-btn-queued');
     btn.onclick = () => pugsLeaveQueue();
   } else if (state === 'busy') {
@@ -183,10 +186,17 @@ function pugsMapCardHtml(mapName) {
     </div>`;
 }
 
+function pugsTeamLabel(lobby, team) {
+  const players = team === 'teamA' ? lobby.teamA : lobby.teamB;
+  if (players.length === 1) return players[0].displayName;
+  return team === 'teamA' ? 'Team A' : 'Team B';
+}
+
 function pugsMapBanHtml(lobby) {
   const turn = lobby.mapBanTurn;
-  const turnLabel = turn === 'teamA' ? 'Team A' : 'Team B';
+  const turnLabel = pugsTeamLabel(lobby, turn);
   const isMyTurn = lobby.myTeam === turn;
+  const teamSize = lobby.teamA.length;
   const bannedMaps = [lobby.mapBans.teamA, lobby.mapBans.teamB].filter(Boolean);
   const tally = lobby.mapBanTally || {};
 
@@ -201,16 +211,18 @@ function pugsMapBanHtml(lobby) {
            ${clickable ? `onclick="pugsBanMap('${m.replace(/'/g, "\\'")}')"` : ''}>
         ${img ? `<img src="${img}" alt="${escapeHtml(m)}" class="pugs-mapban-photo" />` : ''}
         <div class="pugs-mapban-name">${escapeHtml(m)}</div>
-        ${banned ? '<div class="pugs-mapban-tag">BANNED</div>' : (typeof count === 'number' ? `<div class="pugs-mapban-votes">${count}/3 votes</div>` : '')}
+        ${banned ? '<div class="pugs-mapban-tag">BANNED</div>' : (typeof count === 'number' ? `<div class="pugs-mapban-votes">${count}/${teamSize} votes</div>` : '')}
       </div>`;
   }).join('');
 
   return `
     <div class="pugs-map-card pugs-mapban">
       <div class="pugs-map-card-label">Map Ban — ${isMyTurn ? 'Your Team is Voting' : `Waiting on ${turnLabel}`}</div>
-      ${lobby.mapBanDeadline ? `<div class="pugs-mapban-timer">You have <span id="pugs-mapban-countdown">30</span> seconds to vote</div>` : ''}
+      ${lobby.mapBanDeadline ? `<div class="pugs-mapban-timer"><span id="pugs-mapban-countdown">30</span> seconds to vote</div>` : ''}
       <div class="pugs-mapban-grid">${cards}</div>
-      <p class="pugs-note" style="margin-top:0.75rem;margin-bottom:0;">${isMyTurn ? "Vote for the map your team should ban — majority decides, ties are broken randomly." : `Waiting for ${turnLabel} to finish voting on their ban.`}</p>
+      <p class="pugs-note" style="margin-top:0.75rem;margin-bottom:0;">${isMyTurn
+        ? (teamSize === 1 ? 'Pick a map to ban.' : 'Vote for the map your team should ban — majority decides, ties are broken randomly.')
+        : `Waiting for ${teamSize === 1 ? turnLabel : turnLabel + ' to finish voting'} on their ban.`}</p>
     </div>`;
 }
 
@@ -264,17 +276,27 @@ function pugsRenderLobby(lobby) {
     : true;
 
   const isCompetitive = lobby.mode === 'competitive';
+  const is1v1 = lobby.mode === '1v1';
   const you = pugsUser;
   const myEntry = you ? [...lobby.teamA, ...lobby.teamB].find(p => p.userId === you.userId) : null;
   const hostEntry = [...lobby.teamA, ...lobby.teamB].find(p => p.userId === lobby.host);
 
   const headLines = [];
-  if (!isCompetitive) {
+  if (lobby.mode === 'casual') {
     headLines.push(`
       <div class="pugs-weapon-box">
         <div class="pugs-lobby-line">Everyone uses the same weapon</div>
         <div class="pugs-lobby-line">Random Weapon: ${escapeHtml(lobby.weapon)}</div>
       </div>`);
+  }
+  if (is1v1 && lobby.roundWeapons) {
+    headLines.push(`
+      <div class="pugs-weapon-box">
+        <div class="pugs-lobby-line">Round 1 Weapon: ${escapeHtml(lobby.roundWeapons[0])}</div>
+        <div class="pugs-lobby-line">Round 2 Weapon: ${escapeHtml(lobby.roundWeapons[1])}</div>
+        <div class="pugs-lobby-line">Round 3 Weapon: ${escapeHtml(lobby.roundWeapons[2])}</div>
+      </div>
+      <p class="pugs-note">Banned Weapons: ${PUGS_BANNED_WEAPONS_1V1.map(escapeHtml).join(', ')}</p>`);
   }
   if (isCompetitive && myEntry) headLines.push(`<span class="pugs-ranked-wins">Rank: <b>${pugsRankName(myEntry.rankedWins || 0)}</b></span>`);
 
@@ -302,22 +324,22 @@ function pugsRenderLobby(lobby) {
       </div>`;
   }
 
+  const threshold = lobby.winThreshold || 4;
   let voteHtml = '';
   if (lobby.result) {
-    const winnerLabel = lobby.result === 'teamA' ? 'Team A' : 'Team B';
-    voteHtml = `<div class="pugs-result-banner">${winnerLabel} Wins!</div>
+    voteHtml = `<div class="pugs-result-banner">${escapeHtml(pugsTeamLabel(lobby, lobby.result))} Wins!</div>
       <button type="button" class="pugs-queue-btn pugs-btn-cancel" style="width:100%;" onclick="pugsBackToQueue()">Back to Queue</button>`;
   } else if (lobby.code) {
     voteHtml = `
-      <div class="pugs-lobby-code-label" style="text-align:center;margin-bottom:0.75rem;">Which team won? (needs 4 votes)</div>
+      <div class="pugs-lobby-code-label" style="text-align:center;margin-bottom:0.75rem;">Who won? (needs ${threshold} vote${threshold === 1 ? '' : 's'})</div>
       <div class="pugs-vote-row">
         <button type="button" class="pugs-vote-btn ${lobby.myVote === 'teamA' ? 'voted' : ''}" onclick="pugsVote('teamA')">
-          Team A Won
-          <span class="pugs-vote-tally">${lobby.voteCounts.teamA}/4 votes</span>
+          ${escapeHtml(pugsTeamLabel(lobby, 'teamA'))} Won
+          <span class="pugs-vote-tally">${lobby.voteCounts.teamA}/${threshold} votes</span>
         </button>
         <button type="button" class="pugs-vote-btn ${lobby.myVote === 'teamB' ? 'voted' : ''}" onclick="pugsVote('teamB')">
-          Team B Won
-          <span class="pugs-vote-tally">${lobby.voteCounts.teamB}/4 votes</span>
+          ${escapeHtml(pugsTeamLabel(lobby, 'teamB'))} Won
+          <span class="pugs-vote-tally">${lobby.voteCounts.teamB}/${threshold} votes</span>
         </button>
       </div>`;
   }
@@ -338,12 +360,12 @@ function pugsRenderLobby(lobby) {
 
       <div class="pugs-teams">
         <div class="pugs-team">
-          <div class="pugs-team-name">Team A</div>
+          <div class="pugs-team-name">${lobby.teamA.length === 1 ? 'Player 1' : 'Team A'}</div>
           ${lobby.teamA.map(p => pugsPlayerRow(p, isCompetitive, lobby.host)).join('')}
         </div>
         ${pugsChatHtml(lobby)}
         <div class="pugs-team">
-          <div class="pugs-team-name">Team B</div>
+          <div class="pugs-team-name">${lobby.teamB.length === 1 ? 'Player 2' : 'Team B'}</div>
           ${lobby.teamB.map(p => pugsPlayerRow(p, isCompetitive, lobby.host)).join('')}
         </div>
       </div>
@@ -387,11 +409,13 @@ async function pugsRefresh() {
 
   document.getElementById('casual-queue-count').textContent = status.counts.casual;
   document.getElementById('competitive-queue-count').textContent = status.counts.competitive;
+  document.getElementById('1v1-queue-count').textContent = status.counts['1v1'];
   document.getElementById('casual-live-count').textContent = status.gamesLive.casual;
   document.getElementById('competitive-live-count').textContent = status.gamesLive.competitive;
+  document.getElementById('1v1-live-count').textContent = status.gamesLive['1v1'];
 
   const loggedIn = !!pugsUser;
-  ['casual', 'competitive'].forEach(mode => {
+  ['casual', 'competitive', '1v1'].forEach(mode => {
     if (!loggedIn) pugsSetButtonState(mode, 'login');
     else if (status.inQueue === mode) pugsSetButtonState(mode, 'searching', status.counts[mode]);
     else if (status.inQueue) pugsSetButtonState(mode, 'busy');

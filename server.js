@@ -49,6 +49,7 @@ if (DATABASE_URL) {
     ALTER TABLE pug_lobbies ADD COLUMN IF NOT EXISTS map_bans JSONB;
     ALTER TABLE pug_lobbies ADD COLUMN IF NOT EXISTS map_ban_votes JSONB;
     ALTER TABLE pug_lobbies ADD COLUMN IF NOT EXISTS map_ban_deadline BIGINT;
+    ALTER TABLE pug_lobbies ADD COLUMN IF NOT EXISTS round_weapons JSONB;
     CREATE TABLE IF NOT EXISTS pug_user_lobby (
       user_id TEXT PRIMARY KEY, lobby_id TEXT NOT NULL
     );
@@ -484,7 +485,20 @@ const WEAPON_POOL = [
   'SLEDGEHAMMER','SPEAR',
 ];
 
+// 1v1 rolls a weapon per round from a smaller pool — these are excluded
+// entirely (too strong / too awkward for a duel), and called out in the UI.
+const WEAPON_1V1_BANNED = ['DUAL BLADES', 'RIOT SHIELD', 'SPEAR', 'SLEDGEHAMMER', 'FLAMETHROWER'];
+const WEAPON_POOL_1V1 = WEAPON_POOL.filter(w => !WEAPON_1V1_BANNED.includes(w));
+
 const MAP_BAN_WINDOW_MS = 30000;
+
+// Casual/Competitive are 3v3 (teams of 3, 4-vote majority to confirm a
+// winner); 1v1 is exactly what it sounds like (teams of 1, both players
+// have to agree — 2 votes — to confirm a winner). Competitive and 1v1 both
+// go through the 3-map pick/ban; Casual just gets one instant random map.
+const PUGS_QUEUE_SIZE = { casual: 6, competitive: 6, '1v1': 2 };
+const PUGS_WIN_THRESHOLD = { casual: 4, competitive: 4, '1v1': 2 };
+const PUGS_PICKBAN_MODES = new Set(['competitive', '1v1']);
 
 function pick(arr)    { return arr[Math.floor(Math.random() * arr.length)]; }
 function shuffle(arr) {
@@ -493,7 +507,7 @@ function shuffle(arr) {
   return a;
 }
 
-const pugQueues = { casual: [], competitive: [] }; // [{ userId, displayName, avatar }]
+const pugQueues = { casual: [], competitive: [], '1v1': [] }; // [{ userId, displayName, avatar }]
 const pugLobbies = {};   // lobbyId -> lobby
 const userLobbyId = {};  // userId -> lobbyId
 
@@ -604,14 +618,19 @@ async function getWinsLeaderboard(column, limit) {
 // safe to call from either the Postgres path or the in-memory path.
 async function buildPugLobby(mode, players) {
   const id = generateId();
-  const eligibleMaps = MAP_POOL.filter(m => mode === 'casual' || !m.banned).map(m => m.name);
-  const weapon = mode === 'casual' ? pick(WEAPON_POOL) : null;
+  // Competitive-only map bans are excluded here too, but 1v1 (like Casual)
+  // is framed as a fun/casual mode, so it gets the full map pool.
+  const eligibleMaps = MAP_POOL.filter(m => mode !== 'competitive' || !m.banned).map(m => m.name);
 
-  // Competitive goes through a pick/ban: 3 random candidates, Team A bans
-  // first, Team B bans second, the map left standing is what's played.
-  // Casual skips straight to one random map.
+  let weapon = null, roundWeapons = null;
+  if (mode === 'casual') weapon = pick(WEAPON_POOL);
+  else if (mode === '1v1') roundWeapons = [pick(WEAPON_POOL_1V1), pick(WEAPON_POOL_1V1), pick(WEAPON_POOL_1V1)];
+
+  // Competitive and 1v1 both go through a pick/ban: 3 random candidates,
+  // Team A bans first, Team B bans second, the map left standing is what's
+  // played. Casual skips straight to one random map.
   let map = null, mapCandidates = null, mapBans = null, mapBanVotes = null, mapBanDeadline = null;
-  if (mode === 'competitive') {
+  if (PUGS_PICKBAN_MODES.has(mode)) {
     mapCandidates = shuffle(eligibleMaps).slice(0, 3);
     mapBans = { teamA: null, teamB: null };
     mapBanVotes = { teamA: {}, teamB: {} };
@@ -619,9 +638,11 @@ async function buildPugLobby(mode, players) {
   } else {
     map = pick(eligibleMaps);
   }
+
+  const teamSize = PUGS_QUEUE_SIZE[mode] / 2;
   const shuffled = shuffle(players);
-  const teamA = shuffled.slice(0, 3);
-  const teamB = shuffled.slice(3, 6);
+  const teamA = shuffled.slice(0, teamSize);
+  const teamB = shuffled.slice(teamSize, teamSize * 2);
   const allPlayers = [...teamA, ...teamB];
 
   for (const p of allPlayers) {
@@ -638,7 +659,7 @@ async function buildPugLobby(mode, players) {
   for (let i = 1; i < allPlayers.length; i++) if (winCounts[i] > winCounts[hostIdx]) hostIdx = i;
   const host = allPlayers[hostIdx].userId;
 
-  return { id, mode, map, weapon, host, code: null, teamA, teamB, votes: {}, chat: [], result: null, mapCandidates, mapBans, mapBanVotes, mapBanDeadline };
+  return { id, mode, map, weapon, roundWeapons, host, code: null, teamA, teamB, votes: {}, chat: [], result: null, mapCandidates, mapBans, mapBanVotes, mapBanDeadline };
 }
 
 function serializePugLobby(lobby, forUserId) {
@@ -647,7 +668,7 @@ function serializePugLobby(lobby, forUserId) {
   const onTeamA = lobby.teamA.some(p => p.userId === forUserId);
   const myTeam = onTeamA ? 'teamA' : lobby.teamB.some(p => p.userId === forUserId) ? 'teamB' : null;
   let mapBanTurn = null, mapBanTally = null, myMapBanVote = null;
-  if (lobby.mode === 'competitive' && !lobby.map && lobby.mapBans) {
+  if (PUGS_PICKBAN_MODES.has(lobby.mode) && !lobby.map && lobby.mapBans) {
     mapBanTurn = pugMapBanTurn(lobby.mapBans);
     if (mapBanTurn) {
       const remaining = (lobby.mapCandidates || []).filter(m => m !== lobby.mapBans.teamA && m !== lobby.mapBans.teamB);
@@ -670,6 +691,8 @@ function serializePugLobby(lobby, forUserId) {
     mapBanDeadline: lobby.mapBanDeadline || null,
     myTeam,
     weapon: lobby.weapon,
+    roundWeapons: lobby.roundWeapons || null,
+    winThreshold: PUGS_WIN_THRESHOLD[lobby.mode] || 4,
     host: lobby.host,
     isHost: lobby.host === forUserId,
     code: lobby.code,
@@ -684,7 +707,7 @@ function serializePugLobby(lobby, forUserId) {
 
 function pugRowToLobby(row) {
   return {
-    id: row.id, mode: row.mode, map: row.map, weapon: row.weapon, host: row.host, code: row.code,
+    id: row.id, mode: row.mode, map: row.map, weapon: row.weapon, roundWeapons: row.round_weapons, host: row.host, code: row.code,
     teamA: row.team_a, teamB: row.team_b, votes: row.votes, chat: row.chat, result: row.result,
     mapCandidates: row.map_candidates, mapBans: row.map_bans, mapBanVotes: row.map_ban_votes,
     mapBanDeadline: row.map_ban_deadline ? Number(row.map_ban_deadline) : null,
@@ -700,21 +723,21 @@ function pugRowToLobby(row) {
 async function pugQueueCounts() {
   if (pool) {
     const r = await pool.query('SELECT mode, COUNT(*)::int AS n FROM pug_queue GROUP BY mode');
-    const counts = { casual: 0, competitive: 0 };
+    const counts = { casual: 0, competitive: 0, '1v1': 0 };
     r.rows.forEach(row => { counts[row.mode] = row.n; });
     return counts;
   }
-  return { casual: pugQueues.casual.length, competitive: pugQueues.competitive.length };
+  return { casual: pugQueues.casual.length, competitive: pugQueues.competitive.length, '1v1': pugQueues['1v1'].length };
 }
 
 async function pugGamesLiveCounts() {
   if (pool) {
     const r = await pool.query('SELECT mode, COUNT(*)::int AS n FROM pug_lobbies WHERE result IS NULL GROUP BY mode');
-    const counts = { casual: 0, competitive: 0 };
+    const counts = { casual: 0, competitive: 0, '1v1': 0 };
     r.rows.forEach(row => { counts[row.mode] = row.n; });
     return counts;
   }
-  const counts = { casual: 0, competitive: 0 };
+  const counts = { casual: 0, competitive: 0, '1v1': 0 };
   Object.values(pugLobbies).forEach(l => { if (!l.result) counts[l.mode]++; });
   return counts;
 }
@@ -724,9 +747,7 @@ async function pugUserQueueMode(userId) {
     const r = await pool.query('SELECT mode FROM pug_queue WHERE user_id=$1', [userId]);
     return r.rows[0] ? r.rows[0].mode : null;
   }
-  if (pugQueues.casual.some(p => p.userId === userId)) return 'casual';
-  if (pugQueues.competitive.some(p => p.userId === userId)) return 'competitive';
-  return null;
+  return Object.keys(PUGS_QUEUE_SIZE).find(m => pugQueues[m].some(p => p.userId === userId)) || null;
 }
 
 async function pugFindUserLobby(userId) {
@@ -764,18 +785,21 @@ async function pugJoinQueue(mode, player) {
       await client.query(
         'INSERT INTO pug_queue (user_id, mode, display_name, avatar) VALUES ($1,$2,$3,$4)',
         [player.userId, mode, player.displayName, player.avatar]);
+      const queueSize = PUGS_QUEUE_SIZE[mode] || 6;
       const queued = await client.query(
-        'SELECT user_id, display_name, avatar FROM pug_queue WHERE mode=$1 ORDER BY joined_at ASC LIMIT 6',
-        [mode]);
+        'SELECT user_id, display_name, avatar FROM pug_queue WHERE mode=$1 ORDER BY joined_at ASC LIMIT $2',
+        [mode, queueSize]);
       let lobby = null;
-      if (queued.rows.length >= 6) {
+      if (queued.rows.length >= queueSize) {
         const players = queued.rows.map(r => ({ userId: r.user_id, displayName: r.display_name, avatar: r.avatar }));
         await client.query('DELETE FROM pug_queue WHERE user_id = ANY($1::text[])', [players.map(p => p.userId)]);
         lobby = await buildPugLobby(mode, players);
         await client.query(
-          `INSERT INTO pug_lobbies (id, mode, map, weapon, host, code, team_a, team_b, votes, chat, result, map_candidates, map_bans, map_ban_votes, map_ban_deadline)
-           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
-          [lobby.id, lobby.mode, lobby.map, lobby.weapon, lobby.host, lobby.code,
+          `INSERT INTO pug_lobbies (id, mode, map, weapon, round_weapons, host, code, team_a, team_b, votes, chat, result, map_candidates, map_bans, map_ban_votes, map_ban_deadline)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+          [lobby.id, lobby.mode, lobby.map, lobby.weapon,
+           lobby.roundWeapons ? JSON.stringify(lobby.roundWeapons) : null,
+           lobby.host, lobby.code,
            JSON.stringify(lobby.teamA), JSON.stringify(lobby.teamB), JSON.stringify(lobby.votes), JSON.stringify(lobby.chat), lobby.result,
            lobby.mapCandidates ? JSON.stringify(lobby.mapCandidates) : null,
            lobby.mapBans ? JSON.stringify(lobby.mapBans) : null,
@@ -796,13 +820,14 @@ async function pugJoinQueue(mode, player) {
   }
 
   if (userLobbyId[player.userId]) return { error: 'You are already in a lobby.' };
-  if (pugQueues.casual.some(p => p.userId === player.userId) || pugQueues.competitive.some(p => p.userId === player.userId)) {
+  if (Object.keys(PUGS_QUEUE_SIZE).some(m => pugQueues[m].some(p => p.userId === player.userId))) {
     return { error: 'You are already in a queue.' };
   }
   pugQueues[mode].push(player);
   let lobby = null;
-  if (pugQueues[mode].length >= 6) {
-    const players = pugQueues[mode].splice(0, 6);
+  const queueSize = PUGS_QUEUE_SIZE[mode] || 6;
+  if (pugQueues[mode].length >= queueSize) {
+    const players = pugQueues[mode].splice(0, queueSize);
     lobby = await buildPugLobby(mode, players);
     pugLobbies[lobby.id] = lobby;
     [...lobby.teamA, ...lobby.teamB].forEach(p => { userLobbyId[p.userId] = lobby.id; });
@@ -871,7 +896,7 @@ function pugFinalizeMapBan(lobby, myTeam, chosenMap) {
 // whatever votes are in (or a fully random pick if nobody voted at all) so
 // the match is never stuck waiting on an AFK player.
 function pugResolveMapBanIfExpired(lobby) {
-  if (lobby.mode !== 'competitive' || lobby.map || !lobby.mapBanDeadline) return false;
+  if (!PUGS_PICKBAN_MODES.has(lobby.mode) || lobby.map || !lobby.mapBanDeadline) return false;
   if (Date.now() < lobby.mapBanDeadline) return false;
   const turn = pugMapBanTurn(lobby.mapBans);
   if (!turn) return false;
@@ -882,7 +907,7 @@ function pugResolveMapBanIfExpired(lobby) {
 }
 
 function pugApplyMapBanVote(lobby, userId, myTeam, mapName) {
-  if (lobby.mode !== 'competitive') return { error: 'Map bans only apply to Competitive.', status: 400 };
+  if (!PUGS_PICKBAN_MODES.has(lobby.mode)) return { error: 'Map bans only apply to Competitive and 1v1.', status: 400 };
   if (lobby.map) return { error: 'The map has already been decided.', status: 409 };
   const bans = lobby.mapBans || { teamA: null, teamB: null };
   const turn = pugMapBanTurn(bans);
@@ -963,8 +988,9 @@ async function pugVote(userId, team) {
         lobby.votes[userId] = team;
         const counts = { teamA: 0, teamB: 0 };
         Object.values(lobby.votes).forEach(v => { counts[v]++; });
-        if (counts.teamA >= 4) { lobby.result = 'teamA'; justResolved = true; }
-        else if (counts.teamB >= 4) { lobby.result = 'teamB'; justResolved = true; }
+        const threshold = PUGS_WIN_THRESHOLD[lobby.mode] || 4;
+        if (counts.teamA >= threshold) { lobby.result = 'teamA'; justResolved = true; }
+        else if (counts.teamB >= threshold) { lobby.result = 'teamB'; justResolved = true; }
         await client.query('UPDATE pug_lobbies SET votes=$1, result=$2 WHERE id=$3', [JSON.stringify(lobby.votes), lobby.result, lobby.id]);
       }
       await client.query('COMMIT');
@@ -987,8 +1013,9 @@ async function pugVote(userId, team) {
     lobby.votes[userId] = team;
     const counts = { teamA: 0, teamB: 0 };
     Object.values(lobby.votes).forEach(v => { counts[v]++; });
-    if (counts.teamA >= 4) lobby.result = 'teamA';
-    else if (counts.teamB >= 4) lobby.result = 'teamB';
+    const threshold = PUGS_WIN_THRESHOLD[lobby.mode] || 4;
+    if (counts.teamA >= threshold) lobby.result = 'teamA';
+    else if (counts.teamB >= threshold) lobby.result = 'teamB';
     if (lobby.result) {
       const winners = lobby.result === 'teamA' ? lobby.teamA : lobby.teamB;
       for (const p of winners) await (lobby.mode === 'competitive' ? addRankedWin(p.userId) : addCasualWin(p.userId));
@@ -1017,8 +1044,9 @@ async function pugLeaveLobby(userId) {
 }
 
 function removeFromPugQueues(userId) {
-  pugQueues.casual      = pugQueues.casual.filter(p => p.userId !== userId);
-  pugQueues.competitive = pugQueues.competitive.filter(p => p.userId !== userId);
+  Object.keys(PUGS_QUEUE_SIZE).forEach(m => {
+    pugQueues[m] = pugQueues[m].filter(p => p.userId !== userId);
+  });
 }
 
 // ── MIME types ───────────────────────────────────────────────────
@@ -1064,24 +1092,6 @@ const handler = async (req, res) => {
   const cookies  = parseCookies(req.headers['cookie']);
   const sid      = cookies['bl_session'];
   const user     = verifySession(sid);
-
-  // TEMP TEST-ONLY HOOK — remove before shipping
-  if (pathname === '/__test/login' && !process.env.VERCEL) {
-    const uid = parsed.query.uid;
-    const sessionToken = signSession({ userId: uid, username: uid, displayName: uid, avatar: null });
-    res.writeHead(200, { 'Set-Cookie': `bl_session=${sessionToken}; Path=/` });
-    res.end('ok');
-    return;
-  }
-
-  // TEMP TEST-ONLY HOOK — remove before shipping
-  if (pathname === '/__test/login' && !process.env.VERCEL) {
-    const uid = parsed.query.uid;
-    const sessionToken = signSession({ userId: uid, username: uid, displayName: uid, avatar: null });
-    res.writeHead(200, { 'Set-Cookie': `bl_session=${sessionToken}; Path=/` });
-    res.end('ok');
-    return;
-  }
 
   // Discord OAuth start
   if (pathname === '/auth/discord') {
@@ -1429,7 +1439,7 @@ const handler = async (req, res) => {
   if (pathname === '/api/pugs/queue/join' && req.method === 'POST') {
     if (!user) { json(res, 401, { error: 'Log in with Discord to queue.' }); return; }
     const body = await readBody(req);
-    const mode = body.mode === 'competitive' ? 'competitive' : 'casual';
+    const mode = Object.prototype.hasOwnProperty.call(PUGS_QUEUE_SIZE, body.mode) ? body.mode : 'casual';
     const result = await pugJoinQueue(mode, { userId: user.userId, displayName: user.displayName, avatar: user.avatar });
     if (result.error) { json(res, 409, { error: result.error }); return; }
     json(res, 200, { ok: true, lobby: result.lobby ? serializePugLobby(result.lobby, user.userId) : null });
